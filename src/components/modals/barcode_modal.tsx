@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import { Button, Input } from "@/components/ui";
 import { RegionalPassportOffice } from "@/utils/address-util";
 import { printBookingPreview } from "@/utils/print-booking";
+import { usePrintServerRes } from "@/lib/hooks/usePrintServerRes";
+import { useAuthStore } from "@/store/auth-store";
 
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
@@ -33,19 +35,39 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   getTodayDate,
   handlePrint,
 }) => {
+  const { submitPrintStatusServer, loading: submitting } = usePrintServerRes();
+  const { user } = useAuthStore();
+
   if (!showModal || !selectedRPO) {
     return null;
   }
 
-  const onPrint = () => {
+  const onCancel = () => {
+    setBarcodeInput("");
+    handleCloseModal();
+  };
+
+  const onPrint = async () => {
     if (handlePrint) {
       handlePrint();
     } else {
-      printBookingPreview({
-        barcodeInput,
-        selectedRPO,
-        getTodayDate,
-      });
+      try {
+        await submitPrintStatusServer({
+          user_id: user?.user_id || "",
+          barcode: barcodeInput,
+          booking_status: "Pending",
+        });
+
+        // Print on success
+        printBookingPreview({
+          barcodeInput,
+          selectedRPO,
+          getTodayDate,
+        });
+      } catch (error) {
+        console.error("Failed to submit pending booking:", error);
+        // Optionally show error message to user
+      }
     }
   };
 
@@ -60,12 +82,12 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
           >
             {/* Header with Icons */}
             <div className="flex items-center justify-between px-5 mb-5">
-              <div className="w-[35px] h-[35px] relative">
+              <div className="w-[45px] h-[45px] relative">
                 <Image
                   src="/bpo.png"
                   alt="BPO"
-                  width={35}
-                  height={35}
+                  width={45}
+                  height={45}
                   className="object-contain"
                 />
               </div>
@@ -75,12 +97,12 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 </h2>
                 <p className="text-lg text-black">e-Passport Booking</p>
               </div>
-              <div className="w-[35px] h-[35px] relative">
+              <div className="w-[45px] h-[45px] relative">
                 <Image
                   src="/passport.png"
                   alt="Passport"
-                  width={35}
-                  height={35}
+                  width={45}
+                  height={45}
                   className="object-contain"
                 />
               </div>
@@ -161,7 +183,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             <Button
               variant="primary"
               className="h-[42px] w-[250px]"
-              onClick={handleCloseModal}
+              onClick={onCancel}
             >
               Cancel
             </Button>
@@ -169,10 +191,33 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               variant="primary"
               className="h-[42px] w-[250px]"
               onClick={onPrint}
-              disabled={!barcodeInput}
+              disabled={!barcodeInput || submitting}
             >
-              Print
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span>Submitting...</span>
+                </span>
+              ) : (
+                "Print"
+              )}
             </Button>
+
             <Button
               variant="primary"
               className="h-[42px] w-[250px]"

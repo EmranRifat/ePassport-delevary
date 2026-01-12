@@ -4,6 +4,19 @@ export interface BarcodeCheckRequest {
     post_code: string;
 }
 
+// Pending booking request type
+export interface PendingBookingRequest {
+    user_id: string;
+    barcode: string;
+    booking_status: string;
+}
+
+// Pending booking response type
+export interface PendingBookingResponse {
+    status_code: string;
+    message: string;
+}
+
 // Response type
 export interface BarcodeCheckResponse {
     status_code: string;
