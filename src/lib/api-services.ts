@@ -15,8 +15,8 @@ import {
 
 // Authentication API
 export const authApi = {
-   
-   
+
+
     login: async (data: LoginRequest): Promise<LoginResponse> => {
         const response = await api.post<LoginResponse>(
             `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/passportoperator-login`,
@@ -24,6 +24,7 @@ export const authApi = {
         );
         return response.data;
     },
+
 
 
 
@@ -39,6 +40,14 @@ export const authApi = {
     logout: () => {
         if (typeof window !== 'undefined') {
             localStorage.clear();
+            // Remove all auth cookies
+            document.cookie = 'auth-token=; path=/; max-age=0';
+            document.cookie = 'user_id=; path=/; max-age=0';
+            document.cookie = 'branch_code=; path=/; max-age=0';
+            document.cookie = 'my_emts_branch_code=; path=/; max-age=0';
+            document.cookie = 'rms_code=; path=/; max-age=0';
+            document.cookie = 'shift=; path=/; max-age=0';
+            document.cookie = 'city_post_status=; path=/; max-age=0';
         }
     },
 };
