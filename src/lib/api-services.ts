@@ -3,6 +3,8 @@ import { API_CONSTANTS } from '@/utils/constants';
 import {
     LoginRequest,
     LoginResponse,
+    DmsLoginRequest,
+    DmsLoginResponse,
     BookingBody,
     BookingResponse,
     LicenseDataBody,
@@ -13,17 +15,22 @@ import {
 
 // Authentication API
 export const authApi = {
-    login: async (data: LoginRequest) => {
+   
+   
+    login: async (data: LoginRequest): Promise<LoginResponse> => {
         const response = await api.post<LoginResponse>(
-            API_CONSTANTS.LOGIN_URL_LOCAL,
+            `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/passportoperator-login`,
             data
         );
         return response.data;
     },
 
-    dmsLogin: async (data: LoginRequest) => {
-        const response = await dmsApi.post<LoginResponse>(
-            API_CONSTANTS.DMS_LOGIN_URL,
+
+
+
+    dmsLogin: async (data: DmsLoginRequest): Promise<DmsLoginResponse> => {
+        const response = await dmsApi.post<DmsLoginResponse>(
+            `${process.env.NEXT_PUBLIC_EKDAK_BASE_URL}/app_dommail_internal_api/public/ws/login`,
             data
         );
         return response.data;
@@ -35,6 +42,15 @@ export const authApi = {
         }
     },
 };
+
+
+
+
+
+
+
+
+
 
 // Booking API
 export const bookingApi = {

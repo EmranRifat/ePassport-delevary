@@ -6,6 +6,7 @@ import { Button, Input, Card } from "@/components/ui";
 import { authApi } from "@/lib/api-services";
 import { useAuthStore } from "@/store";
 import { handleApiError } from "@/lib/error-handler";
+import { LoginResponse, DmsLoginResponse, DmsLoginRequest } from "@/types";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,8 +16,7 @@ export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role_id: "4", // Fixed role_id value
-    deviceImei: "",
+    role_id: "4",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,6 +31,92 @@ export default function LoginPage() {
     setError("");
   };
 
+  // First login API call
+  const performInitialLogin = async (): Promise<LoginResponse> => {
+    const response = await authApi.login(formData);
+    console.log("First-login response:", response);
+
+    // Check for success (case-insensitive)
+    const isSuccess =
+      response.status?.toLowerCase() === "success" ||
+      response.status_code === "200";
+
+    console.log("isSuccess check:", isSuccess);
+    console.log("response.status:", response.status);
+    console.log("response.status_code:", response.status_code);
+    console.log("response.user_id:", response.user_id);
+
+    if (!isSuccess) {
+      throw new Error(response.message || "Login failed. Please try again.");
+    }
+
+    if (!response.user_id) {
+      throw new Error("User ID not found in response");
+    }
+
+    console.log("performInitialLogin completed successfully, returning response");
+    return response;
+  };
+
+
+
+
+  // DMS login API call
+  const performDmsLogin = async (
+    initialResponse: LoginResponse): Promise<DmsLoginResponse> => {
+    
+    console.log("initialResponse:", initialResponse);
+
+      const dmsLoginData: DmsLoginRequest = {
+      user_id: initialResponse.user_id || "",
+      password: initialResponse.user_password || "",
+      user_group: initialResponse.user_group || "",
+      hnddevice: initialResponse.hnddevice || "",
+    };
+
+    console.log("DMS-login request data:", dmsLoginData);
+
+    const dmsResponse = await authApi.dmsLogin(dmsLoginData);
+    console.log("DMS-login response:", dmsResponse);
+
+    // Check DMS login success
+    const isDmsSuccess =
+      dmsResponse.status?.toLowerCase() === "success" ||
+      dmsResponse.status_code === "200";
+
+    if (!isDmsSuccess) {
+      throw new Error("DMS authentication failed. Please try again.");
+    }
+
+    if (!dmsResponse.token) {
+      throw new Error("Token not found in DMS response");
+    }
+
+    return dmsResponse;
+  };
+
+  // Combine and store auth data
+  const saveAuthData = (
+    initialResponse: LoginResponse,
+    dmsResponse: DmsLoginResponse
+  ) => {
+    const authData = {
+      ...initialResponse,
+      token: dmsResponse.token,
+      branch_code: dmsResponse.branch_code,
+      my_emts_branch_code: dmsResponse.my_emts_branch_code,
+      rms_code: dmsResponse.rms_code,
+      shift: dmsResponse.shift,
+      city_post_status: dmsResponse.city_post_status,
+    };
+
+    // Store auth data in store
+    setAuth(authData);
+
+    // Store token in cookie for middleware
+    document.cookie = `auth-token=${dmsResponse.token}; path=/; max-age=86400`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -43,32 +129,26 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await authApi.login(formData);
+      // Step 1: Perform initial login
+      console.log("=== STEP 1: Starting initial login ===");
+      const initialResponse = await performInitialLogin();
+      console.log("=== STEP 1: Initial login SUCCESS ===");
+      console.log("Returned response:", initialResponse);
 
-      // Check for success (case-insensitive)
-      const isSuccess =
-        response.status?.toLowerCase() === "success" ||
-        response.status_code === "200";
+      // Step 2: Perform DMS login
+      console.log("=== STEP 2: Starting DMS login ===");
+      const dmsResponse = await performDmsLogin(initialResponse);
+      console.log("=== STEP 2: DMS login SUCCESS ===");
 
-      if (isSuccess) {
-        // Create a token from user_id if not provided
-        const authToken = response.token || response.user_id || "auth-success";
+      // Step 3: Save auth data
+      console.log("=== STEP 3: Saving auth data ===");
+      saveAuthData(initialResponse, dmsResponse);
 
-        // Add token to response
-        const authData = { ...response, token: authToken };
-
-        // Store auth data
-        setAuth(authData);
-
-        // Store token in cookie for middleware
-        document.cookie = `auth-token=${authToken}; path=/; max-age=86400`;
-
-        // Redirect to dashboard or specified page
-        router.push(redirectUrl);
-      } else {
-        setError(response.message || "Login failed. Please try again.");
-      }
+      // Step 4: Redirect to dashboard or specified page
+      console.log("=== STEP 4: Redirecting to:", redirectUrl, "===");
+      router.push(redirectUrl);
     } catch (err) {
+      console.error("=== LOGIN ERROR ===", err);
       const apiError = handleApiError(err);
       setError(apiError.message || "An error occurred during login");
     } finally {
