@@ -1,0 +1,97 @@
+import { api, dmsApi } from '@/lib/api-client';
+import { API_CONSTANTS } from '@/utils/constants';
+import {
+    LoginRequest,
+    LoginResponse,
+    BookingBody,
+    BookingResponse,
+    LicenseDataBody,
+    LicenseDataResponse,
+    LicenseIssueResponse,
+    PassportDashboardResponse
+} from '@/types';
+
+// Authentication API
+export const authApi = {
+    login: async (data: LoginRequest) => {
+        const response = await api.post<LoginResponse>(
+            API_CONSTANTS.LOGIN_URL_LOCAL,
+            data
+        );
+        return response.data;
+    },
+
+    dmsLogin: async (data: LoginRequest) => {
+        const response = await dmsApi.post<LoginResponse>(
+            API_CONSTANTS.DMS_LOGIN_URL,
+            data
+        );
+        return response.data;
+    },
+
+    logout: () => {
+        if (typeof window !== 'undefined') {
+            localStorage.clear();
+        }
+    },
+};
+
+// Booking API
+export const bookingApi = {
+    createBooking: async (data: BookingBody) => {
+        const response = await dmsApi.post<BookingResponse>(
+            API_CONSTANTS.DMS_BOOKING_URL,
+            data
+        );
+        return response.data;
+    },
+
+    getBookingDetails: async (trackingNumber: string) => {
+        const response = await api.get<BookingResponse>(
+            `${API_CONSTANTS.DMS_BOOKING_URL}/${trackingNumber}`
+        );
+        return response.data;
+    },
+};
+
+// License API
+export const licenseApi = {
+    getLicenseData: async (data: LicenseDataBody) => {
+        const response = await api.post<LicenseDataResponse>(
+            API_CONSTANTS.LICENSE_DATA_URL,
+            data
+        );
+        return response.data;
+    },
+
+    updateLicenseDelivery: async (licenseNo: string, deliveryData: Record<string, unknown>) => {
+        const response = await api.put<LicenseIssueResponse>(
+            `${API_CONSTANTS.LICENSE_DATA_URL}/${licenseNo}`,
+            deliveryData
+        );
+        return response.data;
+    },
+};
+
+// Passport API
+export const passportApi = {
+    getDashboard: async () => {
+        const response = await api.get<PassportDashboardResponse>(
+            '/api/passport/dashboard'
+        );
+        return response.data;
+    },
+
+    getPassportDetails: async (passportNo: string) => {
+        const response = await api.get(`/api/passport/${passportNo}`);
+        return response.data;
+    },
+
+    updatePassportDelivery: async (passportNo: string, deliveryData: Record<string, unknown>) => {
+        const response = await api.put(
+            `/api/passport/${passportNo}/delivery`,
+            deliveryData
+        );
+        return response.data;
+    },
+};
