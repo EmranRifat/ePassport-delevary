@@ -85,6 +85,7 @@ export default function DashboardPage() {
     router.push("/login");
   };
 
+
   const totalPages = dashboardData?.total_page || 1;
   const passportData = dashboardData?.passportissuedata || [];
   const totalBooked = dashboardData?.total_booked || "0";
