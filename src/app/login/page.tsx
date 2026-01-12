@@ -54,20 +54,19 @@ export default function LoginPage() {
       throw new Error("User ID not found in response");
     }
 
-    console.log("performInitialLogin completed successfully, returning response");
+    console.log(
+      "performInitialLogin completed successfully, returning response"
+    );
     return response;
   };
 
-
-
-
   // DMS login API call
   const performDmsLogin = async (
-    initialResponse: LoginResponse): Promise<DmsLoginResponse> => {
-    
+    initialResponse: LoginResponse
+  ): Promise<DmsLoginResponse> => {
     console.log("initialResponse:", initialResponse);
 
-      const dmsLoginData: DmsLoginRequest = {
+    const dmsLoginData: DmsLoginRequest = {
       user_id: initialResponse.user_id || "",
       password: initialResponse.user_password || "",
       user_group: initialResponse.user_group || "",
@@ -77,7 +76,6 @@ export default function LoginPage() {
     console.log("DMS-login request data:", dmsLoginData);
 
     const dmsResponse = await authApi.dmsLogin(dmsLoginData);
-    console.log("DMS-login response:", dmsResponse);
 
     // Check DMS login success
     const isDmsSuccess =
@@ -113,8 +111,22 @@ export default function LoginPage() {
     // Store auth data in store
     setAuth(authData);
 
-    // Store token in cookie for middleware
+    // Store token and user_id in cookies for middleware
     document.cookie = `auth-token=${dmsResponse.token}; path=/; max-age=86400`;
+    document.cookie = `user_id=${initialResponse.user_id}; path=/; max-age=86400`;
+    document.cookie = `branch_code=${
+      dmsResponse.branch_code || ""
+    }; path=/; max-age=86400`;
+    document.cookie = `my_emts_branch_code=${
+      dmsResponse.my_emts_branch_code || ""
+    }; path=/; max-age=86400`;
+    document.cookie = `rms_code=${
+      dmsResponse.rms_code || ""
+    }; path=/; max-age=86400`;
+    document.cookie = `shift=${dmsResponse.shift || ""}; path=/; max-age=86400`;
+    document.cookie = `city_post_status=${
+      dmsResponse.city_post_status || ""
+    }; path=/; max-age=86400`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -130,25 +142,17 @@ export default function LoginPage() {
 
     try {
       // Step 1: Perform initial login
-      console.log("=== STEP 1: Starting initial login ===");
       const initialResponse = await performInitialLogin();
-      console.log("=== STEP 1: Initial login SUCCESS ===");
-      console.log("Returned response:", initialResponse);
 
       // Step 2: Perform DMS login
-      console.log("=== STEP 2: Starting DMS login ===");
       const dmsResponse = await performDmsLogin(initialResponse);
-      console.log("=== STEP 2: DMS login SUCCESS ===");
 
       // Step 3: Save auth data
-      console.log("=== STEP 3: Saving auth data ===");
       saveAuthData(initialResponse, dmsResponse);
 
       // Step 4: Redirect to dashboard or specified page
-      console.log("=== STEP 4: Redirecting to:", redirectUrl, "===");
       router.push(redirectUrl);
     } catch (err) {
-      console.error("=== LOGIN ERROR ===", err);
       const apiError = handleApiError(err);
       setError(apiError.message || "An error occurred during login");
     } finally {
