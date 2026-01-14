@@ -39,7 +39,7 @@ export const printBookingPreview = ({
     }
 
     .preview-card {
-      width: 3.5in;
+      width: 3.2in;
       padding-top: 0.4in;
       color: #000;
     }
@@ -87,26 +87,18 @@ export const printBookingPreview = ({
 
     .barcode-container {
       width: 100%;
-      height: 50px;
+      height: 48px;
       display: flex;
-      justify-content: start;
+      justify-content: center;
       align-items: center;
-      overflow: hidden;
-      }
+    }
 
     .barcode-text {
-      text-align: center;
       font-size: 14px;
       margin-top: 6px;
       letter-spacing: 1px;
     }
 
-    .barcode-container svg,
-    .barcode-container img {
-      display: block;
-      margin: 0 auto !important;
-      max-width: 100%;
-    }
     /* Address */
     .address-section {
       margin-bottom: 16px;
@@ -137,25 +129,24 @@ export const printBookingPreview = ({
   <div class="preview-card">
 
     <div class="header">
-     
-       <img src="/passport.png" />
+      <img src="/passport.png" />
       <div class="header-center">
         <div class="header-title">BPO</div>
         <div class="header-subtitle">e-Passport Booking</div>
       </div>
-      <img src="/bpo.png" />
+       <img src="/bpo.png" />
     </div>
 
     <div class="issue-date">
       Issue Date: ${getTodayDate()}
     </div>
 
-   <div class="barcode-section">
-  <div class="barcode-container">
-    ${printContent.querySelector(".barcode-container")?.innerHTML || ""}
-  </div>
-  <div class="barcode-text">${barcodeInput}</div>
-</div>
+    <div class="barcode-section">
+      <div class="barcode-container">
+        ${printContent.querySelector(".barcode-container")?.innerHTML || ""}
+      </div>
+      <div class="barcode-text">${barcodeInput}</div>
+    </div>
 
     <div class="address-section">
       <div class="address-title">To</div>
