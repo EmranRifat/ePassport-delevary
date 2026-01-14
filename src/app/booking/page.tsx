@@ -8,18 +8,23 @@ import { useAuthStore } from "@/store";
 import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
 import Header from "@/components/header/header";
 import BarcodeModal from "@/components/modals/barcode_modal";
-import { usePostBarcode } from "@/lib/hooks/usePostBarcode";
+import { useGetBarcodeData } from "@/lib/hooks/useGetBarcodeInfo";
+import { useGetMissingBarcode } from "@/lib/hooks/useMisBarcode";
 
 type ViewMode = "grid" | "list";
 
 export default function BookingPage() {
   const router = useRouter();
   const { user } = useAuthStore();
+
   const {
-    postBarcode,
+    GetBarcodeInfo: postBarcode,
     loading: barcodeLoading,
     error: barcodeError,
-  } = usePostBarcode();
+    data: barcodeData,
+  } = useGetBarcodeData();
+
+  const { getMissingBarcode } = useGetMissingBarcode();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -37,6 +42,8 @@ export default function BookingPage() {
       address.code.includes(searchQuery)
   );
 
+  // handle RPO click button trigger  ============= //======== open modal and fetch barcode
+
   const handleRPOClick = async (address: RegionalPassportOffice) => {
     setSelectedRPO(address);
     setShowModal(true);
@@ -44,19 +51,46 @@ export default function BookingPage() {
     setIsScanning(true);
 
     try {
-      // Call the barcode check API
       const response = await postBarcode({
         user_id: user?.user_id || "",
         post_code: address.code,
       });
 
-      // If successful, set the barcode from response
+      console.log("barcode_data ===>", response);
+
+      // Check if the response indicates an error (404 or success: false)
+      if (!response.success || response.status_code === "404") {
+        console.warn("Barcode fetch failed:", response.message);
+
+        // Call getMissingBarcode hook with static values
+        try {
+          const res = await getMissingBarcode({
+            user_id: "BTD001",
+            user_pass: "Bp#tYe*",
+            barcode_qty: 1,
+            barcode_type: "DG",
+          });
+
+          console.log("Missing barcode response:", res);
+
+          if (res?.barcode) {
+            console.log("New barcode generated:", res.barcode);
+            setBarcodeInput(res.barcode);
+          }
+        } catch (missingBarcodeError) {
+          console.error("Error fetching missing barcode:", missingBarcodeError);
+        }
+
+        return;
+      }
+
       if (response.barcode) {
         setBarcodeInput(response.barcode);
+      } else {
+        console.warn("Barcode missing for this RPO");
       }
     } catch (error) {
       console.error("Error fetching barcode:", error);
-      // Error is already set in the hook's error state
     } finally {
       setIsScanning(false);
     }
@@ -213,9 +247,6 @@ export default function BookingPage() {
             </div>
           )}
 
-
-
-
           {/* RPO List */}
           {viewMode === "list" && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -303,6 +334,9 @@ export default function BookingPage() {
 
       {/* Booking Modal */}
       <BarcodeModal
+        barcodeLoading={barcodeLoading}
+        barcodeError={barcodeError}
+        status_code={barcodeData?.status_code}
         showModal={showModal}
         selectedRPO={selectedRPO}
         barcodeInput={barcodeInput}

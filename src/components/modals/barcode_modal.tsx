@@ -16,6 +16,9 @@ interface BarcodeModalProps {
   barcodeInput: string;
   setBarcodeInput: (value: string) => void;
   isScanning: boolean;
+  barcodeLoading?: boolean;
+  barcodeError?: string | null;
+  status_code?: number | string;
   handleCloseModal: () => void;
   handleScan: () => void;
   handleOk: () => void;
@@ -32,11 +35,35 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   handleCloseModal,
   handleScan,
   handleOk,
+  status_code,
+  barcodeLoading,
+  barcodeError,
   getTodayDate,
   handlePrint,
 }) => {
   const { submitPrintStatusServer, loading: submitting } = usePrintServerRes();
+  const [isPrinted, setIsPrinted] = React.useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
   const { user } = useAuthStore();
+
+  // Auto-focus input when scanning mode is active (like focusNode in Flutter)
+  React.useEffect(() => {
+    if (isScanning && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isScanning]);
+
+  // Auto-stop scanning when barcode is scanned
+  React.useEffect(() => {
+    if (isScanning && barcodeInput && barcodeInput.length > 5) {
+      // Barcode has been scanned, stop scanning state
+      const timer = setTimeout(() => {
+        handleScan(); // This will toggle isScanning to false
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [barcodeInput, isScanning, handleScan]);
 
   if (!showModal || !selectedRPO) {
     return null;
@@ -44,6 +71,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
   const onCancel = () => {
     setBarcodeInput("");
+    setIsPrinted(false);
     handleCloseModal();
   };
 
@@ -64,11 +92,34 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
           selectedRPO,
           getTodayDate,
         });
+
+        // Enable scan button after print
+        setIsPrinted(true);
       } catch (error) {
         console.error("Failed to submit pending booking:", error);
         // Optionally show error message to user
       }
     }
+  };
+
+  const onRePrint = () => {
+    // Re-print without submitting to server again
+    printBookingPreview({
+      barcodeInput,
+      selectedRPO,
+      getTodayDate,
+    });
+  };
+
+  const onScan = () => {
+    setIsPrinted(false);
+    handleScan();
+    // Focus input immediately for handheld scanner
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 50);
   };
 
   return (
@@ -86,8 +137,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 <Image
                   src="/bpo.png"
                   alt="BPO"
-                  width={45}
-                  height={45}
+                  width={65}
+                  height={65}
                   className="object-contain"
                 />
               </div>
@@ -101,8 +152,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 <Image
                   src="/passport.png"
                   alt="Passport"
-                  width={45}
-                  height={45}
+                  width={65}
+                  height={65}
                   className="object-contain"
                 />
               </div>
@@ -117,7 +168,32 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
             {/* Barcode Section */}
             <div className="flex flex-col items-center mb-2">
-              {barcodeInput ? (
+              {barcodeLoading ? (
+                <>
+                  <div className="barcode-container h-9 w-[350px] flex items-center justify-center bg-gray-50 border border-gray-300 rounded">
+                    <span className="flex items-center gap-2 text-primary-600">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <span className="text-sm">Loading barcode...</span>
+                    </span>
+                  </div>
+                  <p className="text-lg text-transparent mt-1.5">.</p>
+                </>
+              ) : barcodeInput ? (
                 <>
                   <div className="barcode-container h-9 w-[350px] flex items-center justify-center">
                     <Barcode
@@ -129,6 +205,24 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                     />
                   </div>
                   <p className="text-lg text-gray-900 mt-1.5">{barcodeInput}</p>
+                </>
+              ) : barcodeError ? (
+                <>
+                  <div
+                    className="min-h-[36px] w-[350px] flex items-center justify-center
+                      rounded-md border border-dashed border-red-300 bg-red-50 px-3 py-2"
+                  >
+                    <p className="text-sm font-medium text-red-600 text-center">
+                      {barcodeError}
+                      {status_code && (
+                        <span className="ml-1 text-red-500 font-normal">
+                          ({status_code})
+                        </span>
+                      )}
+                    </p>
+                  </div>
+
+                  <p className="text-lg text-transparent mt-1.5">.</p>
                 </>
               ) : (
                 <>
@@ -166,17 +260,24 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             </div>
           </div>
 
-          {/* Barcode Input (hidden but functional) */}
-          <div className="h-10 w-full bg-white">
+          {/* Barcode Input (visible when scanning) */}
+          <div className="h-10 w-full bg-white mb-4">
             <Input
+              ref={inputRef}
               type="text"
-              placeholder=""
+              placeholder="Ready to scan..."
               value={barcodeInput}
               onChange={(e) => setBarcodeInput(e.target.value)}
-              className="w-full h-full border-0 text-transparent focus:border-0 focus:ring-0 bg-transparent"
+              className="w-full h-full border border-gray-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg"
+              style={{
+                color: isScanning ? "blue" : "black",
+              }}
+              autoComplete="off"
               autoFocus
             />
           </div>
+
+          {/* all buttons here  */}
 
           {/* Action Buttons */}
           <div className="flex items-center justify-center gap-5">
@@ -187,42 +288,54 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             >
               Cancel
             </Button>
-            <Button
-              variant="primary"
-              className="h-[42px] w-[250px]"
-              onClick={onPrint}
-              disabled={!barcodeInput || submitting}
-            >
-              {submitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  <span>Submitting...</span>
-                </span>
-              ) : (
-                "Print"
-              )}
-            </Button>
+
+            {!isPrinted ? (
+              <Button
+                variant="primary"
+                className="h-[42px] w-[250px]"
+                onClick={onPrint}
+                disabled={!barcodeInput || submitting}
+              >
+                {submitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span>Submitting...</span>
+                  </span>
+                ) : (
+                  "Print"
+                )}
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                className="h-[42px] w-[250px]"
+                onClick={onRePrint}
+                disabled={!barcodeInput}
+              >
+                Re-Print
+              </Button>
+            )}
 
             <Button
               variant="primary"
               className="h-[42px] w-[250px]"
-              onClick={handleScan}
-              disabled={!!barcodeInput}
+              onClick={onScan}
+              //   disabled={!!barcodeInput && !isPrinted}
             >
               {isScanning ? (
                 <span className="flex items-center justify-center gap-2">
