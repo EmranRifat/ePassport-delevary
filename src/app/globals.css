@@ -1,3 +1,14 @@
+
+ 
+body {
+  @apply bg-white- text-black;
+}
+
+.dark body {
+  @apply bg-black/50 text-white/50;
+}
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

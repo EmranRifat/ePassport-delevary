@@ -1,133 +1,101 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  ClipboardList,
+  Truck,
+  BookMarked,
 
+} from "lucide-react";
 
 interface MenuItem {
   name: string;
   path: string;
-  icon: string;
+  icon: React.ReactNode;
 }
 
 const menuItems: MenuItem[] = [
-  { name: "Dashboard", path: "/dashboard", icon: "📊" },
-  { name: "Bookings", path: "/booking", icon: "📝" },
-  { name: "Delivery", path: "/delivery", icon: "🚚" },
-  { name: "Passport Status", path: "/passport", icon: "🛂" },
+  {
+    name: "Dashboard",
+    path: "/dashboard",
+    icon: <LayoutDashboard size={18} />,
+  },
+  {
+    name: "Bookings",
+    path: "/booking",
+    icon: <ClipboardList size={18} />,
+  },
+  {
+    name: "Delivery",
+    path: "/delivery",
+    icon: <Truck size={18} />,
+  },
+  {
+    name: "Passport Status",
+    path: "/passport",
+    icon: <BookMarked size={18}/>,
+  },
 ];
-
+ 
 export default function SideBar() {
   const router = useRouter();
   const pathname = usePathname();
-  // const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const handleNavigation = (path: string) => {
-    router.push(path);
-  };
 
   return (
-    // className={`bg-primary-700 text-white flex flex-col transition-all duration-300 ${
-      //   isCollapsed ? "w-16" : "w-64"
-      // }`}
-    <aside
-       className="bg-primary-700 text-white flex flex-col  transition-all duration-300 "
-    >
-      {/* Sidebar Header */}
-      {/* <div className="p-4 border-b border-primary-600 flex items-center justify-between">
-        {!isCollapsed && (
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl">🇧🇩</span>
-            <div>
-              <h2 className="text-sm font-bold">BPO</h2>
-              <p className="text-xs text-primary-200">ePassport Portal</p>
-            </div>
-          </div>
-        )}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 hover:bg-primary-600 rounded transition-colors"
-          aria-label="Toggle sidebar"
-        >
-          {isCollapsed ? "→" : "←"}
-        </button>
-      </div> */}
-      <div className="p-4 border-b border-primary-600 flex items-center justify-between">
-         
-          <div className="flex items-center space-x-2">
-            
-              <h2 className="text-sm font-bold">BPO</h2>
-              <p className="text-xs text-primary-200">ePassport Portal</p>
-            
-          </div>
-        
-        <button
-        
-          className="p-1 hover:bg-primary-600 rounded transition-colors"
-          aria-label="Toggle sidebar"
-        >
-          
-        </button>
+    <aside className="h-full w-64 flex flex-col text-white
+      bg-gradient-to-b from-primary-700 via-primary-700 to-primary-800
+      shadow-xl
+    ">
+      {/* 🔹 Header */}
+      <div className="px-5 py-4 border-b border-white/10">
+        <h2 className="text-lg font-semibold tracking-wide">BPO</h2>
+        <p className="text-xs text-primary-200">ePassport Portal</p>
       </div>
 
-      {/* Menu Items */}
-      {/* <nav className="flex-1 py-4">
+      {/* 🔹 Menu */}
+      <nav className="flex-1 py-4 space-y-1">
         {menuItems.map((item) => {
           const isActive = pathname === item.path;
+
           return (
             <button
               key={item.path}
-              onClick={() => handleNavigation(item.path)}
-              className={`w-full px-4 py-3 flex items-center space-x-3 transition-colors ${
-                isActive
-                  ? "bg-primary-800 border-l-4 border-white"
-                  : "hover:bg-primary-600"
-              }`}
+              onClick={() => router.push(item.path)}
+              className={`
+                group w-full flex items-center gap-3 px-5 py-3
+                text-sm font-medium transition-all duration-200
+                ${
+                  isActive
+                    ? "bg-white/15 border-l-4 border-white pl-4"
+                    : "hover:bg-white/10"
+                }
+              `}
             >
-              <span className="text-xl">{item.icon}</span>
-              {!isCollapsed && (
-                <span className="text-sm font-medium">{item.name}</span>
-              )}
-            </button>
-          );
-        })}
-      </nav> */}
-       <nav className="flex-1 py-4">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.path;
-          return (
-            <button
-              key={item.path}
-              onClick={() => handleNavigation(item.path)}
-              className={`w-full px-4 py-3 flex items-center space-x-3 transition-colors ${
-                isActive
-                  ? "bg-primary-800 border-l-4 border-white"
-                  : "hover:bg-primary-600"
-              }`}
-            >
-              <span className="text-xl">{item.icon}</span>
-             
-                <span className="text-sm font-medium">{item.name}</span>
-           
+              {/* Icon */}
+              <span
+                className={`
+                  transition-colors
+                  ${isActive ? "text-white" : "text-primary-200"}
+                  group-hover:text-white
+                `}
+              >
+                {item.icon}
+              </span>
+
+              {/* Label */}
+              <span className="truncate">{item.name}</span>
             </button>
           );
         })}
       </nav>
 
-      {/* Sidebar Footer */}
-      {/* {!isCollapsed && (
-        <div className="p-4 border-t border-primary-600">
-          <p className="text-xs text-primary-300 text-center">
-            © 2026 Bangladesh Post Office
-          </p>
-        </div>
-      )} */}
-        
-        <div className=" bottom-5 p-4 border-t border-primary-600">
-          <p className="text-xs text-primary-300 text-center">
-            © 2026 Bangladesh Post Office
-          </p>
-        </div>
-      
+      {/* 🔹 Footer */}
+      <div className="px-4 py-3 border-t border-white/10">
+        <p className="text-[11px] text-primary-200 text-center">
+          © 2026 Bangladesh Post Office
+        </p>
+      </div>
     </aside>
   );
-}   
+}
