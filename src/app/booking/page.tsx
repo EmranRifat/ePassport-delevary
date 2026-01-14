@@ -32,8 +32,7 @@ export default function BookingPage() {
     null
   );
   const [showModal, setShowModal] = useState(false);
-  const [barcodeInput, setBarcodeInput] = useState("");
-  const [isScanning, setIsScanning] = useState(false);
+  const [barcodeValue, setBarcodeValue] = useState("");
 
   const allAddresses = getAllAddress();
   const filteredAddresses = allAddresses.filter(
@@ -47,8 +46,6 @@ export default function BookingPage() {
   const handleRPOClick = async (address: RegionalPassportOffice) => {
     setSelectedRPO(address);
     setShowModal(true);
-    setBarcodeInput("");
-    setIsScanning(true);
 
     try {
       const response = await postBarcode({
@@ -73,9 +70,9 @@ export default function BookingPage() {
 
           console.log("Missing barcode response:", res);
 
+          // Set the barcode from missing barcode response
           if (res?.barcode) {
-            console.log("New barcode generated:", res.barcode);
-            setBarcodeInput(res.barcode);
+            setBarcodeValue(res.barcode);
           }
         } catch (missingBarcodeError) {
           console.error("Error fetching missing barcode:", missingBarcodeError);
@@ -85,35 +82,33 @@ export default function BookingPage() {
       }
 
       if (response.barcode) {
-        setBarcodeInput(response.barcode);
+        console.log("Barcode received:", response.barcode);
+        setBarcodeValue(response.barcode);
       } else {
         console.warn("Barcode missing for this RPO");
       }
     } catch (error) {
       console.error("Error fetching barcode:", error);
-    } finally {
-      setIsScanning(false);
     }
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedRPO(null);
-    setBarcodeInput("");
-    setIsScanning(false);
+    setBarcodeValue("");
   };
 
   const handleScan = () => {
-    setIsScanning(true);
-    // Add scan logic here
+    // Toggle scanning state in modal
+    console.log("Scan triggered");
   };
 
-  const handleOk = () => {
-    if (barcodeInput.trim()) {
+  const handleOk = (barcode: string) => {
+    if (barcode.trim()) {
       // Process booking
       console.log(
         "Processing booking with barcode:",
-        barcodeInput,
+        barcode,
         "for RPO:",
         selectedRPO
       );
@@ -339,9 +334,7 @@ export default function BookingPage() {
         status_code={barcodeData?.status_code}
         showModal={showModal}
         selectedRPO={selectedRPO}
-        barcodeInput={barcodeInput}
-        setBarcodeInput={setBarcodeInput}
-        isScanning={isScanning}
+        initialBarcode={barcodeValue}
         handleCloseModal={handleCloseModal}
         handleScan={handleScan}
         handleOk={handleOk}
