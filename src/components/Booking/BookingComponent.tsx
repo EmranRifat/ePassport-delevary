@@ -8,7 +8,9 @@ import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
 import BarcodeModal from "@/components/modals/barcode_modal";
 import { useGetBarcodeData } from "@/lib/hooks/useGetBarcodeInfo";
 import { useGetMissingBarcode } from "@/lib/hooks/useMisBarcode";
-
+import { useSubmitBookingData } from "@/lib/hooks/usePostBookingData";
+import { BOOKING_BASE_PAYLOAD } from "./BookingBasePayload";
+import Cookies from "js-cookie";
 type ViewMode = "grid" | "list";
 
 const BookingComponent = () => {
@@ -101,18 +103,46 @@ const BookingComponent = () => {
     console.log("Scan triggered");
   };
 
-  const handleOk = (barcode: string) => {
-    if (barcode.trim()) {
-      // Process booking
+  // *****************submit Action after ok button in modal************//
+
+ let token = Cookies.get("auth-token");
+
+
+  const {
+    bookingBarcodeSubmit,
+    loading: bookingLoading,
+    error: bookingError,
+  } = useSubmitBookingData(token);
+
+ const handleOk = async (barcode: string) => {
+  if (!barcode.trim()) return;
+
+  const token = Cookies.get("auth-token");
+  console.log("Auth Token from cookies:", token);
+
+  try {
+    const requestData = {
+      ...BOOKING_BASE_PAYLOAD,
+      user_id: user?.user_id || "",
+      printed_item_id: barcode.trim(),
+    };
+
+    const response = await bookingBarcodeSubmit(requestData);
+
+    if (response.success) {
       console.log(
-        "Processing booking with barcode:",
-        barcode,
+        "Booking processed successfully:",
+        response.item_id,
         "for RPO:",
-        selectedRPO
+        selectedRPO?.name
       );
+
       handleCloseModal();
     }
-  };
+  } catch (err) {
+    console.error("Booking submission failed:", err);
+  }
+};
 
   const getTodayDate = () => {
     const today = new Date();
@@ -125,92 +155,90 @@ const BookingComponent = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-        {/* Main Content */}
-        <main className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Search Bar Section */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4 flex-1">
-                <h3 className="text-xl font-bold text-gray-800 whitespace-nowrap">
-                  RPO Name
-                </h3>
-             
-                {/* Search Input */}
-                
-                <div className="flex-1 max-w-md">
-                  <Input
-                    type="text"
-                    placeholder="Search by name or code..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full shadow-sm"
-                  />
-                </div>
-              </div>
+      {/* Main Content */}
+      <main className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search Bar Section */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 flex-1">
+              <h3 className="text-xl font-bold text-gray-800 whitespace-nowrap">
+                RPO Name
+              </h3>
 
+              {/* Search Input */}
 
-
-              {/* View Toggle */}
-              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`px-4 py-2 text-sm font-medium transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-primary-600 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`px-4 py-2 text-sm font-medium transition-colors ${
-                    viewMode === "list"
-                      ? "bg-primary-600 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                </button>
+              <div className="flex-1 max-w-md">
+                <Input
+                  type="text"
+                  placeholder="Search by name or code..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full shadow-sm"
+                />
               </div>
             </div>
-          </div>
 
-          {/* RPO Grid */}
-          {viewMode === "grid" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {filteredAddresses.map((address) => (
-                <button
-                  key={address.code}
-                  className="bg-white border border-gray-300 rounded-lg px-4 py-3 hover:bg-gray-50 hover:border-primary-500 transition-all  duration-200 text-left flex items-center space-x-3 group"
-                  onClick={() => handleRPOClick(address)}
+            {/* View Toggle */}
+            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`px-4 py-2 text-sm font-medium transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-primary-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <span
-                    className="
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`px-4 py-2 text-sm font-medium transition-colors ${
+                  viewMode === "list"
+                    ? "bg-primary-600 text-white"
+                    : "bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* RPO Grid */}
+        {viewMode === "grid" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            {filteredAddresses.map((address) => (
+              <button
+                key={address.code}
+                className="bg-white border border-gray-300 rounded-lg px-4 py-3 hover:bg-gray-50 hover:border-primary-500 transition-all  duration-200 text-left flex items-center space-x-3 group"
+                onClick={() => handleRPOClick(address)}
+              >
+                <span
+                  className="
                         inline-flex items-center justify-center
                         px-3 py-2
                         rounded-md
@@ -225,102 +253,103 @@ const BookingComponent = () => {
                       hover:bg-primary-50
                         hover:shadow-md
                       "
-                  >
-                    {address.code}
-                  </span>
+                >
+                  {address.code}
+                </span>
 
-                  <span className="text-sm font-medium text-gray-900 capitalize">
-                    {address.name.toLowerCase()}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
+                <span className="text-sm font-medium text-gray-900 capitalize">
+                  {address.name.toLowerCase()}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
 
-          {/* RPO List */}
-          {viewMode === "list" && (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        SL
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Code
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        RPO Name
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Address
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Mobile
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                        Action
-                      </th>
+
+
+        {/* RPO List */}
+        {viewMode === "list" && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      SL
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Code
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      RPO Name
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Address
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Mobile
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredAddresses.map((address, index) => (
+                    <tr
+                      key={address.code}
+                      className="hover:bg-primary-50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-medium text-gray-900">
+                          {index + 1}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold  text-primary-800 border ">
+                          {address.code}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-semibold text-gray-900 capitalize">
+                          {address.name.toLowerCase()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-gray-700">
+                          {address.address}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-medium text-gray-700">
+                          {address.mobile}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <button
+                          onClick={() => handleRPOClick(address)}
+                          className="inline-flex items-center px-5 py-2 border border-transparent text-sm font-semibold rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                        >
+                          Book
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredAddresses.map((address, index) => (
-                      <tr
-                        key={address.code}
-                        className="hover:bg-primary-50 transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-gray-900">
-                            {index + 1}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold  text-primary-800 border ">
-                            {address.code}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-semibold text-gray-900 capitalize">
-                            {address.name.toLowerCase()}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-gray-700">
-                            {address.address}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-gray-700">
-                            {address.mobile}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                          <button
-                            onClick={() => handleRPOClick(address)}
-                            className="inline-flex items-center px-5 py-2 border border-transparent text-sm font-semibold rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
-                          >
-                            Book
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* No Results */}
-          {filteredAddresses.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">
-                No RPO offices found matching your search.
-              </p>
-            </div>
-          )}
-        </main>
-    
+        {/* No Results */}
+        {filteredAddresses.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">
+              No RPO offices found matching your search.
+            </p>
+          </div>
+        )}
+      </main>
 
       {/* Booking Modal */}
       <BarcodeModal
@@ -337,6 +366,6 @@ const BookingComponent = () => {
       />
     </div>
   );
-}
+};
 
 export default BookingComponent;
