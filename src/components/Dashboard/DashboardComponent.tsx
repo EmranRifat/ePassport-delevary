@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Button, LoadingSpinner, Input } from "@/components/ui";
-import { useAuthStore } from "@/store";
+// import { useAuthStore } from "@/store";
 import { passportApi } from "@/lib/api-services";
 import { handleApiError } from "@/lib/error-handler";
 
@@ -38,8 +38,8 @@ interface DashboardResponse {
 }
 
 const DashboardComponent = () => {
-  const router = useRouter();
-  const { user, clearAuth } = useAuthStore();
+//   const router = useRouter();
+//   const { user, clearAuth } = useAuthStore();
   const [dashboardData, setDashboardData] = useState<DashboardResponse | null>(
     null
   );
@@ -78,11 +78,11 @@ const DashboardComponent = () => {
     }
   };
 
-  const handleLogout = () => {
-    clearAuth();
-    document.cookie = "auth-token=; path=/; max-age=0";
-    router.push("/login");
-  };
+//   const handleLogout = () => {
+//     clearAuth();
+//     document.cookie = "auth-token=; path=/; max-age=0";
+//     router.push("/login");
+//   };
 
   const totalPages = dashboardData?.total_page || 1;
   const passportData = dashboardData?.passportissuedata || [];

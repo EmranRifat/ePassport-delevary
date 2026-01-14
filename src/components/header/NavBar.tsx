@@ -25,7 +25,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
   return (
     <header className="bg-white shadow sticky top-0 z-50">
-      <div className="px-2 md:px-4 lg:px-8">
+      <div className="px-2 md:px-4 lg:px-16">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-3">
             <button

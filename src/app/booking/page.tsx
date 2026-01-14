@@ -1,11 +1,11 @@
 import BookingComponent from "@/components/Booking/BookingComponent";
 
-const BookingPage = () => {
- return(
-  <div>
-   <BookingComponent />;
-  </div>
- )
+const Page = () => {
+  return (
+    <div>
+      <BookingComponent />
+    </div>
+  );
 };
 
-export default BookingPage;
+export default Page;

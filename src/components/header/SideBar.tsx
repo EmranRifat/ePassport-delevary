@@ -30,7 +30,7 @@ export default function SideBar() {
       //   isCollapsed ? "w-16" : "w-64"
       // }`}
     <aside
-       className="bg-primary-700 text-white flex flex-col transition-all duration-300 "
+       className="bg-primary-700 text-white flex flex-col  transition-all duration-300 "
     >
       {/* Sidebar Header */}
       {/* <div className="p-4 border-b border-primary-600 flex items-center justify-between">
@@ -54,11 +54,10 @@ export default function SideBar() {
       <div className="p-4 border-b border-primary-600 flex items-center justify-between">
          
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">🇧🇩</span>
-            <div>
+            
               <h2 className="text-sm font-bold">BPO</h2>
               <p className="text-xs text-primary-200">ePassport Portal</p>
-            </div>
+            
           </div>
         
         <button
@@ -123,7 +122,7 @@ export default function SideBar() {
         </div>
       )} */}
         
-        <div className="p-4 border-t border-primary-600">
+        <div className=" bottom-5 p-4 border-t border-primary-600">
           <p className="text-xs text-primary-300 text-center">
             © 2026 Bangladesh Post Office
           </p>

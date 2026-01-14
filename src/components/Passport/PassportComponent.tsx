@@ -45,8 +45,8 @@ const PassportComponent=()=> {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Passport Status</h1>
-          <Button variant="outline" onClick={() => router.push("/dashboard")}>
+          <h1 className="texxt-base md:text-lg lg:text-2xl font-semibold md:font-bold text-gray-900">Passport Status</h1>
+          <Button size="sm" variant="outline" onClick={() => router.push("/dashboard")}>
             Back to Dashboard
           </Button>
         </div>
@@ -74,7 +74,7 @@ const PassportComponent=()=> {
             />
 
             <div className="flex justify-end">
-              <Button type="submit" variant="primary" isLoading={isLoading}>
+              <Button size="sm" type="submit" variant="primary" isLoading={isLoading}>
                 {isLoading ? "Searching..." : "Search"}
               </Button>
             </div>
