@@ -13,15 +13,13 @@ const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
 interface BarcodeModalProps {
   showModal: boolean;
   selectedRPO: RegionalPassportOffice | null;
-  barcodeInput: string;
-  setBarcodeInput: (value: string) => void;
-  isScanning: boolean;
+  initialBarcode?: string;
   barcodeLoading?: boolean;
   barcodeError?: string | null;
   status_code?: number | string;
   handleCloseModal: () => void;
   handleScan: () => void;
-  handleOk: () => void;
+  handleOk: (barcode: string) => void;
   getTodayDate: () => string;
   handlePrint?: () => void;
 }
@@ -29,12 +27,10 @@ interface BarcodeModalProps {
 const BarcodeModal: React.FC<BarcodeModalProps> = ({
   showModal,
   selectedRPO,
-  barcodeInput,
-  setBarcodeInput,
-  isScanning,
+  initialBarcode,
   handleCloseModal,
-  handleScan,
-  handleOk,
+  handleScan: externalHandleScan,
+  handleOk: handleOk,
   status_code,
   barcodeLoading,
   barcodeError,
@@ -43,9 +39,38 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 }) => {
   const { submitPrintStatusServer, loading: submitting } = usePrintServerRes();
   const [isPrinted, setIsPrinted] = React.useState(false);
+  const [barcodeInput, setBarcodeInput] = React.useState("");
+  const [scanBarcodeInput, setScanBarcodeInput] = React.useState("");
+  const [isScanning, setIsScanning] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { user } = useAuthStore();
+  //   console.log("initial Barcode ===>>", initialBarcode);
+
+  // Reset all states when modal opens
+  React.useEffect(() => {
+    if (showModal) {
+      // Reset all states for fresh start
+      setBarcodeInput(initialBarcode || "");
+      setScanBarcodeInput("");
+      setIsScanning(false);
+      setIsPrinted(false);
+    }
+  }, [showModal, initialBarcode]);
+
+  // Update internal barcode when initialBarcode prop changes while modal is open
+  React.useEffect(() => {
+    if (showModal && initialBarcode) {
+      setBarcodeInput(initialBarcode);
+    }
+  }, [initialBarcode, showModal]);
+
+  // Auto-activate scanning when scanBarcodeInput has value
+  React.useEffect(() => {
+    if (scanBarcodeInput && !isScanning) {
+      setIsScanning(true);
+    }
+  }, [scanBarcodeInput, isScanning]);
 
   // Auto-focus input when scanning mode is active (like focusNode in Flutter)
   React.useEffect(() => {
@@ -56,14 +81,18 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
   // Auto-stop scanning when barcode is scanned
   React.useEffect(() => {
-    if (isScanning && barcodeInput && barcodeInput.length > 5) {
+    if (scanBarcodeInput && scanBarcodeInput.length >= 13) {
+      console.log("Barcode scan detected, length:", scanBarcodeInput.length);
       // Barcode has been scanned, stop scanning state
       const timer = setTimeout(() => {
-        handleScan(); // This will toggle isScanning to false
-      }, 300);
+        console.log("Scanning Barcode Input:", scanBarcodeInput);
+        setBarcodeInput(scanBarcodeInput); // Copy to main barcode
+        setIsScanning(false);
+        externalHandleScan();
+      }, 500);
       return () => clearTimeout(timer);
     }
-  }, [barcodeInput, isScanning, handleScan]);
+  }, [scanBarcodeInput, externalHandleScan]);
 
   if (!showModal || !selectedRPO) {
     return null;
@@ -113,7 +142,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
   const onScan = () => {
     setIsPrinted(false);
-    handleScan();
+    setScanBarcodeInput(""); // Clear scan input before new scan
+    setIsScanning(true);
+    externalHandleScan();
     // Focus input immediately for handheld scanner
     setTimeout(() => {
       if (inputRef.current) {
@@ -161,7 +192,10 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
             {/* Issue Date */}
             <div className="text-center mb-3.5">
-              <p className="text-lg text-gray-900">
+              <p
+                className="text-mdDG817791512BD
+               text-gray-900"
+              >
                 Issue Date : {getTodayDate()}
               </p>
             </div>
@@ -193,47 +227,22 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                   </div>
                   <p className="text-lg text-transparent mt-1.5">.</p>
                 </>
-              ) : barcodeInput ? (
+              ) : initialBarcode ? (
                 <>
                   <div className="barcode-container h-9 w-[350px] flex items-center justify-center">
                     <Barcode
-                      value={barcodeInput}
+                      value={initialBarcode}
                       height={35}
-                      width={1.5}
+                      width={1.6}
                       displayValue={false}
                       background="#ffffff"
                     />
                   </div>
-                  <p className="text-lg text-gray-900 mt-1.5">{barcodeInput}</p>
+                  <p className="text-lg text-gray-900 mt-1.5">
+                    {initialBarcode}
+                  </p>
                 </>
-              ) : barcodeError ? (
-                <>
-                  <div
-                    className="min-h-[36px] w-[350px] flex items-center justify-center
-                      rounded-md border border-dashed border-red-300 bg-red-50 px-3 py-2"
-                  >
-                    <p className="text-sm font-medium text-red-600 text-center">
-                      {barcodeError}
-                      {status_code && (
-                        <span className="ml-1 text-red-500 font-normal">
-                          ({status_code})
-                        </span>
-                      )}
-                    </p>
-                  </div>
-
-                  <p className="text-lg text-transparent mt-1.5">.</p>
-                </>
-              ) : (
-                <>
-                  <div className="barcode-container h-9 w-[350px] flex items-center justify-center bg-gray-100 border border-gray-300 rounded">
-                    <p className="text-gray-400 text-sm">
-                      Scan or Enter Barcode
-                    </p>
-                  </div>
-                  <p className="text-lg text-transparent mt-1.5">.</p>
-                </>
-              )}
+              ) : null}
             </div>
 
             {/* To Section */}
@@ -260,24 +269,33 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             </div>
           </div>
 
-          {/* Barcode Input (visible when scanning) */}
-          <div className="h-10 w-full bg-white mb-4">
-            <Input
-              ref={inputRef}
-              type="text"
-              placeholder="Ready to scan..."
-              value={barcodeInput}
-              onChange={(e) => setBarcodeInput(e.target.value)}
-              className="w-full h-full border border-gray-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg"
-              style={{
-                color: isScanning ? "blue" : "black",
-              }}
-              autoComplete="off"
-              autoFocus
-            />
-          </div>
+          {/* Barcode Input (visible only when scanning) */}
+          {
+            <div className="h-10 w-full bg-white mb-4">
+              <Input
+                ref={inputRef}
+                type="text"
+                placeholder="Ready to scan..."
+                value={scanBarcodeInput}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setScanBarcodeInput(value);
+                  // Auto-activate scanning when data starts coming in
+                  if (value && !isScanning) {
+                    setIsScanning(true);
+                  }
+                }}
+                className="w-full h-full border border-gray-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg font-semibold"
+                style={{
+                  color: isScanning ? "blue" : "green",
+                }}
+                autoComplete="off"
+                autoFocus
+              />
+            </div>
+          }
 
-          {/* all buttons here  */}
+          {/*================ all buttons here ==================*/}
 
           {/* Action Buttons */}
           <div className="flex items-center justify-center gap-5">
@@ -335,9 +353,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               variant="primary"
               className="h-[42px] w-[250px]"
               onClick={onScan}
-              //   disabled={!!barcodeInput && !isPrinted}
+              disabled={isScanning}
             >
-              {isScanning ? (
+              {isScanning && !scanBarcodeInput ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                     <circle
@@ -365,7 +383,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             <Button
               variant="primary"
               className="h-[42px] w-[250px]"
-              onClick={handleOk}
+              onClick={() => handleOk(barcodeInput)}
               disabled={!barcodeInput}
             >
               Ok

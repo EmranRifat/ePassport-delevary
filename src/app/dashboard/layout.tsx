@@ -7,9 +7,13 @@ import SideBar from "@/components/header/SideBar";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const sidebarHandler = () => {
+    setSidebarOpen((prev) => !prev);
+  };
+
   return (
-    <div className="h-screen overflow-hidden bg-gray-50 flex flex-col">
-      <Navbar onMenuClick={() => setSidebarOpen(true)} />
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-800 flex flex-col">
+      <Navbar onMenuClick={sidebarHandler} />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
@@ -22,7 +26,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         >
           <SideBar />
         </aside>
-        <main className="flex-1 overflow-y-auto p-2 md:p-4">{children}</main>
+        <main className="flex-1 overflow-y-auto p-2 md:p-2 lg:p-4">
+          {children}
+        </main>
       </div>
 
       {/* Mobile overlay */}

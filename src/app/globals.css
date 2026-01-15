@@ -1,33 +1,29 @@
-
- 
-body {
-  @apply bg-white- text-black;
-}
-
-.dark body {
-  @apply bg-black/50 text-white/50;
-}
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --bg: 255 255 255;
+  --text: 0 0 0;
+}
+
+.dark {
+  --bg: 0 0 0;
+  --text: 255 255 255;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+  transition: background-color 0.3s, color 0.3s;
 }
+
+.dark body{
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+  transition: background-color 0.3s, color 0.3s;
+}
+
 
 @layer utilities {
   .text-balance {

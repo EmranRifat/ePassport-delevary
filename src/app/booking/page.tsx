@@ -1,11 +1,13 @@
-import BookingComponent from "@/components/Booking/BookingComponent";
+ import BookingComponent from '@/components/Booking/BookingComponent'
+import React from 'react'
+ 
 
-const Page = () => {
-  return (
-    <div>
+ const page = ( ) => {
+   return (
+     <div>
       <BookingComponent />
-    </div>
-  );
-};
-
-export default Page;
+     </div>
+   )
+ }
+ 
+ export default page

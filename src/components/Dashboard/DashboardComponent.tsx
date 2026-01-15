@@ -90,61 +90,35 @@ const DashboardComponent = () => {
   const totalDelivered = dashboardData?.total_delivered || "0";
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      {/* <Sidebar /> */}
-
-      {/* Main Content Area */}
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-700 rounded-md">
+     
       <div className="flex-1 flex flex-col">
-        {/* Header */}
-        {/* <header className="bg-white shadow">
-          <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Bangladesh Post Office
-              </h1>
-              <p className="text-sm text-gray-600">ePassport Issuing Portal</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">
-                  {user?.name || user?.user_id || "User"}
-                </p>
-                <p className="text-xs text-gray-600">Welcome</p>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleLogout}>
-                Logout
-              </Button>
-            </div>
-          </div>
-        </header> */}
-
         {/* Main Content */}
-        <main className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Dashboard</h2>
           </div>
 
           {/* Summary Statistics */}
           <div className="mb-6">
-            <div className="bg-white border border-gray-300 rounded-md inline-block">
+            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md inline-block ">
               <table className="border-collapse">
                 <thead>
                   <tr>
-                    <th className="border border-gray-300 px-12 py-3 bg-gray-100 text-base font-semibold">
+                    <th className="border border-gray-300 dark:border-gray-700 px-12 py-3 bg-gray-100 dark:bg-gray-800 text-base font-semibold">
                       Booked
                     </th>
-                    <th className="border border-gray-300 px-12 py-3 bg-gray-100 text-base font-semibold">
+                    <th className="border border-gray-300 dark:border-gray-700 px-12 py-3 bg-gray-100 dark:bg-gray-800 text-base font-semibold">
                       Delivered
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-gray-300 px-12 py-2 text-center text-base">
+                    <td className="border border-gray-300 dark:border-gray-700 px-12 py-2 text-center text-base">
                       {totalBooked}
                     </td>
-                    <td className="border border-gray-300 px-12 py-2 text-center text-base">
+                    <td className="border border-gray-300 dark:border-gray-700 px-12 py-2 text-center text-base">
                       {totalDelivered}
                     </td>
                   </tr>
@@ -154,16 +128,16 @@ const DashboardComponent = () => {
           </div>
 
           {/* Data Table */}
-          <div className="bg-white border border-gray-300 rounded-md overflow-hidden">
+          <div className="bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md overflow-hidden">
             {/* Table Header with Filters */}
-            <div className="grid grid-cols-6 border-b border-gray-300 bg-gray-100">
-              <div className="border-r border-gray-300 p-3 text-center">
+            <div className="grid grid-cols-6 border-b border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
                 <p className="font-semibold text-base">Serial No</p>
               </div>
-              <div className="border-r border-gray-300 p-3 text-center">
+              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
                 <p className="font-semibold text-base mb-2">Date</p>
               </div>
-              <div className="border-r border-gray-300 p-3 text-center">
+              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
                 <p className="font-semibold text-base mb-2">Booking ID</p>
                 <Input
                   type="text"
@@ -173,7 +147,7 @@ const DashboardComponent = () => {
                   onChange={(e) => setBarcodeSearch(e.target.value)}
                 />
               </div>
-              <div className="border-r border-gray-300 p-3 text-center">
+              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
                 <p className="font-semibold text-base mb-2">RPO ID</p>
                 <Input
                   type="text"
@@ -183,7 +157,7 @@ const DashboardComponent = () => {
                   onChange={(e) => setRpoIdSearch(e.target.value)}
                 />
               </div>
-              <div className="border-r border-gray-300 p-3 text-center">
+              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
                 <p className="font-semibold text-base mb-2">RPO Name</p>
                 <Input
                   type="text"
@@ -196,7 +170,7 @@ const DashboardComponent = () => {
               <div className="p-3 text-center">
                 <p className="font-semibold text-base mb-2">Status</p>
                 <select
-                  className="w-full h-8 px-2 border border-gray-300 rounded text-sm"
+                  className="w-full h-8 px-2 border border-gray-300 dark:border-gray-700 rounded text-sm"
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
@@ -222,23 +196,23 @@ const DashboardComponent = () => {
                 {passportData.map((item, index) => (
                   <div
                     key={index}
-                    className={`grid grid-cols-6 border-b border-gray-300 hover:bg-gray-50 cursor-pointer ${
+                    className={`grid grid-cols-6 border-b border-gray-300 dark:border-gray-700 hover:bg-gray-50 cursor-pointer ${
                       index % 2 === 0 ? "bg-white" : "bg-gray-50"
                     }`}
                   >
-                    <div className="border-r border-gray-300 p-3 text-center text-base">
+                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base">
                       {(currentPage - 1) * pageSize + index + 1}
                     </div>
-                    <div className="border-r border-gray-300 p-3 text-center text-base">
+                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base">
                       {item.booking_date || item.created_at || "N/A"}
                     </div>
-                    <div className="border-r border-gray-300 p-3 text-center text-base">
+                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base">
                       {item.barcode || "N/A"}
                     </div>
-                    <div className="border-r border-gray-300 p-3 text-center text-base">
+                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base">
                       {item.post_code || "N/A"}
                     </div>
-                    <div className="border-r border-gray-300 p-3 text-center text-base">
+                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base">
                       {item.rpo_name || item.rpo_address || "N/A"}
                     </div>
                     <div className="p-3 text-center text-base">
@@ -251,7 +225,7 @@ const DashboardComponent = () => {
 
             {/* Pagination */}
             {passportData.length > 0 && (
-              <div className="border-t border-gray-300 p-4 flex items-center justify-center space-x-4 bg-gray-100">
+              <div className="border-t border-gray-300 dark:border-gray-700 p-4 flex items-center justify-center space-x-4 bg-gray-100">
                 <span className="text-base font-semibold">
                   {currentPage} of {totalPages}
                 </span>
@@ -285,7 +259,7 @@ const DashboardComponent = () => {
                           className={`px-3 py-1 text-sm rounded ${
                             currentPage === pageNum
                               ? "bg-gray-600 text-white"
-                              : "bg-white text-black border border-gray-300 hover:bg-gray-200"
+                              : "bg-white text-black border border-gray-300 dark:border-gray-700 hover:bg-gray-200"
                           }`}
                           onClick={() => setCurrentPage(pageNum)}
                         >
@@ -307,7 +281,7 @@ const DashboardComponent = () => {
 
                 <div className="flex items-center space-x-2">
                   <select
-                    className="px-3 py-1 border border-gray-300 rounded text-sm bg-white"
+                    className="px-3 py-1 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white"
                     value={pageSize}
                     onChange={(e) => {
                       setPageSize(Number(e.target.value));
