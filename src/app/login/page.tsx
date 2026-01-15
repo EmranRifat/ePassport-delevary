@@ -162,58 +162,61 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-700 dark:to-gray-900 px-4">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Bangladesh Post Office
-          </h1>
-          <p className="text-gray-600">ePassport Issuing Portal</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Enter your email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            autoComplete="email"
-          />
-
-          <Input
-            label="Password"
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            autoComplete="current-password"
-          />
-
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full"
-            isLoading={isLoading}
-          >
-            {isLoading ? "Signing In..." : "Sign In"}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>© 2026 Bangladesh Post Office. All rights reserved.</p>
-        </div>
-      </Card>
+  <Card className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+    <div className="text-center mb-8">
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+        Bangladesh Post Office
+      </h1>
+      <p className="text-gray-600 dark:text-gray-400">ePassport Issuing Portal</p>
     </div>
+
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="bg-red-50 dark:bg-red-300 border border-red-200 dark:border-red-500 text-red-700 dark:text-red-700 px-4 py-3 rounded-lg">
+          {error}
+        </div>
+      )}
+
+      <Input
+        label="Email"
+        name="email"
+        type="email"
+        placeholder="Enter your email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+        autoComplete="email"
+        className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary-500 focus:border-primary-500"
+      />
+
+      <Input
+        label="Password"
+        name="password"
+        type="password"
+        placeholder="Enter your password"
+        value={formData.password}
+        onChange={handleChange}
+        required
+        autoComplete="current-password"
+        className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary-500 focus:border-primary-500"
+      />
+
+      <Button
+        type="submit"
+        variant="primary"
+        size="lg"
+        className="w-full"
+        isLoading={isLoading}
+      >
+        {isLoading ? "Signing In..." : "Sign In"}
+      </Button>
+    </form>
+
+    <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+      <p>© 2026 Bangladesh Post Office. All rights reserved.</p>
+    </div>
+  </Card>
+</div>
+
   );
 }

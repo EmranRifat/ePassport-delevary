@@ -42,8 +42,8 @@ const PassportComponent=()=> {
   };
 
   return (
-  <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-  <header className="bg-white dark:bg-gray-800 shadow">
+  <div className="min-h-screen">
+  <header className="bg-white dark:bg-gray-700 shadow rounded-md">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
       <h1 className="text-base md:text-lg lg:text-2xl font-semibold md:font-bold text-gray-900 dark:text-gray-100">
         Passport Status

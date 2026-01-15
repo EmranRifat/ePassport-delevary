@@ -12,7 +12,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-800 flex flex-col">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Navbar onMenuClick={sidebarHandler} />
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}

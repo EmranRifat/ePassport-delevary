@@ -267,8 +267,8 @@ const BookingComponent = () => {
                     key={address.code}
                     className={
                     index % 2 === 0
-                      ? "bg-white dark:bg-gray-600/80"
-                      : "bg-gray-50/5 dark:bg-gray-800/70"
+                      ? "bg-white dark:bg-gray-600/80 hover:bg-gray-100 hover:dark:bg-slate-600"
+                      : "bg-gray-50/5 dark:bg-gray-800/70 hover:bg-gray-100 hover:dark:bg-slate-700"
                   }
                   >
                     <td className="px-6 py-4 whitespace-nowrap">

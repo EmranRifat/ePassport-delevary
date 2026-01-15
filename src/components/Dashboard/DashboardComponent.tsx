@@ -90,7 +90,7 @@ const DashboardComponent = () => {
   const totalDelivered = dashboardData?.total_delivered || "0";
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-700 rounded-md">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-800/50 rounded-md">
      
       <div className="flex-1 flex flex-col">
         {/* Main Content */}

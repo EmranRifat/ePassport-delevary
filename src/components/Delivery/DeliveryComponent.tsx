@@ -60,9 +60,9 @@ const Delivery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <div className="min-h-screen ">
+      <header className="bg-white dark:bg-gray-700 shadow rounded-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center ">
           <h1 className="text-base md:text-lg lg:text-2xl font-semibold md:font-bold text-gray-900 dark:text-gray-100">
             Delivery Management
           </h1>
@@ -78,69 +78,73 @@ const Delivery = () => {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card
-  title="Search Delivery Information"
-  subtitle="Search by license number, NID, or mobile number"
-  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
->
-  <form onSubmit={handleSearch} className="space-y-6">
-    {error && (
-      <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg">
-        {error}
-      </div>
-    )}
+          title="Search Delivery Information"
+          subtitle="Search by license number, NID, or mobile number"
+          className="bg-white dark:bg-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700"
+        >
+          <form onSubmit={handleSearch} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
 
-    <div>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Search By
-      </label>
-      <div className="flex space-x-4">
-        {["license", "nid", "mobile"].map((type) => (
-          <label key={type} className="flex items-center text-gray-700 dark:text-gray-300">
-            <input
-              type="radio"
-              name="searchType"
-              value={type}
-              checked={searchType === type}
-              onChange={(e) =>
-                setSearchType(e.target.value as "license" | "nid" | "mobile")
-              }
-              className="mr-2 accent-primary-600 dark:accent-primary-400"
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search By
+              </label>
+              <div className="flex space-x-4">
+                {["license", "nid", "mobile"].map((type) => (
+                  <label
+                    key={type}
+                    className="flex items-center text-gray-700 dark:text-gray-300"
+                  >
+                    <input
+                      type="radio"
+                      name="searchType"
+                      value={type}
+                      checked={searchType === type}
+                      onChange={(e) =>
+                        setSearchType(
+                          e.target.value as "license" | "nid" | "mobile"
+                        )
+                      }
+                      className="mr-2 accent-primary-600 dark:accent-primary-400"
+                    />
+                    {type === "license" ? "License Number" : type.toUpperCase()}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <Input
+              label={`Enter ${
+                searchType === "license"
+                  ? "License Number"
+                  : searchType === "nid"
+                  ? "NID"
+                  : "Mobile Number"
+              }`}
+              type="text"
+              placeholder={`Enter ${searchType}`}
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              required
+              className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary-500 focus:border-primary-500"
             />
-            {type === "license" ? "License Number" : type.toUpperCase()}
-          </label>
-        ))}
-      </div>
-    </div>
 
-    <Input
-      label={`Enter ${
-        searchType === "license"
-          ? "License Number"
-          : searchType === "nid"
-          ? "NID"
-          : "Mobile Number"
-      }`}
-      type="text"
-      placeholder={`Enter ${searchType}`}
-      value={searchValue}
-      onChange={(e) => setSearchValue(e.target.value)}
-      required
-      className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary-500 focus:border-primary-500"
-    />
-
-    <div className="flex justify-end">
-      <Button
-        size="sm"
-        type="submit"
-        variant="primary"
-        isLoading={isLoading}
-      >
-        {isLoading ? "Searching..." : "Search"}
-      </Button>
-    </div>
-  </form>
-</Card>
-
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                type="submit"
+                variant="primary"
+                isLoading={isLoading}
+              >
+                {isLoading ? "Searching..." : "Search"}
+              </Button>
+            </div>
+          </form>
+        </Card>
 
         {deliveryData && (
           <Card title="Delivery Information" className="mt-6">

@@ -8,6 +8,7 @@ import { Button } from "../ui";
 import { useAuthStore } from "@/store";
 import { authApi } from "@/lib/api-services";
 import { useTheme } from "next-themes";
+import Avatar from "../ui/Avatar";
 
 interface NavbarProps {
   onMenuClick?: () => void;
@@ -17,6 +18,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   const router = useRouter();
   const { user, clearAuth } = useAuthStore();
   const { theme, setTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [mounted, setMounted] = useState(false);
 
@@ -61,7 +63,23 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </div>
 
           {/* Right */}
-          <div className="flex items-center space-x-3">
+          <div className="flex md:hidden gap-2">
+           <div>
+             <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
+              {user?.name || user?.user_id || "User"}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Welcome</p>
+
+           </div>
+            <button
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="md:hidden rounded-full focus:outline-none 
+                    hover:ring-2 hover:ring-purple-400 transition"
+            >
+              <Avatar name={user?.name || user?.user_id} />
+            </button>
+          </div>
+          <div className="hidden md:flex items-center space-x-3">
             <button
               onClick={themeHandler}
               className="p-2 md:p-3 rounded-full bg-gray-200 dark:bg-gray-600"
@@ -73,7 +91,6 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 <Moon size={18} className="text-gray-700" />
               )}
             </button>
-
             <div className="text-right">
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
                 {user?.name || user?.user_id || "User"}
@@ -83,12 +100,53 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
               </p>
             </div>
 
-            <Button variant="outline" size="sm" onClick={handleLogout}>
+            <Button variant="danger" size="sm" onClick={handleLogout}>
               Logout
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Dropdown Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-16 right-4 w-48 rounded-xl bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+          <div className="flex flex-col p-2 space-y-2">
+            {/* Theme Toggle */}
+            <button
+              onClick={themeHandler}
+              className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              {theme === "dark" ? (
+                <>
+                  <Sun size={16} className="text-yellow-400" />
+                  <span className="text-sm text-gray-800 dark:text-gray-200">
+                    Light Mode
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Moon
+                    size={16}
+                    className="text-gray-700 dark:text-gray-300"
+                  />
+                  <span className="text-sm text-gray-800 dark:text-gray-200">
+                    Dark Mode
+                  </span>
+                </>
+              )}
+            </button>
+
+            {/* Logout */}
+            <Button
+              onClick={handleLogout}
+             variant="danger" 
+             size="sm"
+            >
+              Logout
+            </Button>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
