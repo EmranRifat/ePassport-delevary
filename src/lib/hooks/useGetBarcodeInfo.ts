@@ -12,7 +12,7 @@ export const useGetBarcodeData = () => {
         try {
             // Using native fetch instead of api-client
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/epassportchack`,
+                `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/epassportchack`,
                 {
                     method: 'POST',
                     headers: {

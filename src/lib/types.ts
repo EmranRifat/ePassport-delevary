@@ -100,3 +100,47 @@ export interface BookingDataResponse {
   barcode?: string | null;
   [key: string]: any;
 }
+
+export interface EpassportRequest {
+  user_id: string;          // dynamic
+  item_id: string;          // dynamic (barcode)
+  total_charge: number;
+  service_type: "Parcel";
+  vas_type: "GEP";
+  price: number;
+  insured: number;
+  booking_status: "Booked";
+}
+
+export interface EpassportResponse {
+  status_code?: string;
+  status?: string;
+  message?: string;
+  created_at?: string;
+  updated_at?: string;
+  success?: boolean;
+}
+export interface BrtaBookingLicenceResponse {
+  status_code?: string;
+  data?: string;   // "463"
+  success?: boolean;
+}
+
+export interface StoreaDataRequest {
+  user_id: string;
+  insurance_id: string;
+  rpo_address: string;
+  phone: string;
+  post_code: string;
+  rpo_name: string;
+  barcode: string;
+  booking_status: "Init" | "Booked";
+}
+
+export interface StoreaDataRequestResponse {
+  status_code?: string;
+  message?: string;
+  created_at?: string;
+  success?: boolean;
+}
+

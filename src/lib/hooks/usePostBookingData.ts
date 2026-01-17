@@ -24,8 +24,7 @@ export const useSubmitBookingData = (token?: string) => {
                 console.warn("No token provided for booking submission");
             }
 
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_EKDAK_BASE_URL}/app_dommail_internal_api/public/ws/bookingreq`,
+        const response = await fetch(`${process.env.NEXT_PUBLIC_EKDAK_BASE_URL}/app_dommail_internal_api/public/ws/bookingreq`,
                 {
                     method: "POST",
                     headers,

@@ -15,7 +15,7 @@ export const useGetMissingBarcode = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/passport_get_barcode`,
+        `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/passport_get_barcode`,
         {
           method: "POST",
           headers: {
