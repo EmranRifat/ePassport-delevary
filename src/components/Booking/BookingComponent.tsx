@@ -129,8 +129,8 @@ const BookingComponent = () => {
 
       {/* Search Bar Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-          <div className="flex md:flex-row items-center gap-4 flex-1">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1">
             <h3 className="text-base font-semibold md:text-md lg:text-xl md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
               RPO Name
             </h3>
@@ -141,7 +141,7 @@ const BookingComponent = () => {
                 placeholder="Search by name or code..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-8 md:h-10 lg:h-12 shadow-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md"
+                className="w-full h-9 md:h-10 lg:h-12 shadow-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md"
               />
             </div>
           </div>
@@ -150,7 +150,7 @@ const BookingComponent = () => {
           <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-2 md:px-4 py-2 md:py-2 text-sm font-medium transition-colors ${
+              className={`px-2 md:px-4 py-1 md:py-2 text-sm font-medium transition-colors ${
                 viewMode === "grid"
                   ? "bg-primary-600 text-white"
                   : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -173,7 +173,7 @@ const BookingComponent = () => {
 
             <button
               onClick={() => setViewMode("list")}
-              className={`px-2 md:px-4 py-2 text-sm font-medium transition-colors ${
+              className={`px-2 md:px-4 py-1 md:py-2 text-sm font-medium transition-colors ${
                 viewMode === "list"
                   ? "bg-primary-600 text-white"
                   : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"

@@ -164,10 +164,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-700 dark:to-gray-900 px-4">
   <Card className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
     <div className="text-center mb-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+      <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
         Bangladesh Post Office
       </h1>
-      <p className="text-gray-600 dark:text-gray-400">ePassport Issuing Portal</p>
+      <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">ePassport Issuing Portal</p>
     </div>
 
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -204,7 +204,7 @@ export default function LoginPage() {
       <Button
         type="submit"
         variant="primary"
-        size="lg"
+        size="md"
         className="w-full"
         isLoading={isLoading}
       >
@@ -212,7 +212,7 @@ export default function LoginPage() {
       </Button>
     </form>
 
-    <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+    <div className="mt-6 text-center text-xs md:sm text-gray-600 dark:text-gray-400">
       <p>© 2026 Bangladesh Post Office. All rights reserved.</p>
     </div>
   </Card>

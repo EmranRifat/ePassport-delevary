@@ -32,9 +32,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const avatarHandler = ()=>{
-    setMobileMenuOpen((prev) => !prev)
-  }
+  const avatarHandler = () => {
+    setMobileMenuOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -43,21 +43,28 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   if (!mounted) return null;
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-green-50 via-white to-green-50 dark:from-gray-700 dark:via-gray-900 dark:to-gray-800 shadow">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-green-50 via-white to-green-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 shadow">
       <div className="px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
             <button
               onClick={onMenuClick}
-              className="md:hidden p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-400"
+              className="md:hidden p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
             >
-              <Menu size={22} />
+              <Menu size={24} />
             </button>
 
-            <Image src="/bpo.png" alt="BPO" width={40} height={40} priority />
-
+            <div className="w-7 sm:w-8 md:w-9 md:h-10">
+              <Image
+                src="/bpo.png"
+                alt="BPO"
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
+              />
+            </div>
             <div>
-              <p className="text-sm md:text-lg xl:text-xl font-semibold md:font-bold text-gray-800 dark:text-gray-200">
+              <p className="text-sm md:text-lg xl:text-xl font-bold md:font-bold text-gray-800 dark:text-gray-200">
                 Bangladesh Post Office
               </p>
               <p className="text-xs md:text-sm text-gray-500 dark:text-gray-200">
@@ -68,19 +75,20 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
           {/* Right */}
           <div className="flex md:hidden gap-2">
-           <div>
-             <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-              {user?.name || user?.user_id || "User"}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Welcome</p>
-
-           </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+                {user?.name || user?.user_id || "User"}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Welcome
+              </p>
+            </div>
             <button
-              onClick={avatarHandler }
+              onClick={avatarHandler}
               className="md:hidden rounded-full focus:outline-none 
                     hover:ring-2 hover:ring-purple-400 transition"
             >
-              <Avatar name={user?.name || user?.user_id} />
+              <Avatar size="md" name={user?.name || user?.user_id} />
             </button>
           </div>
           <div className="hidden md:flex items-center space-x-3">
@@ -141,11 +149,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
             </button>
 
             {/* Logout */}
-            <Button
-              onClick={handleLogout}
-             variant="danger" 
-             size="sm"
-            >
+            <Button onClick={handleLogout} variant="danger" size="sm">
               Logout
             </Button>
           </div>
