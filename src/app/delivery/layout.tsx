@@ -6,6 +6,7 @@ import SideBar from "@/components/header/SideBar";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
 
   const sidebarHandler = () => {
     setSidebarOpen((prev) => !prev);
@@ -38,6 +39,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+      
     </div>
   );
 };

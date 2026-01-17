@@ -271,32 +271,32 @@ const BookingComponent = () => {
                       : "bg-gray-50/5 dark:bg-gray-800/70 hover:bg-gray-100 hover:dark:bg-slate-700"
                   }
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-3 whitespace-nowrap">
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {index + 1}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-3 whitespace-nowrap">
                       <span className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold text-primary-800 dark:text-primary-400 border border-primary-400 dark:border-primary-600">
                         {address.code}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-3 whitespace-nowrap">
                       <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 capitalize">
                         {address.name.toLowerCase()}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-3">
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         {address.address}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-3 whitespace-nowrap">
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {address.mobile}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-6 py-3 whitespace-nowrap text-center">
                       <button
                         onClick={() => handleRPOClick(address)}
                         className="inline-flex items-center px-5 py-2 border border-transparent text-sm font-semibold rounded-md shadow-sm text-white bg-primary-700 hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"

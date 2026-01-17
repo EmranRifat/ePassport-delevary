@@ -32,6 +32,10 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const avatarHandler = ()=>{
+    setMobileMenuOpen((prev) => !prev)
+  }
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -72,7 +76,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
            </div>
             <button
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              onClick={avatarHandler }
               className="md:hidden rounded-full focus:outline-none 
                     hover:ring-2 hover:ring-purple-400 transition"
             >
