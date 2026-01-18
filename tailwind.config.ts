@@ -6,6 +6,9 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    // Include HeroUI theme to ensure color/variant/size tokens are generated
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
+    // Optionally keep react package scanning (harmless)
     "./node_modules/@heroui/react/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {

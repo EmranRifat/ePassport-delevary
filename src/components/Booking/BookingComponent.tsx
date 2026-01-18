@@ -8,8 +8,15 @@ import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
 import BarcodeModal from "@/components/modals/barcode_modal";
 import { useGetBarcodeData } from "@/lib/hooks/useGetBarcodeInfo";
 import { useGetMissingBarcode } from "@/lib/hooks/useMisBarcode";
+import { useSubmitBookingData } from "@/lib/hooks/usePostBookingData";
+import { BOOKING_BASE_PAYLOAD } from "./BookingBasePayload";
+import Cookies from "js-cookie";
+import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
+import { useGetBrtaBookingLicence } from "@/lib/hooks/useGetBookingSubmissionCheck";
+import { useStoreMissingData } from "@/lib/hooks/useStoreMissingData";
 
 type ViewMode = "grid" | "list";
+const token = Cookies.get("auth-token");
 
 const BookingComponent = () => {
   // const router = useRouter();
@@ -31,13 +38,20 @@ const BookingComponent = () => {
   );
   const [showModal, setShowModal] = useState(false);
   const [barcodeValue, setBarcodeValue] = useState("");
-
+  const [bookingErrorMessage, setBookingErrorMessage] = useState("");
+  const [bookingSuccessMessage, setBookingSuccessMessage] = useState("");
   const allAddresses = getAllAddress();
   const filteredAddresses = allAddresses.filter(
     (address) =>
       address.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       address.code.includes(searchQuery)
   );
+
+  const {
+    storeMissingData,
+    loading: missingDataLoading,
+    error: missingDataError,
+  } = useStoreMissingData(token);
 
   // handle RPO click button trigger  ============= //======== open modal and fetch barcode
 
@@ -71,6 +85,24 @@ const BookingComponent = () => {
           // Set the barcode from missing barcode response
           if (res?.barcode) {
             setBarcodeValue(res.barcode);
+
+            // Call storeMissingData after getting missing barcode
+            try {
+              const storeRes = await storeMissingData({
+                user_id: user?.user_id || "",
+                insurance_id: "0",
+                rpo_address: address.address,
+                phone: address.mobile,
+                post_code: address.code,
+                rpo_name: address.name,
+                barcode: res.barcode,
+                booking_status: "Init",
+              });
+
+              console.log("Store missing data response:", storeRes);
+            } catch (storeError) {
+              console.error("Store missing data failed:", storeError);
+            }
           }
         } catch (missingBarcodeError) {
           console.error("Error fetching missing barcode:", missingBarcodeError);
@@ -94,6 +126,8 @@ const BookingComponent = () => {
     setShowModal(false);
     setSelectedRPO(null);
     setBarcodeValue("");
+    setBookingErrorMessage("");
+    setBookingSuccessMessage("");
   };
 
   const handleScan = () => {
@@ -101,16 +135,117 @@ const BookingComponent = () => {
     console.log("Scan triggered");
   };
 
-  const handleOk = (barcode: string) => {
-    if (barcode.trim()) {
-      // Process booking
-      console.log(
-        "Processing booking with barcode:",
-        barcode,
-        "for RPO:",
-        selectedRPO
-      );
-      handleCloseModal();
+  // *****************submit Action after ok button in modal************//
+
+  // first api call for booking submission
+
+  const {
+    bookingBarcodeSubmit,
+    loading: bookingLoading,
+    error: bookingError,
+  } = useSubmitBookingData(token);
+
+  // second  api call for booking submission
+
+  const { submitEpassport, loading, error } = useSubmitEpassport(token);
+
+  // Third API Call for BRTA Booking Licence Check
+
+  const {
+    getBrtaBookingLicence,
+    loading: brtaLoading,
+    error: brtaError,
+    data: brtaData,
+  } = useGetBrtaBookingLicence(token);
+
+  // const res = await getBrtaBookingLicence();
+
+  // ===========================================================================
+  // handle Ok button click in modal
+  // ==========================================================================
+
+  const handleOk = async (barcode: string) => {
+    if (!barcode.trim()) return;
+
+    try {
+      const requestData = {
+        ...BOOKING_BASE_PAYLOAD,
+        user_id: user?.user_id || "",
+        printed_item_id: barcode.trim(),
+      };
+
+      const response = await bookingBarcodeSubmit(requestData);
+
+      // Check for errors in response
+      if (!response.success || response.status_code !== "200") {
+        const errorMessage =
+          response.status || response.message || "Booking failed";
+        setBookingErrorMessage(
+          `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`
+        );
+        console.error("Booking failed:", response);
+        return;
+      }
+
+      if (response.success) {
+        console.log(
+          "Booking processed successfully:",
+          response.item_id,
+          "for RPO:",
+          selectedRPO?.name
+        );
+
+        // Call submitEpassport after successful booking
+        try {
+          const epassportRes = await submitEpassport({
+            user_id: user?.user_id || "",
+            item_id: response.item_id || barcode.trim(), // 🔥 fallback
+            total_charge: 0,
+            service_type: "Parcel",
+            vas_type: "GEP",
+            price: 0,
+            insured: 0,
+            booking_status: "Booked",
+          });
+
+          console.log("E-passport response:", epassportRes);
+
+          if (!epassportRes.success || epassportRes.status_code !== "200") {
+            console.warn("E-passport API returned non-success:", epassportRes);
+            handleCloseModal();
+            return;
+          }
+
+          // Set success message only when status_code is 200
+          setBookingSuccessMessage("E-passport submission successful");
+
+          // Clear success message after 3 seconds
+          setTimeout(() => {
+            setBookingSuccessMessage("");
+          }, 3000);
+
+          console.log("E-passport submission successful");
+
+          // Call getBrtaBookingLicence only if epassport was successful
+          try {
+            console.log("Step 3: Fetching BRTA booking licence...");
+            const brtaRes = await getBrtaBookingLicence();
+            console.log("BRTA booking licence data:", brtaRes);
+
+            if (!brtaRes.success) {
+              console.warn("BRTA API returned non-success:", brtaRes);
+            }
+          } catch (brtaErr) {
+            console.error("BRTA booking licence check failed:", brtaErr);
+          }
+        } catch (epassportErr) {
+          console.error("E-passport submission failed:", epassportErr);
+        }
+
+        handleCloseModal();
+      }
+    } catch (err) {
+      console.error("Booking submission failed:", err);
     }
   };
 
