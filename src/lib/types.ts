@@ -144,3 +144,79 @@ export interface StoreaDataRequestResponse {
   success?: boolean;
 }
 
+
+export interface AllBookingResponse {
+  success: boolean;
+  status_code: string;
+  status: string;
+  total_item: number;
+  total_booked: number;
+  total_delivered: number;
+  current_page: number;
+  total_page: number;
+  passportissuedata: BookingItem[];
+}
+export interface BookingItem {
+  id: number;
+  user_id: string;
+  insurance_id: string | null;
+  rpo_address: string;
+  phone: string;
+  post_code: string;
+  rpo_name: string;
+  barcode: string;
+  item_id: string;
+  total_charge: string;
+  service_type: string;
+  vas_type: string;
+  price: string;
+  insured: string;
+  booking_status: string;
+  created_at: string;
+  pending_date: string;
+  booking_date: string;
+  delivered_date: string | null;
+  updated_at: string;
+  is_check_today: number;
+  push_status: number;
+}
+export interface GetAllBookingsRequest {
+  user_id: string;
+  start_date: string;     // DD-MM-YYYY
+  end_date: string;       // DD-MM-YYYY
+  page_no: number;
+  par_page_data: number;
+  status: "All" | "Booked" | "Delivered";
+  rpo_code?: string;
+  rpo_name?: string;
+  barcode?: string;
+}
+export  interface PassportIssueData {
+  user_id?: string;
+  insurance_id?: string;
+  rpo_address?: string;
+  rpo_name?: string;
+  phone?: string;
+  post_code?: string;
+  barcode?: string;
+  item_id?: string;
+  total_charge?: string;
+  service_type?: string;
+  vas_type?: string;
+  price?: string;
+  insured?: string;
+  booking_status?: string;
+  created_at?: string;
+  updated_at?: string;
+  booking_date?: string;
+}
+
+export  interface DashboardResponse {
+  status_code?: string;
+  status?: string;
+  total_item?: string;
+  total_booked?: string;
+  total_delivered?: string;
+  total_page?: number;
+  passportissuedata?: PassportIssueData[];
+}
