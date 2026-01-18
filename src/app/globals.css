@@ -18,11 +18,11 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
-.dark body{
+/* .dark body{
   background-color: rgb(var(--bg));
   color: rgb(var(--text));
   transition: background-color 0.3s, color 0.3s;
-}
+} */
 
 
 @layer utilities {
