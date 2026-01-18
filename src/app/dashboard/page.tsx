@@ -3,7 +3,7 @@ import React from 'react'
 
  
 
-const page = ( ) => {
+const page = () => {
   return (
     <div>
       <DashboardComponent />

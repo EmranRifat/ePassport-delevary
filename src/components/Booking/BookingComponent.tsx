@@ -131,7 +131,7 @@ const BookingComponent = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
-            <h3 className="text-base font-semibold md:text-md lg:text-xl md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+            <h3 className="text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
               RPO Name
             </h3>
             {/* Search Input */}

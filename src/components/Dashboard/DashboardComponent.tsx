@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 // import { useRouter } from "next/navigation";
-import { Button, LoadingSpinner, Input } from "@/components/ui";
+// import { Button, LoadingSpinner, Input } from "@/components/ui";
 // import { useAuthStore } from "@/store";
 import { passportApi } from "@/lib/api-services";
 import { handleApiError } from "@/lib/error-handler";
+import DateRangePicker from "../ui/DateRangePicker/DateRangePicker";
+import { Button, Input } from "@heroui/react";
+import { LoadingSpinner } from "../ui";
 
 interface PassportIssueData {
   user_id?: string;
@@ -100,7 +103,7 @@ const DashboardComponent = () => {
           </div>
 
           {/* Summary Statistics */}
-          <div className="mb-6">
+          <div className="flex gap-10 mb-6">
             <div className="bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md inline-block ">
               <table className="border-collapse">
                 <thead>
@@ -125,6 +128,20 @@ const DashboardComponent = () => {
                 </tbody>
               </table>
             </div>
+            <div className="">
+              <DateRangePicker />
+            </div>
+          </div>
+
+         <Button color="danger">Danger</Button>
+
+          <div>
+            <Input 
+            size="md"
+            label="Search by Serial Number"
+            labelPlacement="outside"
+            placeholder="Search by Serial Number"
+            />
           </div>
 
           {/* Data Table */}
@@ -232,7 +249,7 @@ const DashboardComponent = () => {
 
                 <div className="flex items-center space-x-2">
                   <Button
-                    variant="outline"
+                    variant="flat"
                     size="sm"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(currentPage - 1)}
@@ -270,7 +287,7 @@ const DashboardComponent = () => {
                   </div>
 
                   <Button
-                    variant="outline"
+                    variant="solid"
                     size="sm"
                     disabled={currentPage === totalPages}
                     onClick={() => setCurrentPage(currentPage + 1)}
