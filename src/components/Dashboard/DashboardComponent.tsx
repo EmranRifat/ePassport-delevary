@@ -7,8 +7,50 @@ import type { ChangeEvent, KeyboardEvent } from "react";
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
-import { Button, DateRangePicker, Input } from "@heroui/react";
-import { LoadingSpinner } from "../ui";
+import {
+  Button,
+  DateRangePicker,
+  Input,
+  Pagination,
+  RangeValue,
+  Select,
+  SelectItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@heroui/react";
+
+import renderCell from "./renderCell";
+import { CalendarDate, parseDate } from "@internationalized/date";
+const columns = [
+  {
+    name: "Serial No",
+    uid: "serial_no",
+  },
+  {
+    name: "Date",
+    uid: "date",
+  },
+  {
+    name: "Booking ID",
+    uid: "booking_id",
+  },
+  {
+    name: "RPO ID",
+    uid: "rpo_id",
+  },
+  {
+    name: "RPO Name",
+    uid: "rpo_name",
+  },
+  {
+    name: "Status",
+    uid: "status",
+  },
+];
 
 const DashboardComponent = () => {
   //   const router = useRouter();
@@ -44,6 +86,13 @@ const DashboardComponent = () => {
   const [statusFilter, setStatusFilter] = useState<
     "All" | "Booked" | "Delivered"
   >("All");
+  // DateRangePicker state (CalendarDate)
+  const [bookedDateRange, setBookedDateRange] = useState<
+    RangeValue<CalendarDate>
+  >({
+    start: parseDate(defaultDates.start),
+    end: parseDate(defaultDates.end),
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState(defaultDates.start);
   const [endDate, setEndDate] = useState(defaultDates.end);
@@ -103,6 +152,20 @@ const DashboardComponent = () => {
 
     fetchBookings();
   }, [currentPage, pageSize, statusFilter, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Date range picker handler: keep picker and API dates in sync
+  const handleBookedDateRange = (value: RangeValue<CalendarDate> | null) => {
+    if (!value) return;
+    setBookedDateRange(value);
+    const toYMD = (d: CalendarDate) => {
+      const y = d.year;
+      const m = String(d.month).padStart(2, "0");
+      const dd = String(d.day).padStart(2, "0");
+      return `${y}-${m}-${dd}`;
+    };
+    setStartDate(toYMD(value.start));
+    setEndDate(toYMD(value.end));
+  };
 
   // Handle search button click
   const handleSearch = () => {
@@ -238,10 +301,20 @@ const DashboardComponent = () => {
                       min={startDate}
                     />
                   </div>
+                  <DateRangePicker
+                    size="md"
+                    label="Select Date Range"
+                    labelPlacement="outside"
+                    value={bookedDateRange}
+                    onChange={handleBookedDateRange}
+                    variant="bordered"
+                    
+                  />
                 </div>
                 <div className="self-end">
                   <Button
-                    onClick={() => {
+                    size="md"
+                    onPress={() => {
                       setCurrentPage(1);
                       fetchBookings();
                     }}
@@ -255,11 +328,10 @@ const DashboardComponent = () => {
             {/* Search Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Search (Booking ID, RPO ID, or RPO Name)
-                </label>
                 <Input
                   type="text"
+                  label="Search (Booking ID, RPO ID, or RPO Name)"
+                  labelPlacement="outside"
                   placeholder="Enter booking ID, RPO ID, or RPO name..."
                   className="h-10 text-sm w-full"
                   value={searchTerm}
@@ -272,11 +344,10 @@ const DashboardComponent = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Status
-                </label>
-                <select
-                  className="w-full h-10 px-3 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                <Select
+                  label="Select Status"
+                  labelPlacement="outside"
+                  placeholder="Select Status"
                   value={statusFilter}
                   onChange={(e) =>
                     setStatusFilter(
@@ -284,197 +355,91 @@ const DashboardComponent = () => {
                     )
                   }
                 >
-                  <option value="All">All Status</option>
-                  <option value="Booked">Booked</option>
-                  <option value="Delivered">Delivered</option>
-                </select>
+                  <SelectItem>All Status</SelectItem>
+                  <SelectItem>Booked</SelectItem>
+                  <SelectItem>Delivered</SelectItem>
+                </Select>
               </div>
             </div>
 
             <div className="mt-4 flex justify-end">
-              <Button onClick={handleSearch} className="px-6">
+              <Button onPress={handleSearch} className="px-6">
                 Search
               </Button>
             </div>
-            <div className="">
-              <DateRangePicker />
-            </div>
           </div>
-
-          <Button color="danger">Danger</Button>
-
-          <div>
-            <Input
-              // size="md"
-              label="Search by Serial Number"
-              // labelPlacement="outside"
-              placeholder="Search by Serial Number"
-            />
-          </div>
-
           {/* Data Table */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
-            {/* Table Header */}
-            <div className="grid grid-cols-6 border-b border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-700">
-              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
-                <p className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                  #
-                </p>
-              </div>
-              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
-                <p className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                  Date
-                </p>
-              </div>
-              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
-                <p className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                  Booking ID
-                </p>
-              </div>
-              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
-                <p className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                  RPO ID
-                </p>
-              </div>
-              <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center">
-                <p className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                  RPO Name
-                </p>
-              </div>
-              <div className="p-3 text-center">
-                <p className="font-semibold text-sm text-gray-700 dark:text-gray-200">
-                  Status
-                </p>
-              </div>
-            </div>
 
-            {/* Table Body */}
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <LoadingSpinner size="lg" />
-                <span className="ml-3 text-base dark:text-gray-200">
-                  Loading...
-                </span>
-              </div>
-            ) : error ? (
-              <div className="flex items-center justify-center py-8">
-                <span className="text-base text-red-500 dark:text-red-400">
-                  Error: {error}
-                </span>
-              </div>
-            ) : passportData.length === 0 ? (
-              <div className="flex items-center justify-center py-8">
-                <span className="text-base dark:text-gray-300">
-                  No Data Found
-                </span>
-              </div>
-            ) : (
-              <div className="max-h-[500px] overflow-y-auto">
+          <div className="w-full relative">
+            <Table
+              aria-label="Passport records table"
+              classNames={{
+                th: "bg-[#EDF2F7] dark:bg-gray-700 text-center",
+                tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+                td: "dark:text-gray-200 text-center",
+              }}
+            >
+              <TableHeader columns={columns}>
+                {(column) => (
+                  <TableColumn
+                    key={column.uid}
+                    className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base"
+                  >
+                    {column.name}
+                  </TableColumn>
+                )}
+              </TableHeader>
+
+              <TableBody
+                items={passportData}
+                isLoading={loading}
+                // loadingContent=
+                emptyContent={
+                  <div className="py-8 text-center">
+                    <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
+                      {error || "No data available."}
+                    </p>
+                  </div>
+                }
+              >
                 {passportData.map((item, index) => (
-                  <div
-                    key={index}
-                    className={`grid grid-cols-6 border-b border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer ${
+                  <TableRow
+                    key={item.id}
+                    className={
                       index % 2 === 0
                         ? "bg-white dark:bg-gray-800"
-                        : "bg-gray-50 dark:bg-gray-750"
-                    }`}
+                        : "bg-gray-50 dark:bg-gray-700/30"
+                    }
                   >
-                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base dark:text-gray-200">
-                      {(currentPage - 1) * pageSize + index + 1}
-                    </div>
-                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base dark:text-gray-200">
-                      {item.booking_date || item.created_at || "N/A"}
-                    </div>
-                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base dark:text-gray-200">
-                      {item.barcode || "N/A"}
-                    </div>
-                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base dark:text-gray-200">
-                      {item.post_code || "N/A"}
-                    </div>
-                    <div className="border-r border-gray-300 dark:border-gray-700 p-3 text-center text-base dark:text-gray-200">
-                      {item.rpo_name || item.rpo_address || "N/A"}
-                    </div>
-                    <div className="p-3 text-center text-base dark:text-gray-200">
-                      {item.booking_status || "N/A"}
-                    </div>
-                  </div>
+                    {(columnKey) => (
+                      <TableCell className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base">
+                        {renderCell({
+                          data: item,
+                          columnKey: columnKey,
+                          index: index,
+                          serial: (currentPage - 1) * pageSize,
+                          // onAction: handleSearch,
+                        })}
+                      </TableCell>
+                    )}
+                  </TableRow>
                 ))}
-              </div>
-            )}
+              </TableBody>
+            </Table>
+          </div>
 
-            {/* Pagination */}
-            {passportData.length > 0 && (
-              <div className="border-t border-gray-300 dark:border-gray-700 p-4 flex items-center justify-center space-x-4 bg-gray-100 dark:bg-gray-700">
-                <span className="text-base font-semibold dark:text-gray-200">
-                  {currentPage} of {totalPages}
-                </span>
-
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="flat"
-                    size="sm"
-                    color="primary"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                  >
-                    Previous
-                  </Button>
-
-                  {/* Page Numbers */}
-                  <div className="flex space-x-1">
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum;
-                      if (totalPages <= 5) {
-                        pageNum = i + 1;
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1;
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i;
-                      } else {
-                        pageNum = currentPage - 2 + i;
-                      }
-                      return (
-                        <button
-                          key={pageNum}
-                          className={`px-3 py-1 text-sm rounded ${
-                            currentPage === pageNum
-                              ? "bg-gray-600 dark:bg-gray-500 text-white"
-                              : "bg-white dark:bg-gray-800 text-black dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
-                          }`}
-                          onClick={() => setCurrentPage(pageNum)}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <Button
-                    // variant="solid"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                  >
-                    Next
-                  </Button>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <select
-                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-800 dark:text-gray-200"
-                    value={pageSize}
-                    onChange={(e) => {
-                      setPageSize(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                </div>
-              </div>
+          <div className="flex justify-center my-3">
+            {totalPages > 1 && (
+              <Pagination
+                isCompact
+                showControls
+                page={currentPage}
+                total={totalPages}
+                onChange={(page) => {
+                  setCurrentPage(page);
+                }}
+                className="overflow-x-visible"
+              />
             )}
           </div>
         </main>
