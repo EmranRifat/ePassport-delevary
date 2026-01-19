@@ -1,44 +1,46 @@
+import { RegionalPassportOffice } from "@/utils/address-util";
+
 // Request type
 export interface BarcodeCheckRequest {
-    user_id: string;
-    post_code: string;
+  user_id: string;
+  post_code: string;
 }
 
 // Pending booking request type
 export interface PendingBookingRequest {
-    user_id: string;
-    barcode: string;
-    booking_status: string;
+  user_id: string;
+  barcode: string;
+  booking_status: string;
 }
 
 // Pending booking response type
 export interface PendingBookingResponse {
-    status_code: string;
-    message: string;
+  status_code: string;
+  message: string;
 }
 
 // Response type
 export interface BarcodeCheckResponse {
-    status_code: string;
-    status?: string;
-    message?: string;
-    success?: boolean; // ✅ Add this property
-    user_id?: string;
-    insurance_id?: string | null;
-    rpo_address?: string;
-    phone?: string;
-    post_code?: string;
-    rpo_name?: string;
-    barcode?: string | null;
-    item_id?: string | null;
-    total_charge?: string | null;
-    service_type?: string | null;
-    vas_type?: string | null;
-    price?: string | null;
-    insured?: string | null;
-    booking_status?: string;
-    created_at?: string;
-    updated_at?: string;
+  status_code: string;
+  status?: string;
+  message?: string;
+  success?: boolean; // ✅ Add this property
+  user_id?: string;
+  insurance_id?: string | null;
+  rpo_address?: string;
+  phone?: string;
+  post_code?: string;
+  rpo_name?: string;
+  barcode?: string | null;
+  item_id?: string | null;
+  total_charge?: string | null;
+  service_type?: string | null;
+  vas_type?: string | null;
+  price?: string | null;
+  insured?: string | null;
+  booking_status?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface GetMissingBarcodeRequest {
@@ -187,11 +189,11 @@ export interface GetAllBookingsRequest {
   page_no: number;
   par_page_data: number;
   status: "All" | "Booked" | "Delivered";
-  rpo_code?: string;
+  rop_code?: string;
   rpo_name?: string;
   barcode?: string;
 }
-export  interface PassportIssueData {
+export interface PassportIssueData {
   user_id?: string;
   insurance_id?: string;
   rpo_address?: string;
@@ -211,7 +213,7 @@ export  interface PassportIssueData {
   booking_date?: string;
 }
 
-export  interface DashboardResponse {
+export interface DashboardResponse {
   status_code?: string;
   status?: string;
   total_item?: string;
@@ -219,4 +221,19 @@ export  interface DashboardResponse {
   total_delivered?: string;
   total_page?: number;
   passportissuedata?: PassportIssueData[];
+}
+export interface BarcodeModalProps {
+  showModal: boolean;
+  selectedRPO: RegionalPassportOffice | null;
+  initialBarcode?: string;
+  barcodeLoading?: boolean;
+  barcodeError?: string | null;
+  status_code?: number | string;
+  handleCloseModal: () => void;
+  handleScan: () => void;
+  handleOk: (barcode: string) => void;
+  getTodayDate: () => string;
+  handlePrint?: () => void;
+  bookingErrorMessage?: string;
+  bookingSuccessMessage?: string;
 }

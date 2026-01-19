@@ -1,20 +1,32 @@
 // app/layout.tsx
-"use client";
 
-import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import Providers from "./providers";
+import { HeroUIProvider } from "@heroui/react";
+import { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import { Inter } from "next/font/google"; // <-- Google Font import
 
-  
+// Define the font
+const inter = Inter({ subsets: ["latin"] });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: "Bangladesh Post Office - ePassport Portal",
+  description: "Bangladesh Post Office ePassport Issuing Portal",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-
-      <body>
-        <ThemeProvider attribute="class" defaultTheme="system">
-         <Providers> {children}</Providers>
-        </ThemeProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <HeroUIProvider>
+          <ThemeProvider attribute="class" defaultTheme="system">
+            {children}
+          </ThemeProvider>
+        </HeroUIProvider>
       </body>
     </html>
   );

@@ -2,32 +2,15 @@ import React from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { Button, Input } from "@/components/ui";
-import { RegionalPassportOffice } from "@/utils/address-util";
 import { printBookingPreview } from "@/utils/print-booking";
 import { usePrintServerRes } from "@/lib/hooks/usePrintServerRes";
 import { useAuthStore } from "@/store/auth-store";
-// import { toast, ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import ToastSuccess from "../Common/ToastSuccess";
+import { BarcodeModalProps } from "@/lib/types";
 
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
 
-interface BarcodeModalProps {
-  showModal: boolean;
-  selectedRPO: RegionalPassportOffice | null;
-  initialBarcode?: string;
-  barcodeLoading?: boolean;
-  barcodeError?: string | null;
-  status_code?: number | string;
-  handleCloseModal: () => void;
-  handleScan: () => void;
-  handleOk: (barcode: string) => void;
-  getTodayDate: () => string;
-  handlePrint?: () => void;
-  bookingErrorMessage?: string;
-  bookingSuccessMessage?: string;
-}
 
 const BarcodeModal: React.FC<BarcodeModalProps> = ({
   showModal,

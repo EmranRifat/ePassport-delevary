@@ -49,7 +49,7 @@ const RenderCell = ({ data, columnKey, index, serial = 0 }: Props) => {
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            {data.rpo_name || "-"}
+            {data.rpo_name.toLowerCase() || "-"}
           </span>
         </div>
       );
@@ -61,6 +61,8 @@ const RenderCell = ({ data, columnKey, index, serial = 0 }: Props) => {
       ): "success" | "danger" | "warning" | "default" => {
         switch (status.toLowerCase()) {
           case "booked":
+            return "warning";
+          case "delivered":
             return "success";
           default:
             return "default";

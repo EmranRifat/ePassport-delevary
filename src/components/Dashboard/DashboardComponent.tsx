@@ -1,9 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import type { ChangeEvent, KeyboardEvent } from "react";
-// import { Button, LoadingSpinner, Input } from "@/components/ui";
-
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
@@ -12,7 +9,6 @@ import {
   DateRangePicker,
   Input,
   Pagination,
-  RangeValue,
   Select,
   SelectItem,
   Table,
@@ -24,7 +20,6 @@ import {
 } from "@heroui/react";
 
 import renderCell from "./renderCell";
-import { CalendarDate, parseDate } from "@internationalized/date";
 const columns = [
   {
     name: "Serial No",
@@ -50,6 +45,12 @@ const columns = [
     name: "Status",
     uid: "status",
   },
+];
+
+const statusOptions = [
+  { key: "All", label: "All Status" },
+  { key: "Booked", label: "Booked" },
+  { key: "Delivered", label: "Delivered" },
 ];
 
 const DashboardComponent = () => {
@@ -86,14 +87,9 @@ const DashboardComponent = () => {
   const [statusFilter, setStatusFilter] = useState<
     "All" | "Booked" | "Delivered"
   >("All");
-  // DateRangePicker state (CalendarDate)
-  const [bookedDateRange, setBookedDateRange] = useState<
-    RangeValue<CalendarDate>
-  >({
-    start: parseDate(defaultDates.start),
-    end: parseDate(defaultDates.end),
-  });
-  const [searchTerm, setSearchTerm] = useState("");
+  const [bookingIdSearch, setBookingIdSearch] = useState("");
+  const [rpoIdSearch, setRpoIdSearch] = useState("");
+  const [rpoNameSearch, setRpoNameSearch] = useState("");
   const [startDate, setStartDate] = useState(defaultDates.start);
   const [endDate, setEndDate] = useState(defaultDates.end);
 
@@ -102,6 +98,7 @@ const DashboardComponent = () => {
   console.log("Getting_All_booking_Data==>", data);
   // Use ref to prevent multiple API calls on mount
   const hasFetchedRef = useRef(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Helper function to format date from YYYY-MM-DD to DD-MM-YYYY
   const formatDateForAPI = (dateString: string) => {
@@ -126,11 +123,9 @@ const DashboardComponent = () => {
         page_no: currentPage,
         par_page_data: pageSize,
         status: statusFilter,
-        ...(searchTerm && {
-          rpo_code: searchTerm,
-          rpo_name: searchTerm,
-          barcode: searchTerm,
-        }),
+        ...(bookingIdSearch && { barcode: bookingIdSearch }),
+        ...(rpoIdSearch && { rop_code: rpoIdSearch }),
+        ...(rpoNameSearch && { rpo_name: rpoNameSearch }),
       };
 
       console.log("Fetching bookings with:", requestData);
@@ -153,19 +148,31 @@ const DashboardComponent = () => {
     fetchBookings();
   }, [currentPage, pageSize, statusFilter, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Date range picker handler: keep picker and API dates in sync
-  const handleBookedDateRange = (value: RangeValue<CalendarDate> | null) => {
-    if (!value) return;
-    setBookedDateRange(value);
-    const toYMD = (d: CalendarDate) => {
-      const y = d.year;
-      const m = String(d.month).padStart(2, "0");
-      const dd = String(d.day).padStart(2, "0");
-      return `${y}-${m}-${dd}`;
+  // Debounced search effect for all search fields
+  useEffect(() => {
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Don't search on initial render
+    if (!hasFetchedRef.current) {
+      return;
+    }
+
+    // Set new timeout for debounced search
+    searchTimeoutRef.current = setTimeout(() => {
+      setCurrentPage(1);
+      fetchBookings();
+    }, 500); // 500ms debounce delay
+
+    // Cleanup timeout on unmount or when search terms change
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
     };
-    setStartDate(toYMD(value.start));
-    setEndDate(toYMD(value.end));
-  };
+  }, [bookingIdSearch, rpoIdSearch, rpoNameSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle search button click
   const handleSearch = () => {
@@ -189,89 +196,160 @@ const DashboardComponent = () => {
       <div className="flex-1 flex flex-col">
         {/* Main Content */}
         <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">
-              Dashboard
-            </h2>
-          </div>
-
-          {/* Summary Statistics - Top Section */}
-          <div className="mb-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {/* Booked Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2">
-                  <svg
-                    className="w-5 h-5 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-                    Booked
-                  </p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {totalBooked}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Delivered Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3">
-                <div className="bg-green-100 dark:bg-green-900/30 rounded-lg p-2">
-                  <svg
-                    className="w-5 h-5 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase">
-                    Delivered
-                  </p>
-                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {totalDelivered}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+          </div> */}
 
           {/* All Filters Section */}
-          <div className="mb-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-              Filters
-            </h3>
+          <div className="mb-6 bg-white border border-gray-300 rounded-lg p-5 shadow-sm">
+            {/* Summary Statistics */}
+            <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex gap-4">
+                <div className="bg-blue-50 rounded-lg px-4 py-2 min-w-[180px] w-[580px]">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-blue-100 rounded-lg p-2">
+                      <svg
+                        className="w-5 h-5 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-600 uppercase">
+                        Booked
+                      </p>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {totalBooked}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-            {/* Date Range Picker */}
-            <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-4 flex-wrap">
-                <div className="flex-1 max-w-md">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Date Range
-                  </label>
-                  <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+                <div className="bg-green-50 rounded-lg px-4 py-2 min-w-[180px] w-[580px]">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-green-100 rounded-lg p-2">
+                      <svg
+                        className="w-5 h-5 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-600 uppercase">
+                        Delivered
+                      </p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {totalDelivered}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Report Print */}
+              <Button
+                color="secondary"
+                className="flex items-center gap-2 md:ml-auto"
+              >
+                Report Print
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                  />
+                </svg>
+              </Button>
+            </div>
+
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
+            </div>
+
+            {/* Search Filters */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Select
+                  size="md"
+                  label="Status"
+                  labelPlacement="outside"
+                  placeholder="Select status"
+                  variant="bordered"
+                  selectedKeys={[statusFilter]}
+                  onSelectionChange={(keys) => {
+                    const selected = Array.from(keys)[0] as
+                      | "All"
+                      | "Booked"
+                      | "Delivered";
+                    setStatusFilter(selected);
+                  }}
+                >
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status.key}>{status.label}</SelectItem>
+                  ))}
+                </Select>
+              </div>
+
+              <div>
+                <DateRangePicker
+                  size="md"
+                  label="Date Range"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  onChange={(value) => {
+                    if (value && value.start && value.end) {
+                      const formatDate = (date: any) => {
+                        const year = date.year;
+                        const month = String(date.month).padStart(2, "0");
+                        const day = String(date.day).padStart(2, "0");
+                        return `${year}-${month}-${day}`;
+                      };
+                      setStartDate(formatDate(value.start));
+                      setEndDate(formatDate(value.end));
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-8 my-5 w-full ">
+              <div className="w-[49%] ">
+                <Input
+                  type="text"
+                  size="md"
+                  label=" Search Booking ID"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  placeholder="Search..."
+                  value={bookingIdSearch}
+                  onChange={(e) => setBookingIdSearch(e.target.value)}
+                  isClearable
+                  onClear={() => setBookingIdSearch("")}
+                  startContent={
                     <svg
-                      className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                      className="w-4 h-4 text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -280,95 +358,88 @@ const DashboardComponent = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                       />
                     </svg>
-                    <input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="flex-1 text-sm border-none focus:outline-none focus:ring-0 p-0 bg-transparent dark:text-gray-200 dark:color-scheme-dark"
-                      max={endDate}
-                    />
-                    <span className="text-gray-500 dark:text-gray-400 text-sm">
-                      to
-                    </span>
-                    <input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="flex-1 text-sm border-none focus:outline-none focus:ring-0 p-0 bg-transparent dark:text-gray-200 dark:color-scheme-dark"
-                      min={startDate}
-                    />
-                  </div>
-                  <DateRangePicker
-                    size="md"
-                    label="Select Date Range"
-                    labelPlacement="outside"
-                    value={bookedDateRange}
-                    onChange={handleBookedDateRange}
-                    variant="bordered"
-                    
-                  />
-                </div>
-                <div className="self-end">
-                  <Button
-                    size="md"
-                    onPress={() => {
-                      setCurrentPage(1);
-                      fetchBookings();
-                    }}
-                  >
-                    Apply Filter
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Search Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Input
-                  type="text"
-                  label="Search (Booking ID, RPO ID, or RPO Name)"
-                  labelPlacement="outside"
-                  placeholder="Enter booking ID, RPO ID, or RPO name..."
-                  className="h-10 text-sm w-full"
-                  value={searchTerm}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setSearchTerm(e.target.value)
                   }
-                  onKeyPress={(e: KeyboardEvent<HTMLInputElement>) =>
-                    e.key === "Enter" && handleSearch()
-                  }
+                  classNames={{
+                    input: "text-xs",
+                    inputWrapper: "h-6 bg-white hover:bg-gray-50",
+                  }}
                 />
               </div>
-              <div>
-                <Select
-                  label="Select Status"
-                  labelPlacement="outside"
-                  placeholder="Select Status"
-                  value={statusFilter}
-                  onChange={(e) =>
-                    setStatusFilter(
-                      e.target.value as "All" | "Booked" | "Delivered",
-                    )
-                  }
-                >
-                  <SelectItem>All Status</SelectItem>
-                  <SelectItem>Booked</SelectItem>
-                  <SelectItem>Delivered</SelectItem>
-                </Select>
-              </div>
-            </div>
 
-            <div className="mt-4 flex justify-end">
-              <Button onPress={handleSearch} className="px-6">
-                Search
-              </Button>
+              <div className="w-[49%] ">
+                <Input
+                  type="text"
+                  size="md"
+                  label=" Search RPO ID"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  placeholder="Search..."
+                  value={rpoIdSearch}
+                  onChange={(e) => setRpoIdSearch(e.target.value)}
+                  isClearable
+                  onClear={() => setRpoIdSearch("")}
+                  startContent={
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  }
+                  classNames={{
+                    input: "text-xs",
+                    inputWrapper: "h-6 bg-white hover:bg-gray-50",
+                  }}
+                />
+              </div>
+            
+               
             </div>
+              <div className="w-[49%] pt-4 ">
+                <Input
+                  type="text"
+                  size="md"
+                  label=" Search RPO Name"
+                  labelPlacement="outside"
+                  variant="bordered"
+                  placeholder="Search..."
+                  value={rpoNameSearch}
+                  onChange={(e) => setRpoNameSearch(e.target.value)}
+                  isClearable
+                  onClear={() => setRpoNameSearch("")}
+                  startContent={
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  }
+                  classNames={{
+                    input: "text-xs",
+                    inputWrapper: "h-6 bg-white hover:bg-gray-50",
+                  }}
+                />
+              </div>
           </div>
-          {/* Data Table */}
+           
 
           <div className="w-full relative">
             <Table
