@@ -8,6 +8,7 @@ import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
 import TableContent from "./TableContent";
+import DatePickerModal from "@/components/modals/datePickerModal";
 
 const statusOptions = [
   { key: "All", label: "All Status" },
@@ -55,6 +56,7 @@ const DashboardComponent = () => {
   const [startDate, setStartDate] = useState(defaultDates.start);
   const [endDate, setEndDate] = useState(defaultDates.end);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
 
   const { getAllBookings, loading, error, data } = useGetAllBookings({ token });
 
@@ -221,7 +223,7 @@ const DashboardComponent = () => {
               </div>
 
               {/* Report Print */}
-              <Button
+              {/* <Button
                 color="secondary"
                 className="flex items-center gap-2 md:ml-auto"
               >
@@ -239,6 +241,27 @@ const DashboardComponent = () => {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
+              </Button> */}
+
+              <Button
+                color="primary"
+                className="flex items-center gap-2"
+                onClick={() => setIsDateModalOpen(true)}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Select Date Range
               </Button>
             </div>
 
@@ -287,6 +310,31 @@ const DashboardComponent = () => {
             </div>
           </div>
 
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between mb-">
+            <h1 className="text-xs  text-gray-700">
+              Total: {data?.total_item} items
+            </h1>
+
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-600">Per Page:</span>
+              <select
+                className="px-3 py-1 border border-gray-300 rounded text-sm bg-white focus:outline-none "
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>80</option>
+              </select>
+            </div>
+          </div>
+
           {/* Data Table */}
           {isInitialLoad ? (
             <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
@@ -315,6 +363,20 @@ const DashboardComponent = () => {
           )}
         </main>
       </div>
+
+      {/* Date Range Modal */}
+      <DatePickerModal
+        isOpen={isDateModalOpen}
+        onClose={() => setIsDateModalOpen(false)}
+        onApply={(startDate, endDate) => {
+          setStartDate(startDate);
+          setEndDate(endDate);
+          setIsDateModalOpen(false);
+        }}
+        passportData={passportData}
+        totalBooked={totalBooked}
+        totalDelivered={totalDelivered}
+      />
     </div>
   );
 };

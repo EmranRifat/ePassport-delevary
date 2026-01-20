@@ -39,14 +39,14 @@ const TableContent: React.FC<TableContentProps> = ({
     <div>
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
         {/* Table Header */}
-        <div className="grid grid-cols-6 border-b border-gray-300 bg-gray-100">
-          <div className="border-r border-gray-300 p-3 text-center">
+        <div className="grid grid-cols-[50px_1fr_1.2fr_0.8fr_1.2fr_0.9fr_1.5fr_1fr] border-b border-gray-300 bg-gray-100">
+          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">#</p>
           </div>
-          <div className="border-r border-gray-300 p-3 text-center">
+          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">Date</p>
           </div>
-          <div className="border-r border-gray-200 p-3">
+          <div className="border-r border-gray-200 p-2">
             <p className="font-semibold text-sm text-gray-700 text-center mb-2">
               Booking ID
             </p>
@@ -81,7 +81,7 @@ const TableContent: React.FC<TableContentProps> = ({
             />
           </div>
 
-          <div className="border-r border-gray-300 p-3">
+          <div className="border-r border-gray-300 p-2">
             <p className="font-semibold text-sm text-gray-700 text-center mb-2">
               RPO ID
             </p>
@@ -115,7 +115,7 @@ const TableContent: React.FC<TableContentProps> = ({
               }}
             />
           </div>
-          <div className="border-r border-gray-300 p-3">
+          <div className="border-r border-gray-300 p-2">
             <p className="font-semibold text-sm text-gray-700 text-center mb-2">
               RPO Name
             </p>
@@ -149,7 +149,14 @@ const TableContent: React.FC<TableContentProps> = ({
               }}
             />
           </div>
-          <div className="p-3 text-center">
+          <div className="border-r border-gray-300 p-2 flex items-center justify-center">
+            <p className="font-semibold text-sm text-gray-700">Service Type</p>
+          </div>
+          <div className="border-r border-gray-300 p-2 flex items-center justify-center">
+            <p className="font-semibold text-sm text-gray-700">RPO Address</p>
+          </div>
+
+          <div className="p-2 flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">Status</p>
           </div>
         </div>
@@ -168,27 +175,44 @@ const TableContent: React.FC<TableContentProps> = ({
             {passportData.map((item, index) => (
               <div
                 key={index}
-                className={`grid grid-cols-6 border-b border-gray-300 hover:bg-gray-50 cursor-pointer ${
+                className={`grid grid-cols-[50px_1fr_1.2fr_0.8fr_1.2fr_0.9fr_1.5fr_1fr] border-b border-gray-300 hover:bg-gray-50 cursor-pointer ${
                   index % 2 === 0 ? "bg-white" : "bg-gray-50"
                 }`}
               >
-                <div className="border-r border-gray-300 p-3 text-center text-base">
+                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
                   {(currentPage - 1) * pageSize + index + 1}
                 </div>
-                <div className="border-r border-gray-300 p-3 text-center text-base">
+                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
                   {item.booking_date || item.created_at || "N/A"}
                 </div>
-                <div className="border-r border-gray-300 p-3 text-center text-base">
+                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
                   {item.barcode || "N/A"}
                 </div>
-                <div className="border-r border-gray-300 p-3 text-center text-base">
+                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
                   {item.post_code || "N/A"}
                 </div>
-                <div className="border-r border-gray-300 p-3 text-center text-base">
-                  {item.rpo_name || item.rpo_address || "N/A"}
+                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
+                  {item.rpo_name || "N/A"}
                 </div>
-                <div className="p-3 text-center text-base">
-                  {item.booking_status || "N/A"}
+                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
+                  {item.service_type || "N/A"}
+                </div>
+                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
+                  {item.rpo_address || "N/A"}
+                </div>
+
+                <div className="p-2 text-center text-sm flex items-center justify-center">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      item.booking_status === "Booked"
+                        ? "bg-blue-100 text-blue-700"
+                        : item.booking_status === "Delivered"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-700"
+                    }`}
+                  >
+                    {item.booking_status || "N/A"}
+                  </span>
                 </div>
               </div>
             ))}
@@ -249,22 +273,6 @@ const TableContent: React.FC<TableContentProps> = ({
               >
                 Next
               </Button>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <select
-                className="px-3 py-1 border border-gray-300 rounded text-sm bg-white"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
             </div>
           </div>
         )}
