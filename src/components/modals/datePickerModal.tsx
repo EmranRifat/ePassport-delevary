@@ -49,16 +49,20 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Booking Report - ${printStartDate} to ${printEndDate}</title>
+          <title>e-Passport Booking Report</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h1 { text-align: center; color: #1f2937; margin-bottom: 10px; }
-            .report-info { text-align: center; margin-bottom: 20px; color: #6b7280; }
-            .summary { text-align: center; margin-bottom: 30px; font-size: 14px; }
+            body { font-family: Arial, sans-serif; padding: 20px; position: relative; }
+            .logo { position: absolute; top: 20px; left: 20px; width: 60px; height: 60px; }
+            .header { text-align: center; margin-bottom: 30px; padding-top: 10px; }
+            .header h1 { margin: 5px 0; font-size: 18px; font-weight: normal; }
+            .header h2 { margin: 5px 0; font-size: 16px; font-weight: normal; }
+            .header h3 { margin: 5px 0; font-size: 14px; font-weight: normal; }
+            .info-row { display: flex; justify-content: space-between; margin: 10px 0; font-size: 14px; }
+            .summary { text-align: center; margin-bottom: 20px; font-size: 14px; }
             .summary p { margin: 5px 0; }
             table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #d1d5db; padding: 12px; text-align: left; }
-            th { background-color: #f3f4f6; font-weight: 600; color: #1f2937; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 12px; }
+            th { background-color: #f3f4f6; font-weight: 600; }
             tr:nth-child(even) { background-color: #f9fafb; }
             .no-data { text-align: center; padding: 40px; color: #6b7280; }
             @media print {
@@ -68,10 +72,15 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
           </style>
         </head>
         <body>
-          <h1>Booking Report</h1>
-          <div class="report-info">
-            <p>Date Range: ${printStartDate} to ${printEndDate}</p>
-            <p>Generated on: ${new Date().toLocaleString()}</p>
+          <img src="/bpo.png" alt="BPO Logo" class="logo" />
+          <div class="header">
+            <h1>Bangladesh Post Office</h1>
+            <h2>e-Passport Booking</h2>
+            <h3>Daily Report for: ${printStartDate} to ${printEndDate}</h3>
+          </div>
+          <div class="info-row">
+            <div>Operator Name: Samsu</div>
+            <div>Total page 1</div>
           </div>
           <div class="summary">
             <p><strong>Total Booked:</strong> ${totalBooked} | <strong>Total Delivered:</strong> ${totalDelivered}</p>
@@ -164,7 +173,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800">
-                    Select Date Range
+                    Select Date Range for Report Print
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
                     Choose a start and end date for your filter
@@ -178,6 +187,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                   label="Date Range"
                   variant="bordered"
                   className="w-full"
+                  aria-label="Select date range for report"
                   onChange={(value) => {
                     setTempDateRange(value);
                   }}

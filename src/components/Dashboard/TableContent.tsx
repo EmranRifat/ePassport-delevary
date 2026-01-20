@@ -1,23 +1,7 @@
 import React from "react";
 import { Input, Button } from "@heroui/react";
 import { LoadingSpinner } from "@/components/ui";
-
-interface TableContentProps {
-  loading: boolean;
-  error: string | null;
-  passportData: any[];
-  currentPage: number;
-  pageSize: number;
-  totalPages: number;
-  bookingIdSearch: string;
-  rpoIdSearch: string;
-  rpoNameSearch: string;
-  setBookingIdSearch: (value: string) => void;
-  setRpoIdSearch: (value: string) => void;
-  setRpoNameSearch: (value: string) => void;
-  setCurrentPage: (value: number) => void;
-  setPageSize: (value: number) => void;
-}
+import { TableContentProps } from "@/lib/types";
 
 const TableContent: React.FC<TableContentProps> = ({
   loading,
@@ -35,17 +19,18 @@ const TableContent: React.FC<TableContentProps> = ({
   setCurrentPage,
   setPageSize,
 }) => {
+  // console.log("Passport data==", passportData);
   return (
     <div>
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
         {/* Table Header */}
-        <div className="grid grid-cols-[50px_1fr_1.2fr_0.8fr_1.2fr_0.9fr_1.5fr_1fr] border-b border-gray-300 bg-gray-100">
+        <div className="grid grid-cols-[50px_1fr_1.2fr_0.8fr_1.2fr_0.9fr_1.5fr_1fr] border-b border-gray-300 bg-gray-200 dark:bg-gray-700">
           <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">#</p>
           </div>
           <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">Date</p>
-          </div>
+         </div>
           <div className="border-r border-gray-200 p-2">
             <p className="font-semibold text-sm text-gray-700 text-center mb-2">
               Booking ID
@@ -55,6 +40,7 @@ const TableContent: React.FC<TableContentProps> = ({
               size="sm"
               variant="bordered"
               placeholder="Search..."
+              aria-label="Search Booking ID"
               value={bookingIdSearch}
               onChange={(e) => setBookingIdSearch(e.target.value)}
               isClearable
@@ -90,6 +76,7 @@ const TableContent: React.FC<TableContentProps> = ({
               size="sm"
               variant="bordered"
               placeholder="Search..."
+              aria-label="Search RPO ID"
               value={rpoIdSearch}
               onChange={(e) => setRpoIdSearch(e.target.value)}
               isClearable
@@ -124,6 +111,7 @@ const TableContent: React.FC<TableContentProps> = ({
               size="sm"
               variant="bordered"
               placeholder="Search..."
+              aria-label="Search RPO Name"
               value={rpoNameSearch}
               onChange={(e) => setRpoNameSearch(e.target.value)}
               isClearable
