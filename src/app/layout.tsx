@@ -1,12 +1,10 @@
 // app/layout.tsx
-
 import "./globals.css";
 import { HeroUIProvider } from "@heroui/react";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { Inter } from "next/font/google"; // <-- Google Font import
+import { Inter } from "next/font/google";
 
-// Define the font
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,13 +18,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <HeroUIProvider>
-          <ThemeProvider attribute="class" defaultTheme="system">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+        >
+          <HeroUIProvider>
             {children}
-          </ThemeProvider>
-        </HeroUIProvider>
+          </HeroUIProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
