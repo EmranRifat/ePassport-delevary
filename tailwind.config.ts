@@ -7,7 +7,6 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-
   ],
   darkMode: "class",
   theme: {
@@ -52,31 +51,31 @@ const config: Config = {
       dgenBlueLight: "#22d3ee",
       sidebarBg: "#f2f4f8",
       danger: {
-        DEFAULT: '#EF4444',
-        50: '#FEF2F2',
-        100: '#FEE2E2',
-        200: '#FECACA',
-        300: '#FCA5A5',
-        400: '#F87171',
-        500: '#EF4444',
-        600: '#DC2626',
-        700: '#B91C1C',
-        800: '#991B1B',
-        900: '#7F1D1D',
+        DEFAULT: "#EF4444",
+        50: "#FEF2F2",
+        100: "#FEE2E2",
+        200: "#FECACA",
+        300: "#FCA5A5",
+        400: "#F87171",
+        500: "#EF4444",
+        600: "#DC2626",
+        700: "#B91C1C",
+        800: "#991B1B",
+        900: "#7F1D1D",
       },
-        primary: {
-          DEFAULT: "#673AB7",
-          50: "#EDE7F6",
-          100: "#D1C4E9",
-          200: "#B39DDB",
-          300: "#9575CD",
-          400: "#7E57C2",
-          500: "#673AB7",
-          600: "#5E35B1",
-          700: "#512DA8",
-          800: "#4527A0",
-          900: "#311B92",
-        },
+      primary: {
+        DEFAULT: "#673AB7",
+        50: "#EDE7F6",
+        100: "#D1C4E9",
+        200: "#B39DDB",
+        300: "#9575CD",
+        400: "#7E57C2",
+        500: "#673AB7",
+        600: "#5E35B1",
+        700: "#512DA8",
+        800: "#4527A0",
+        900: "#311B92",
+      },
       slate: {
         50: "#f8fafc",
         100: "#f1f5f9",
@@ -115,18 +114,6 @@ const config: Config = {
         800: "#7F1D1D",
         900: "#651919",
       },
-      error: {
-        50: "#FDE8E8",
-        100: "#FBCFCF",
-        200: "#F79E9E",
-        300: "#F26666",
-        400: "#EB3B3B",
-        500: "#DC2626", // primary red
-        600: "#B91C1C",
-        700: "#991B1B",
-        800: "#7F1D1D",
-        900: "#651919",
-      },
       green: {
         50: "#f0fdf4",
         100: "#dcfce7",
@@ -153,7 +140,7 @@ const config: Config = {
         900: "#713f12",
       },
       emerald: {
-        50:  "#ecfdf5",
+        50: "#ecfdf5",
         100: "#d1fae5",
         200: "#a7f3d0",
         300: "#6ee7b7",
@@ -163,9 +150,8 @@ const config: Config = {
         700: "#047857",
         800: "#065f46",
         900: "#064e3b",
-        950: "#022c22"
+        950: "#022c22",
       },
-  
 
       success: {
         50: "#D9FBE6",
@@ -187,7 +173,6 @@ const config: Config = {
         800: "#002e62",
         900: "#001731",
       },
-
 
       amber: {
         50: "#FFFBEB",
@@ -215,9 +200,6 @@ const config: Config = {
         900: "#134e4a",
       },
 
-
-
-
       cyan: {
         50: "#ecfeff",
         100: "#cffafe",
@@ -236,21 +218,19 @@ const config: Config = {
         100: "#FFC837",
         500: "#F6A723",
       },
-          purple: {
-      50: "#F4EBFF",
-      100: "#E1D5FF",
-      200: "#C7B3FF",
-      300: "#A98EFF",
-      400: "#936DFF", // your primary purple
-      500: "#7B51F6",
-      600: "#643BD4",
-      700: "#512FB0",
-      800: "#3F248C",
-      900: "#2D1A69",
+      purple: {
+        50: "#F4EBFF",
+        100: "#E1D5FF",
+        200: "#C7B3FF",
+        300: "#A98EFF",
+        400: "#936DFF", // your primary purple
+        500: "#7B51F6",
+        600: "#643BD4",
+        700: "#512FB0",
+        800: "#3F248C",
+        900: "#2D1A69",
+      },
     },
-
-    },
-
 
     gray: {
       50: "#FAFAFA",
@@ -298,20 +278,6 @@ const config: Config = {
       900: "#0f172a",
     },
 
-    red: {
-      50: "#FDE8E8",
-      100: "#FBCFCF",
-      200: "#F79E9E",
-      300: "#F26666",
-      400: "#EB3B3B",
-      500: "#DC2626", // primary red
-      600: "#B91C1C",
-      700: "#991B1B",
-      800: "#7F1D1D",
-      900: "#651919",
-    },
-
-
     lime: {
       50: "#f7fee7",
       100: "#ecfccb",
@@ -348,9 +314,7 @@ const config: Config = {
       700: "#047857",
       800: "#065f46",
       900: "#064e3b",
-    }
-    ,
-
+    },
     teal: {
       50: "#f0fdfa",
       100: "#ccfbf1",
@@ -362,9 +326,7 @@ const config: Config = {
       700: "#0f766e",
       800: "#115e59",
       900: "#134e4a",
-    }
-    ,
-
+    },
     orange: {
       50: "#FFF3E0",
       100: "#FFE0B2",
@@ -388,8 +350,7 @@ const config: Config = {
       700: "#3f3f46",
       800: "#27272a",
       900: "#18181b",
-    }
-    ,
+    },
     indigo: {
       50: "#EEF2FF",
       100: "#E0E7FF",
@@ -416,7 +377,7 @@ const config: Config = {
       900: "#78350F",
     },
 
-    // primary: "#006FEE",
+    primary: "#006FEE",
     secondary: "#7828c8",
     warning: "#f5a524",
     // orange: "#FF784B",
@@ -439,10 +400,6 @@ const config: Config = {
     stockColor: "#CBCBCB",
     "primary-new": "#B7FFD1",
     alertsErrorBase: "#FF4747",
-
-
-
-
 
     /* Add these styles to your global styles or Tailwind CSS configuration file */
 
@@ -471,9 +428,7 @@ const config: Config = {
       "2xl": "1400px",
       // => @media (min-width: 1400px) { ... }
     },
-    extend: {
-
-    },
+    extend: {},
   },
   plugins: [heroui()],
 };

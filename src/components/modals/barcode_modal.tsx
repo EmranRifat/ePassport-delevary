@@ -11,7 +11,6 @@ import { BarcodeModalProps } from "@/lib/types";
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
 
-
 const BarcodeModal: React.FC<BarcodeModalProps> = ({
   showModal,
   selectedRPO,
@@ -84,8 +83,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [scanBarcodeInput, externalHandleScan]);
 
-
-
   if (!showModal || !selectedRPO) {
     return null;
   }
@@ -147,15 +144,17 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
   return (
     <>
-      {bookingSuccessMessage && <ToastSuccess message={bookingSuccessMessage} />}
+      {bookingSuccessMessage && (
+        <ToastSuccess message={bookingSuccessMessage} />
+      )}
 
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
             {/* Booking Preview Card */}
             <div
               id="booking-preview-card"
-              className="border-2 border-black rounded-lg p-6 mb-6"
+              className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-6"
             >
               {/* Header with Icons */}
               <div className="flex items-center justify-between px-5 mb-5">
@@ -169,10 +168,12 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                   />
                 </div>
                 <div className="text-center">
-                  <h2 className="text-[22px] font-normal text-black leading-tight">
+                  <h2 className="text-[22px] font-normal text-black dark:text-white leading-tight">
                     BPO
                   </h2>
-                  <p className="text-lg text-black">e-Passport Booking</p>
+                  <p className="text-lg text-black dark:text-gray-100">
+                    e-Passport Booking
+                  </p>
                 </div>
                 <div className="w-[45px] h-[45px] relative">
                   <Image
@@ -187,10 +188,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* Issue Date */}
               <div className="text-center mb-3.5">
-                <p
-                  className="text-mdDG817791512BD
-               text-gray-900"
-                >
+                <p className="text-mdDG817791512BD text-gray-900 dark:text-gray-100">
                   Issue Date : {getTodayDate()}
                 </p>
               </div>
@@ -199,7 +197,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               <div className="flex flex-col items-center mb-2">
                 {barcodeLoading ? (
                   <>
-                    <div className="barcode-container h-9 w-[350px] flex items-center justify-center bg-gray-50 border border-gray-300 rounded">
+                    <div className="barcode-container h-9 w-[350px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded">
                       <span className="flex items-center gap-2 text-primary-600">
                         <svg
                           className="animate-spin h-5 w-5"
@@ -227,19 +225,16 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                   </>
                 ) : initialBarcode ? (
                   <>
-                    <div className="barcode-container h-9 w-[350px] flex items-center justify-center">
+                    <div className="barcode-container h-9 w-[250px] md:w-[350px] flex items-center justify-center">
                       <Barcode
                         value={initialBarcode}
                         height={55}
                         width={2.6}
                         displayValue={false}
-                        background="#ffffff"
+                        background="#fefefe"
                       />
                     </div>
-                    <p
-                      className="text-lg text-gray-8DP741503837BD
-                  00 mt-1.5"
-                    >
+                    <p className="text-lg text-gray-8DP741503837BD 00 mt-3 dark:text-gray-100">
                       {initialBarcode}
                     </p>
                   </>
@@ -248,31 +243,37 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* To Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-normal text-gray-900">To</p>
-                <p className="text-lg font-normal text-gray-900">
+                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                  To
+                </p>
+                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
                   {selectedRPO.address}
                 </p>
-                <p className="text-lg font-normal text-gray-900">
+                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
                   Phone: {selectedRPO.mobile}
                 </p>
               </div>
 
               {/* From Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-bold text-gray-900">From</p>
-                <p className="text-lg text-gray-900">
+                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  From
+                </p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
                   Passport Personalization Complex
                 </p>
-                <p className="text-lg text-gray-900">
+                <p className="text-lg text-gray-900 dark:text-gray-100">
                   Plot-4, Road-1, Sector-16(i), Diabari, Uttara
                 </p>
-                <p className="text-lg text-gray-900">Dhaka-1711</p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  Dhaka-1711
+                </p>
               </div>
             </div>
 
             {/* Barcode Input (visible only when scanning) */}
             {
-              <div className="h-10 w-full bg-white mb-4">
+              <div className="h-10 w-full bg-white dark:bg-gray-800 mb-4">
                 <Input
                   ref={inputRef}
                   type="text"
@@ -286,7 +287,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                       setIsScanning(true);
                     }
                   }}
-                  className="w-full h-full border border-gray-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg font-semibold"
+                  className="w-full h-full border border-gray-300 dark:border-gray-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg font-semibold dark:bg-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                   style={{
                     color: isScanning ? "blue" : "green",
                   }}
@@ -300,8 +301,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
             {/* Booking Error Message Display */}
             {bookingErrorMessage && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-lg">
-                <p className="text-red-700 text-sm font-medium text-center">
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg">
+                <p className="text-red-700 dark:text-red-400 text-sm font-medium text-center">
                   {bookingErrorMessage}
                 </p>
               </div>

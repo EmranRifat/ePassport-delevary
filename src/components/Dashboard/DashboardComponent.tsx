@@ -152,25 +152,25 @@ const DashboardComponent = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <div className="flex-1 flex flex-col">
+    <div >
+     
         {/* Main Content */}
-        <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-2">
-          {/* <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-          </div> */}
+        <main className="flex-1 w-full px-1 md:px-3 py-4">
+          <div className="mb-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50">Dashboard</h2>
+          </div>
 
           {/* All Filters Section */}
-          <div className="mb-6 bg-white border border-gray-300 rounded-lg p-5 shadow-sm">
+          <div className="mb-6 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm">
             {/* Summary Statistics */}
-            <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            
-              <div className="flex gap-4">
-                <div className="bg-blue-50 rounded-lg p-4 min-w-[350px] w-[350px]">
+            <div className="mb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              
+               <div className="flex flex-col md:flex-row md:items-center   gap-4 w-full lg:w-[78%]">
+                 <div className="w-full bg-blue-50 dark:bg-blue-900/30 rounded-lg px-4 py-2  ">
                   <div className="flex items-center gap-3">
-                    <div className="bg-blue-100 rounded-lg p-2">
+                    <div className="bg-blue-100 dark:bg-blue-900/50 rounded-lg p-2">
                       <svg
-                        className="w-5 h-5 text-blue-600"
+                        className="w-5 h-5 text-blue-600 dark:text-blue-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -184,21 +184,21 @@ const DashboardComponent = () => {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-600 uppercase">
+                      <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">
                         Booked
                       </p>
-                      <p className="text-2xl font-bold text-blue-600">
+                      <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {totalBooked}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-green-50 rounded-lg p-4 min-w-[350px] w-[350px]">
+                <div className="w-full bg-green-50 dark:bg-green-900/30 rounded-lg px-4 py-2 ">
                   <div className="flex items-center gap-3">
-                    <div className="bg-green-100 rounded-lg p-2">
+                    <div className="bg-green-100 dark:bg-green-900/50 rounded-lg p-2">
                       <svg
-                        className="w-5 h-5 text-green-600"
+                        className="w-5 h-5 text-green-600 dark:text-green-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -212,18 +212,19 @@ const DashboardComponent = () => {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-600 uppercase">
+                      <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">
                         Delivered
                       </p>
-                      <p className="text-2xl font-bold text-green-600">
+                      <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {totalDelivered}
                       </p>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <Button
+               </div>
+                <div className="w-full lg:w-[20%] flex lg:justify-end ">
+                    <Button
+                   
                 color="primary"
                 className="flex items-center gap-2"
                 onClick={() => setIsDateModalOpen(true)}
@@ -243,16 +244,23 @@ const DashboardComponent = () => {
                 </svg>
                 Print Report
               </Button>
+                </div>
+               
+
+            
             </div>
 
             <div className="flex justify-between items-center mb-2">
-              <h3 className="text-sm font-semibold text-gray-800">Filters</h3>
+              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                Filters
+              </h3>
             </div>
 
             {/* Search Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <Select
+                size="md"
                   label="Status"
                   placeholder="Select status"
                   aria-label="Filter by status"
@@ -273,6 +281,7 @@ const DashboardComponent = () => {
 
               <div>
                 <DateRangePicker
+                  size="md"
                   label="Date Range"
                   aria-label="Select date range for filtering"
                   onChange={(value) => {
@@ -294,14 +303,16 @@ const DashboardComponent = () => {
 
           {/* Pagination Controls */}
           <div className="flex items-center justify-between mb-1.5">
-            <h1 className="text-xs  text-gray-700">
-              Total: {data?.total_item} items
+            <h1 className="text-xs  text-gray-700 dark:text-gray-300">
+              Total : {data?.total_item} items
             </h1>
 
             <div className="flex items-center space-x-2">
-              <span className="text-xs text-gray-600">Per Page:</span>
+              <span className="text-xs text-gray-600 dark:text-gray-300">
+                Per Page :
+              </span>
               <select
-                className="px-3 py-1 border border-gray-300 rounded text-sm bg-white focus:outline-none "
+                className="px-1 md:px-2 py-0.5 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none "
                 aria-label="Select items per page"
                 value={pageSize}
                 onChange={(e) => {
@@ -340,7 +351,7 @@ const DashboardComponent = () => {
             />
           )}
         </main>
-      </div>
+   
 
       {/* Date Range Modal */}
       <DatePickerModal
