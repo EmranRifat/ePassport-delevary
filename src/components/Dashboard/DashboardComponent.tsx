@@ -1,52 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import { useState, useEffect, useRef } from "react";
+import { Button, DateRangePicker, Select, SelectItem } from "@heroui/react";
+import { LoadingSpinner } from "@/components/ui";
+
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
-import {
-  Button,
-  DateRangePicker,
-  Input,
-  Pagination,
-  Select,
-  SelectItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@heroui/react";
-
-import renderCell from "./renderCell";
 import TableContent from "./TableContent";
-const columns = [
-  {
-    name: "Serial No",
-    uid: "serial_no",
-  },
-  {
-    name: "Date",
-    uid: "date",
-  },
-  {
-    name: "Booking ID",
-    uid: "booking_id",
-  },
-  {
-    name: "RPO ID",
-    uid: "rpo_id",
-  },
-  {
-    name: "RPO Name",
-    uid: "rpo_name",
-  },
-  {
-    name: "Status",
-    uid: "status",
-  },
-];
+import DatePickerModal from "@/components/modals/datePickerModal";
+import LoaderSpinner from "../Common/LoaderSpinner";
 
 const statusOptions = [
   { key: "All", label: "All Status" },
@@ -93,6 +56,8 @@ const DashboardComponent = () => {
   const [rpoNameSearch, setRpoNameSearch] = useState("");
   const [startDate, setStartDate] = useState(defaultDates.start);
   const [endDate, setEndDate] = useState(defaultDates.end);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isDateModalOpen, setIsDateModalOpen] = useState(false);
 
   const { getAllBookings, loading, error, data } = useGetAllBookings({ token });
 
@@ -132,8 +97,10 @@ const DashboardComponent = () => {
       console.log("Fetching bookings with:", requestData);
       const response = await getAllBookings(requestData);
       setDashboardData(response);
+      setIsInitialLoad(false);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
+      setIsInitialLoad(false);
     }
   };
 
@@ -175,38 +142,31 @@ const DashboardComponent = () => {
     };
   }, [bookingIdSearch, rpoIdSearch, rpoNameSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Handle search button click
-  const handleSearch = () => {
-    setCurrentPage(1);
-    // Force a re-fetch by calling fetchBookings directly
-    fetchBookings();
-  };
-
   const totalPages = dashboardData?.total_page || 1;
   const passportData = dashboardData?.passportissuedata || [];
   const totalBooked = dashboardData?.total_booked?.toString() || "0";
   const totalDelivered = dashboardData?.total_delivered?.toString() || "0";
-
   // Show error message if there's an error
   if (error) {
     console.error("API Error:", error);
   }
 
   return (
-        <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50">
       <div className="flex-1 flex flex-col">
         {/* Main Content */}
-        <main className="flex-1 w-full px-2 md:px-3 lg:px-4 py-4">
-          <div className="mb-2">
+        <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-2">
+          {/* <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
-          </div>
+          </div> */}
 
           {/* All Filters Section */}
           <div className="mb-6 bg-white border border-gray-300 rounded-lg p-5 shadow-sm">
             {/* Summary Statistics */}
-            <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex gap-8">
-                <div className="bg-blue-50 rounded-lg px-4 py-2 min-w-[180px] w-[580px]">
+            <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            
+              <div className="flex gap-4">
+                <div className="bg-blue-50 rounded-lg p-4 min-w-[350px] w-[350px]">
                   <div className="flex items-center gap-3">
                     <div className="bg-blue-100 rounded-lg p-2">
                       <svg
@@ -234,7 +194,7 @@ const DashboardComponent = () => {
                   </div>
                 </div>
 
-                <div className="bg-green-50 rounded-lg px-4 py-2 min-w-[180px] w-[580px]">
+                <div className="bg-green-50 rounded-lg p-4 min-w-[350px] w-[350px]">
                   <div className="flex items-center gap-3">
                     <div className="bg-green-100 rounded-lg p-2">
                       <svg
@@ -263,12 +223,11 @@ const DashboardComponent = () => {
                 </div>
               </div>
 
-              {/* Report Print */}
               <Button
-                color="secondary"
-                className="flex items-center gap-2 md:ml-auto"
+                color="primary"
+                className="flex items-center gap-2"
+                onClick={() => setIsDateModalOpen(true)}
               >
-                Report Print
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -282,21 +241,21 @@ const DashboardComponent = () => {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
+                Print Report
               </Button>
             </div>
 
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-sm font-semibold text-gray-800">Filters</h3>
             </div>
 
             {/* Search Filters */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Select
-                  label="Select Status"
-                  labelPlacement="outside"
+                  label="Status"
                   placeholder="Select status"
-                  variant="bordered"
+                  aria-label="Filter by status"
                   selectedKeys={[statusFilter]}
                   onSelectionChange={(keys) => {
                     const selected = Array.from(keys)[0] as
@@ -315,8 +274,7 @@ const DashboardComponent = () => {
               <div>
                 <DateRangePicker
                   label="Date Range"
-                  labelPlacement="outside"
-                  variant="bordered"
+                  aria-label="Select date range for filtering"
                   onChange={(value) => {
                     if (value && value.start && value.end) {
                       const formatDate = (date: any) => {
@@ -332,10 +290,38 @@ const DashboardComponent = () => {
                 />
               </div>
             </div>
-          
           </div>
 
-          <div className="w-full  ">
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between mb-1.5">
+            <h1 className="text-xs  text-gray-700">
+              Total: {data?.total_item} items
+            </h1>
+
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-600">Per Page:</span>
+              <select
+                className="px-3 py-1 border border-gray-300 rounded text-sm bg-white focus:outline-none "
+                aria-label="Select items per page"
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>80</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Data Table */}
+          {isInitialLoad ? (
+            <LoaderSpinner />
+          ) : (
             <TableContent
               loading={loading}
               error={error}
@@ -352,9 +338,23 @@ const DashboardComponent = () => {
               setCurrentPage={setCurrentPage}
               setPageSize={setPageSize}
             />
-          </div>
+          )}
         </main>
       </div>
+
+      {/* Date Range Modal */}
+      <DatePickerModal
+        isOpen={isDateModalOpen}
+        onClose={() => setIsDateModalOpen(false)}
+        onApply={(startDate, endDate) => {
+          setStartDate(startDate);
+          setEndDate(endDate);
+          setIsDateModalOpen(false);
+        }}
+        passportData={passportData}
+        totalBooked={totalBooked}
+        totalDelivered={totalDelivered}
+      />
     </div>
   );
 };

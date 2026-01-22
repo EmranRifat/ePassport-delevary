@@ -150,7 +150,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       {bookingSuccessMessage && <ToastSuccess message={bookingSuccessMessage} />}
 
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
             {/* Booking Preview Card */}
             <div
@@ -188,7 +188,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               {/* Issue Date */}
               <div className="text-center mb-3.5">
                 <p
-                  className="text-md text-gray-900 dark:text-gray-100"
+                  className="text-mdDG817791512BD
+               text-gray-900"
                 >
                   Issue Date : {getTodayDate()}
                 </p>
@@ -236,7 +237,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                       />
                     </div>
                     <p
-                      className="text-lg text-gray-800 dark:text-gray-200 mt-1.5"
+                      className="text-lg text-gray-8DP741503837BD
+                  00 mt-1.5"
                     >
                       {initialBarcode}
                     </p>
@@ -246,31 +248,31 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* To Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">To</p>
-                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-normal text-gray-900">To</p>
+                <p className="text-lg font-normal text-gray-900">
                   {selectedRPO.address}
                 </p>
-                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-normal text-gray-900">
                   Phone: {selectedRPO.mobile}
                 </p>
               </div>
 
               {/* From Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">From</p>
-                <p className="text-lg text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-bold text-gray-900">From</p>
+                <p className="text-lg text-gray-900">
                   Passport Personalization Complex
                 </p>
-                <p className="text-lg text-gray-900 dark:text-gray-100">
+                <p className="text-lg text-gray-900">
                   Plot-4, Road-1, Sector-16(i), Diabari, Uttara
                 </p>
-                <p className="text-lg text-gray-900 dark:text-gray-100">Dhaka-1711</p>
+                <p className="text-lg text-gray-900">Dhaka-1711</p>
               </div>
             </div>
 
             {/* Barcode Input (visible only when scanning) */}
             {
-              <div className="h-10 w-full bg-white dark:bg-gray-700 mb-4">
+              <div className="h-10 w-full bg-white mb-4">
                 <Input
                   ref={inputRef}
                   type="text"
