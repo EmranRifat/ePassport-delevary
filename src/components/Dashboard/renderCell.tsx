@@ -49,7 +49,23 @@ const RenderCell = ({ data, columnKey, index, serial = 0 }: Props) => {
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            {data.rpo_name.toLowerCase() || "-"}
+            {data.rpo_name || "-"}
+          </span>
+        </div>
+      );
+    case "service_type":
+      return (
+        <div className="flex flex-col">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+            {data.service_type || "-"}
+          </span>
+        </div>
+      );
+    case "rpo_address":
+      return (
+        <div className="flex flex-col">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+            {data.rpo_address || "-"}
           </span>
         </div>
       );

@@ -26,7 +26,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         >
           <SideBar />
         </aside>
-        <main className="flex-1 overflow-y-auto p-2 md:p-2 lg:p-4">
+        <main className="flex-1 overflow-y-auto p-1 md:p-2 lg:p-4">
           {children}
         </main>
       </div>

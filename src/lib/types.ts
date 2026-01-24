@@ -58,9 +58,6 @@ export interface MissingBarcodeResponse {
   success?: boolean;
 }
 
-
-
-
 export interface BookingDataRequest {
   user_id: string;
   user_group: string;
@@ -104,8 +101,8 @@ export interface BookingDataResponse {
 }
 
 export interface EpassportRequest {
-  user_id: string;          // dynamic
-  item_id: string;          // dynamic (barcode)
+  user_id: string; // dynamic
+  item_id: string; // dynamic (barcode)
   total_charge: number;
   service_type: "Parcel";
   vas_type: "GEP";
@@ -124,7 +121,7 @@ export interface EpassportResponse {
 }
 export interface BrtaBookingLicenceResponse {
   status_code?: string;
-  data?: string;   // "463"
+  data?: string; // "463"
   success?: boolean;
 }
 
@@ -145,7 +142,6 @@ export interface StoreaDataRequestResponse {
   created_at?: string;
   success?: boolean;
 }
-
 
 export interface AllBookingResponse {
   success: boolean;
@@ -184,8 +180,8 @@ export interface BookingItem {
 }
 export interface GetAllBookingsRequest {
   user_id: string;
-  start_date: string;     // DD-MM-YYYY
-  end_date: string;       // DD-MM-YYYY
+  start_date: string; // DD-MM-YYYY
+  end_date: string; // DD-MM-YYYY
   page_no: number;
   par_page_data: number;
   status: "All" | "Booked" | "Delivered";
@@ -263,18 +259,15 @@ export interface PassportDataItem {
 }
 
 export interface TableContentProps {
+  data: any;
   loading: boolean;
   error: string | null;
   passportData: PassportDataItem[];
   currentPage: number;
   pageSize: number;
   totalPages: number;
-  bookingIdSearch: string;
-  rpoIdSearch: string;
-  rpoNameSearch: string;
-  setBookingIdSearch: (value: string) => void;
-  setRpoIdSearch: (value: string) => void;
-  setRpoNameSearch: (value: string) => void;
+  searchQuery: string;
+  setSearchQuery: (value: string) => void;
   setCurrentPage: (value: number) => void;
   setPageSize: (value: number) => void;
 }
