@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Button, DateRangePicker, Select, SelectItem } from "@heroui/react";
+import {
+  Button,
+  DateRangePicker,
+  Input,
+  Select,
+  SelectItem,
+} from "@heroui/react";
 import { LoadingSpinner } from "@/components/ui";
 
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
@@ -51,9 +57,7 @@ const DashboardComponent = () => {
   const [statusFilter, setStatusFilter] = useState<
     "All" | "Booked" | "Delivered"
   >("All");
-  const [bookingIdSearch, setBookingIdSearch] = useState("");
-  const [rpoIdSearch, setRpoIdSearch] = useState("");
-  const [rpoNameSearch, setRpoNameSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [startDate, setStartDate] = useState(defaultDates.start);
   const [endDate, setEndDate] = useState(defaultDates.end);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -82,6 +86,25 @@ const DashboardComponent = () => {
     try {
       const userId = Cookies.get("user_id") || "";
 
+      // Determine which field to search based on the query pattern
+      let searchParams = {};
+      if (searchQuery) {
+        const trimmedQuery = searchQuery.trim();
+
+        // Check if it's a 4-digit number (RPO code)
+        if (/^\d{4}$/.test(trimmedQuery)) {
+          searchParams = { rop_code: trimmedQuery };
+        }
+        // Check if it matches barcode pattern (starts with letters followed by numbers)
+        else if (/^[A-Z]{2}\d+[A-Z]{2}$/i.test(trimmedQuery)) {
+          searchParams = { barcode: trimmedQuery };
+        }
+        // Otherwise treat as RPO name (string)
+        else {
+          searchParams = { rpo_name: trimmedQuery };
+        }
+      }
+
       const requestData = {
         user_id: userId,
         start_date: formatDateForAPI(startDate),
@@ -89,9 +112,7 @@ const DashboardComponent = () => {
         page_no: currentPage,
         par_page_data: pageSize,
         status: statusFilter,
-        ...(bookingIdSearch && { barcode: bookingIdSearch }),
-        ...(rpoIdSearch && { rop_code: rpoIdSearch }),
-        ...(rpoNameSearch && { rpo_name: rpoNameSearch }),
+        ...searchParams,
       };
 
       console.log("Fetching bookings with:", requestData);
@@ -140,7 +161,7 @@ const DashboardComponent = () => {
         clearTimeout(searchTimeoutRef.current);
       }
     };
-  }, [bookingIdSearch, rpoIdSearch, rpoNameSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalPages = dashboardData?.total_page || 1;
   const passportData = dashboardData?.passportissuedata || [];
@@ -164,7 +185,6 @@ const DashboardComponent = () => {
           <div className="mb-6 bg-white border border-gray-300 rounded-lg p-5 shadow-sm">
             {/* Summary Statistics */}
             <div className="mb-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            
               <div className="flex gap-4">
                 <div className="bg-blue-50 rounded-lg p-4 min-w-[350px] w-[350px]">
                   <div className="flex items-center gap-3">
@@ -250,7 +270,41 @@ const DashboardComponent = () => {
             </div>
 
             {/* Search Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Input
+                  type="text"
+                  size="md"
+                  variant="bordered"
+                  label="Search"
+                  placeholder="Search by Booking ID, RPO ID, or RPO Name..."
+                  aria-label="Search bookings"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  isClearable
+                  onClear={() => setSearchQuery("")}
+                  startContent={
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  }
+                  classNames={{
+                    input: "text-sm",
+                    inputWrapper: "bg-white hover:bg-gray-50",
+                  }}
+                />
+              </div>
+
               <div>
                 <Select
                   label="Status"
@@ -329,12 +383,8 @@ const DashboardComponent = () => {
               currentPage={currentPage}
               pageSize={pageSize}
               totalPages={totalPages}
-              bookingIdSearch={bookingIdSearch}
-              rpoIdSearch={rpoIdSearch}
-              rpoNameSearch={rpoNameSearch}
-              setBookingIdSearch={setBookingIdSearch}
-              setRpoIdSearch={setRpoIdSearch}
-              setRpoNameSearch={setRpoNameSearch}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
               setCurrentPage={setCurrentPage}
               setPageSize={setPageSize}
             />

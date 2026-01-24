@@ -10,12 +10,8 @@ const TableContent: React.FC<TableContentProps> = ({
   currentPage,
   pageSize,
   totalPages,
-  bookingIdSearch,
-  rpoIdSearch,
-  rpoNameSearch,
-  setBookingIdSearch,
-  setRpoIdSearch,
-  setRpoNameSearch,
+  searchQuery,
+  setSearchQuery,
   setCurrentPage,
   setPageSize,
 }) => {
@@ -23,6 +19,9 @@ const TableContent: React.FC<TableContentProps> = ({
   return (
     <div>
       <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+        {/* Search Bar */}
+   
+
         {/* Table Header */}
         <div className="grid grid-cols-[50px_1fr_1.2fr_0.8fr_1.2fr_0.9fr_1.5fr_1fr] border-b border-gray-300 bg-gray-200 dark:bg-gray-700">
           <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
@@ -30,112 +29,15 @@ const TableContent: React.FC<TableContentProps> = ({
           </div>
           <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">Date</p>
-         </div>
-          <div className="border-r border-gray-200 p-2">
-            <p className="font-semibold text-sm text-gray-700 text-center mb-2">
-              Booking ID
-            </p>
-            <Input
-              type="text"
-              size="sm"
-              variant="bordered"
-              placeholder="Search..."
-              aria-label="Search Booking ID"
-              value={bookingIdSearch}
-              onChange={(e) => setBookingIdSearch(e.target.value)}
-              isClearable
-              onClear={() => setBookingIdSearch("")}
-              startContent={
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              }
-              classNames={{
-                input: "text-xs",
-                inputWrapper: "h-6 bg-white hover:bg-gray-50",
-              }}
-            />
           </div>
-
-          <div className="border-r border-gray-300 p-2">
-            <p className="font-semibold text-sm text-gray-700 text-center mb-2">
-              RPO ID
-            </p>
-            <Input
-              type="text"
-              size="sm"
-              variant="bordered"
-              placeholder="Search..."
-              aria-label="Search RPO ID"
-              value={rpoIdSearch}
-              onChange={(e) => setRpoIdSearch(e.target.value)}
-              isClearable
-              onClear={() => setRpoIdSearch("")}
-              startContent={
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              }
-              classNames={{
-                input: "text-xs",
-                inputWrapper: "h-6 bg-white hover:bg-gray-50",
-              }}
-            />
+          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
+            <p className="font-semibold text-sm text-gray-700">Booking ID</p>
           </div>
-          <div className="border-r border-gray-300 p-2">
-            <p className="font-semibold text-sm text-gray-700 text-center mb-2">
-              RPO Name
-            </p>
-            <Input
-              type="text"
-              size="sm"
-              variant="bordered"
-              placeholder="Search..."
-              aria-label="Search RPO Name"
-              value={rpoNameSearch}
-              onChange={(e) => setRpoNameSearch(e.target.value)}
-              isClearable
-              onClear={() => setRpoNameSearch("")}
-              startContent={
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              }
-              classNames={{
-                input: "text-xs",
-                inputWrapper: "h-6 bg-white hover:bg-gray-50",
-              }}
-            />
+          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
+            <p className="font-semibold text-sm text-gray-700">RPO ID</p>
+          </div>
+          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
+            <p className="font-semibold text-sm text-gray-700">RPO Name</p>
           </div>
           <div className="border-r border-gray-300 p-2 flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">Service Type</p>
@@ -143,7 +45,6 @@ const TableContent: React.FC<TableContentProps> = ({
           <div className="border-r border-gray-300 p-2 flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">RPO Address</p>
           </div>
-
           <div className="p-2 flex items-center justify-center">
             <p className="font-semibold text-sm text-gray-700">Status</p>
           </div>

@@ -269,12 +269,8 @@ export interface TableContentProps {
   currentPage: number;
   pageSize: number;
   totalPages: number;
-  bookingIdSearch: string;
-  rpoIdSearch: string;
-  rpoNameSearch: string;
-  setBookingIdSearch: (value: string) => void;
-  setRpoIdSearch: (value: string) => void;
-  setRpoNameSearch: (value: string) => void;
+  searchQuery: string;
+  setSearchQuery: (value: string) => void;
   setCurrentPage: (value: number) => void;
   setPageSize: (value: number) => void;
 }
