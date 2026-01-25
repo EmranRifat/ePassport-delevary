@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import {HeroUIProvider} from '@heroui/react'
+import { HeroUIProvider } from "@heroui/react";
+import { ThemeProvider } from "next-themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,15 +13,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}:{
+}: {
   children: React.ReactNode;
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
         <HeroUIProvider>
-          
-          {children} 
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            {children}
+          </ThemeProvider>
         </HeroUIProvider>
       </body>
     </html>

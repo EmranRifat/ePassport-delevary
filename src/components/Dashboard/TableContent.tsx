@@ -1,169 +1,162 @@
 import React from "react";
-import { Input, Button } from "@heroui/react";
-import { LoadingSpinner } from "@/components/ui";
+import {
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Table,
+  Pagination,
+} from "@heroui/react";
+// import { LoadingSpinner } from "@/components/ui";
 import { TableContentProps } from "@/lib/types";
 
+import renderCell from "./renderCell";
+
+const columns = [
+  {
+    name: "Serial No",
+    uid: "serial_no",
+  },
+  {
+    name: "Date",
+    uid: "date",
+  },
+  {
+    name: "Booking ID",
+    uid: "booking_id",
+  },
+  {
+    name: "RPO ID",
+    uid: "rpo_id",
+  },
+  {
+    name: "RPO Name",
+    uid: "rpo_name",
+  },
+  {
+    name: "Service Type",
+    uid: "service_type",
+  },
+  {
+    name: "RPO Address",
+    uid: "rpo_address",
+  },
+  {
+    name: "Status",
+    uid: "status",
+  },
+];
 const TableContent: React.FC<TableContentProps> = ({
-  loading,
+  data,
+  loading: _loading,
   error,
   passportData,
   currentPage,
   pageSize,
   totalPages,
-  searchQuery,
-  setSearchQuery,
   setCurrentPage,
   setPageSize,
 }) => {
   // console.log("Passport data==", passportData);
   return (
     <div>
-      <div className="bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-        {/* Search Bar */}
-   
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-between my-2 md:my-3">
+        <h1 className="text-sm  text-gray-700 dark:text-gray-300">
+          Total : {data?.total_item} items
+        </h1>
 
-        {/* Table Header */}
-        <div className="grid grid-cols-[50px_1fr_1.2fr_0.8fr_1.2fr_0.9fr_1.5fr_1fr] border-b border-gray-300 bg-gray-200 dark:bg-gray-700">
-          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">#</p>
-          </div>
-          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">Date</p>
-          </div>
-          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">Booking ID</p>
-          </div>
-          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">RPO ID</p>
-          </div>
-          <div className="border-r border-gray-300 p-2 text-center flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">RPO Name</p>
-          </div>
-          <div className="border-r border-gray-300 p-2 flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">Service Type</p>
-          </div>
-          <div className="border-r border-gray-300 p-2 flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">RPO Address</p>
-          </div>
-          <div className="p-2 flex items-center justify-center">
-            <p className="font-semibold text-sm text-gray-700">Status</p>
-          </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-600 dark:text-gray-300">
+            Per Page :
+          </span>
+          <select
+            className="px-1 md:px-2 py-0.5 border border-gray-300 dark:border-gray-700 rounded text-sm bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none "
+            aria-label="Select items per page"
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>80</option>
+          </select>
         </div>
+      </div>
+      <div className="w-full relative mb-2">
+        <Table
+          aria-label="Passport records table"
+          classNames={{
+            th: "bg-[#EDF2F7] dark:bg-gray-700 text-center",
+            tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+            td: "dark:text-gray-200 text-center",
+          }}
+        >
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base mb-0"
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
 
-        {/* Table Body */}
-        {error ? (
-          <div className="flex items-center justify-center py-8">
-            <span className="text-base text-red-500">Error: {error}</span>
-          </div>
-        ) : passportData.length === 0 ? (
-          <div className="flex items-center justify-center py-8">
-            <span className="text-base">No Data Found</span>
-          </div>
-        ) : (
-          <div className="max-h-[500px] overflow-y-auto">
+          <TableBody
+            items={passportData}
+            // isLoading={loading}
+            // loadingContent=
+            emptyContent={
+              <div className="py-8 text-center">
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
+                  {error || "No data available."}
+                </p>
+              </div>
+            }
+          >
             {passportData.map((item, index) => (
-              <div
-                key={index}
-                className={`grid grid-cols-[50px_1fr_1.2fr_0.8fr_1.2fr_0.9fr_1.5fr_1fr] border-b border-gray-300 hover:bg-gray-50 cursor-pointer ${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                }`}
+              <TableRow
+                key={item.id}
+                className={
+                  index % 2 === 0
+                    ? "bg-white dark:bg-gray-800"
+                    : "bg-gray-50 dark:bg-gray-700/30"
+                }
               >
-                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
-                  {(currentPage - 1) * pageSize + index + 1}
-                </div>
-                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
-                  {item.booking_date || item.created_at || "N/A"}
-                </div>
-                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
-                  {item.barcode || "N/A"}
-                </div>
-                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
-                  {item.post_code || "N/A"}
-                </div>
-                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
-                  {item.rpo_name || "N/A"}
-                </div>
-                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
-                  {item.service_type || "N/A"}
-                </div>
-                <div className="border-r border-gray-300 p-2 text-center text-sm text-gray-800 flex items-center justify-center">
-                  {item.rpo_address || "N/A"}
-                </div>
-
-                <div className="p-2 text-center text-sm flex items-center justify-center">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      item.booking_status === "Booked"
-                        ? "bg-blue-100 text-blue-700"
-                        : item.booking_status === "Delivered"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {item.booking_status || "N/A"}
-                  </span>
-                </div>
-              </div>
+                {(columnKey) => (
+                  <TableCell className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base">
+                    {renderCell({
+                      data: item,
+                      columnKey: columnKey,
+                      index: index,
+                      serial: (currentPage - 1) * pageSize,
+                      // onAction: handleSearch,
+                    })}
+                  </TableCell>
+                )}
+              </TableRow>
             ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {passportData.length > 0 && (
-          <div className="border-t border-gray-300 p-4 flex items-center justify-center space-x-4 bg-gray-100">
-            <span className="text-base font-semibold">
-              {currentPage} of {totalPages}
-            </span>
-
-            <div className="flex items-center space-x-2">
-              <Button
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
-                Previous
-              </Button>
-
-              {/* Page Numbers */}
-              <div className="flex space-x-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  return (
-                    <button
-                      key={pageNum}
-                      className={`px-3 py-1 text-sm rounded ${
-                        currentPage === pageNum
-                          ? "bg-gray-600 text-white"
-                          : "bg-white text-black border border-gray-300 hover:bg-gray-200"
-                      }`}
-                      onClick={() => setCurrentPage(pageNum)}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <Button
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() => {
-                  setCurrentPage(currentPage + 1);
-                }}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex justify-center mt-6">
+        {totalPages > 1 && (
+          <Pagination
+            isCompact
+            showControls
+            page={currentPage}
+            total={totalPages}
+            onChange={(page) => {
+              setCurrentPage(page);
+            }}
+            className="overflow-x-visible"
+          />
         )}
       </div>
     </div>
