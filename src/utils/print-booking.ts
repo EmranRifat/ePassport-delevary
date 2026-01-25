@@ -129,12 +129,14 @@ export const printBookingPreview = ({
   <div class="preview-card">
 
     <div class="header">
-      <img src="/passport.png" />
+           <img src="/bpo.png" />
+
       <div class="header-center">
         <div class="header-title">BPO</div>
         <div class="header-subtitle">e-Passport Booking</div>
       </div>
-       <img src="/bpo.png" />
+             <img src="/passport.png" />
+
     </div>
 
     <div class="issue-date">
