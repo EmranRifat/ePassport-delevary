@@ -7,6 +7,7 @@ import { authApi } from "@/lib/api-services";
 import { useAuthStore } from "@/store";
 import { handleApiError } from "@/lib/error-handler";
 import { LoginResponse, DmsLoginResponse, DmsLoginRequest } from "@/types";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,14 +56,14 @@ export default function LoginPage() {
     }
 
     console.log(
-      "performInitialLogin completed successfully, returning response"
+      "performInitialLogin completed successfully, returning response",
     );
     return response;
   };
 
   // DMS login API call
   const performDmsLogin = async (
-    initialResponse: LoginResponse
+    initialResponse: LoginResponse,
   ): Promise<DmsLoginResponse> => {
     console.log("initialResponse:", initialResponse);
 
@@ -96,7 +97,7 @@ export default function LoginPage() {
   // Combine and store auth data
   const saveAuthData = (
     initialResponse: LoginResponse,
-    dmsResponse: DmsLoginResponse
+    dmsResponse: DmsLoginResponse,
   ) => {
     const authData = {
       ...initialResponse,
@@ -161,62 +162,77 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-700 dark:to-gray-900 px-4">
-  <Card className="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-    <div className="text-center mb-8">
-      <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-        Bangladesh Post Office
-      </h1>
-      <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">ePassport Issuing Portal</p>
-    </div>
-
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="bg-red-50 dark:bg-red-300 border border-red-200 dark:border-red-500 text-red-700 dark:text-red-700 px-4 py-3 rounded-lg">
-          {error}
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+      <Card className="relative w-full max-w-md backdrop-blur-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200/60 dark:border-gray-700/60 shadow-2xl rounded-2xl p-2 md:p-6 transition-all duration-300">
+        <div className="flex justify-center mb-4">
+          <Image
+            src="/bpo.png"
+            alt="Bangladesh Post Office Logo"
+            width={80}
+            height={80}
+            priority
+            className="object-contain"
+          />
         </div>
-      )}
 
-      <Input
-        label="Email"
-        name="email"
-        type="email"
-        placeholder="Enter your email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-        autoComplete="email"
-        className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary-500 focus:border-primary-500"
-      />
+        <div className="text-center mb-8 space-y-2">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Bangladesh Post Office
+          </h1>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+            ePassport Issuing Portal
+          </p>
+        </div>
 
-      <Input
-        label="Password"
-        name="password"
-        type="password"
-        placeholder="Enter your password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-        autoComplete="current-password"
-        className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-primary-500 focus:border-primary-500"
-      />
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Input
+            label="Email Address"
+            name="email"
+            type="email"
+            placeholder="Enter your email or phone number"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            autoComplete="email"
+            className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
+          />
 
-      <Button
-        type="submit"
-        variant="primary"
-        size="md"
-        className="w-full"
-        isLoading={isLoading}
-      >
-        {isLoading ? "Signing In..." : "Sign In"}
-      </Button>
-    </form>
+          <Input
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            autoComplete="current-password"
+            className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
+          />
 
-    <div className="mt-6 text-center text-xs md:sm text-gray-600 dark:text-gray-400">
-      <p>© 2026 Bangladesh Post Office. All rights reserved.</p>
+          <Button
+            type="submit"
+            variant="primary"
+            size="md"
+            className="w-full rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+            isLoading={isLoading}
+          >
+            {isLoading ? "Signing In..." : "Sign In"}
+          </Button>
+
+          {error && (
+            <div className="flex items-start gap-3 bg-red-50 dark:bg-red-900/40  border-red-200 dark:border-red-500 text-red-600 dark:text-red-300 px-4 py-2 rounded-xl text-sm">
+              <span className="font-semibold">Error :</span>
+              <span>{error}</span>
+            </div>
+          )}
+        </form>
+
+        <div className="my-6 border-t border-gray-200 dark:border-gray-700"></div>
+
+        <div className="text-center text-xs text-gray-500 dark:text-gray-400">
+          <p>© 2026 Bangladesh Post Office. All rights reserved.</p>
+        </div>
+      </Card>
     </div>
-  </Card>
-</div>
-
   );
 }

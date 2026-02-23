@@ -7,6 +7,7 @@ import {
   TableCell,
   Table,
   Pagination,
+  Spinner,
 } from "@heroui/react";
 // import { LoadingSpinner } from "@/components/ui";
 import { TableContentProps } from "@/lib/types";
@@ -49,7 +50,7 @@ const columns = [
 ];
 const TableContent: React.FC<TableContentProps> = ({
   data,
-  loading: _loading,
+  loading: loading,
   error,
   passportData,
   currentPage,
@@ -109,18 +110,24 @@ const TableContent: React.FC<TableContentProps> = ({
           </TableHeader>
 
           <TableBody
-            items={passportData}
-            // isLoading={loading}
-            // loadingContent=
-            emptyContent={
-              <div className="py-8 text-center">
-                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
-                  {error || "No data available."}
-                </p>
+            items={passportData ?? []}
+            isLoading={loading && (!passportData || passportData.length === 0)}
+            loadingContent={
+              <div className="mt-6 flex justify-center">
+                <Spinner />
               </div>
             }
+            emptyContent={
+              error && (
+                <div className="py-8 text-center">
+                  <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
+                    {error || "No data available."}
+                  </p>
+                </div>
+              )
+            }
           >
-            {passportData.map((item, index) => (
+            {passportData?.map((item, index) => (
               <TableRow
                 key={item.id}
                 className={
@@ -133,10 +140,9 @@ const TableContent: React.FC<TableContentProps> = ({
                   <TableCell className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base">
                     {renderCell({
                       data: item,
-                      columnKey: columnKey,
-                      index: index,
+                      columnKey,
+                      index,
                       serial: (currentPage - 1) * pageSize,
-                      // onAction: handleSearch,
                     })}
                   </TableCell>
                 )}

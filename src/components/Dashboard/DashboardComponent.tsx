@@ -8,6 +8,7 @@ import {
   Input,
   Select,
   SelectItem,
+  Spinner,
 } from "@heroui/react";
 import { LoadingSpinner } from "@/components/ui";
 
@@ -207,10 +208,14 @@ const DashboardComponent = () => {
                     <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">
                       Booked
                     </p>
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {totalBooked}
-                    </p>
-                  </div>
+                    {loading && !dashboardData ? (
+                      <Spinner size="sm" color="primary" /> 
+                    ) : (
+                      <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        {totalBooked}
+                      </p>
+                    )}
+                  </div> 
                 </div>
               </div>
 
@@ -235,9 +240,13 @@ const DashboardComponent = () => {
                     <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">
                       Delivered
                     </p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {totalDelivered}
-                    </p>
+                    {loading && !dashboardData ? (
+                      <Spinner size="sm" color="success" />
+                    ) : (
+                      <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        {totalDelivered}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -302,7 +311,6 @@ const DashboardComponent = () => {
                 }
                 classNames={{
                   input: "text-sm outline-none",
-                  
                 }}
               />
             </div>
@@ -349,26 +357,22 @@ const DashboardComponent = () => {
             </div>
           </div>
 
-          {/* Data Table */}
-          {isInitialLoad ? (
-            <LoaderSpinner />
-          ) : (
-            <TableContent
-              data={data}
-              loading={loading}
-              error={error}
-              passportData={passportData}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              totalPages={totalPages}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              setCurrentPage={setCurrentPage}
-              setPageSize={setPageSize}
-            />
-          )}
+          <TableContent
+            data={data}
+            loading={loading}
+            error={error}
+            passportData={passportData}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            setCurrentPage={setCurrentPage}
+            setPageSize={setPageSize}
+          />
         </main>
       </Card>
+
 
       {/* Date Range Modal */}
       <DatePickerModal

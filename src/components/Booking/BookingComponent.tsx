@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui";
+// import { Input } from "@/components/ui";
 import { useAuthStore } from "@/store";
 import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
 import BarcodeModal from "@/components/modals/barcode_modal";
@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
 import { useGetBrtaBookingLicence } from "@/lib/hooks/useGetBookingSubmissionCheck";
 import { useStoreMissingData } from "@/lib/hooks/useStoreMissingData";
+import { Input } from "@heroui/react";
 
 type ViewMode = "grid" | "list";
 const token = Cookies.get("auth-token");
@@ -34,7 +35,7 @@ const BookingComponent = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedRPO, setSelectedRPO] = useState<RegionalPassportOffice | null>(
-    null
+    null,
   );
   const [showModal, setShowModal] = useState(false);
   const [barcodeValue, setBarcodeValue] = useState("");
@@ -44,7 +45,7 @@ const BookingComponent = () => {
   const filteredAddresses = allAddresses.filter(
     (address) =>
       address.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      address.code.includes(searchQuery)
+      address.code.includes(searchQuery),
   );
 
   const {
@@ -181,7 +182,7 @@ const BookingComponent = () => {
         const errorMessage =
           response.status || response.message || "Booking failed";
         setBookingErrorMessage(
-          `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`
+          `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`,
         );
         console.error("Booking failed:", response);
         return;
@@ -192,7 +193,7 @@ const BookingComponent = () => {
           "Booking processed successfully:",
           response.item_id,
           "for RPO:",
-          selectedRPO?.name
+          selectedRPO?.name,
         );
 
         // Call submitEpassport after successful booking
@@ -262,30 +263,60 @@ const BookingComponent = () => {
     <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
       {/* Toast Notifications */}
 
+      {/* Search Bar Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1">
+            <h3 className="text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+              RPO Name
+            </h3>
 
-     
-        {/* Search Bar Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 flex-1">
-              <h3 className="text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
-                RPO Name
-              </h3>
 
-              {/* Search Input */}
-              <div className="flex-1 max-w-md">
-                <Input
-                  type="text"
-                  placeholder="Search by name or code..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-9 md:h-10 lg:h-12 shadow-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md"
-                />
-              </div>
+            <div className="flex-1 max-w-md">
+              <Input
+                type="text"
+                placeholder="Search by Name or RPO..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search RPO by Name or Code"
+                startContent={
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                }
+                classNames={{
+                  inputWrapper: [
+                    "h-11",
+                    "bg-white",
+                    "dark:bg-gray-700",
+                    "border",
+                    "border-gray-300",
+                    "dark:border-gray-600",
+                    "hover:border-primary-500",
+                    "focus-within:border-primary-500",
+                    "rounded-lg",
+                    "shadow-sm",
+                    "!outline-none",
+                    "focus-within:!outline-none",
+                  ],
+                  input: ["text-sm", "!outline-none", "focus:!outline-none"],
+                }}
+              />
             </div>
+          </div>
 
-            {/* View Toggle */}
-           <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+          {/* View Toggle */}
+          <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
             <button
               onClick={() => setViewMode("grid")}
               className={`px-2 md:px-4 py-1 md:py-2 text-sm font-medium transition-colors ${
@@ -342,8 +373,8 @@ const BookingComponent = () => {
             <button
               key={address.code}
               onClick={() => handleRPOClick(address)}
-              className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
-                   hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-primary-400 transition-all duration-200 
+              className="bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
+                   hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-primary-500 transition-all duration-200 
                    text-left flex items-center space-x-3 group"
             >
               <span
@@ -351,7 +382,7 @@ const BookingComponent = () => {
                           rounded-md
                           border border-primary-300
                           text-sm font-medium
-                          text-primary-200
+                          text-primary-500
                           transition-colors
                           group-hover:border-primary-600
                           group-hover:text-primary-700
@@ -372,12 +403,12 @@ const BookingComponent = () => {
         </div>
       )}
 
-        {/* RPO List */}
-        {viewMode === "list" && (
+      {/* RPO List */}
+      {viewMode === "list" && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-200 dark:bg-gray-900/50 py-4">
+              <thead className="bg-gray-200 dark:bg-gray-800 py-4">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
                     SL
@@ -404,10 +435,10 @@ const BookingComponent = () => {
                   <tr
                     key={address.code}
                     className={
-                    index % 2 === 0
-                      ? "bg-white dark:bg-gray-600/80 hover:bg-gray-100 hover:dark:bg-slate-600"
-                      : "bg-gray-50/5 dark:bg-gray-800/50 hover:bg-gray-100 hover:dark:bg-slate-700"
-                  }
+                      index % 2 === 0
+                        ? "bg-white dark:bg-gray-900/80 hover:bg-gray-100 hover:dark:bg-slate-600"
+                        : "bg-gray-50/5 dark:bg-gray-900/50 hover:bg-gray-100 hover:dark:bg-slate-700"
+                    }
                   >
                     <td className="px-6 py-3 whitespace-nowrap">
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -415,7 +446,7 @@ const BookingComponent = () => {
                       </span>
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap">
-                      <span className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold text-primary-800 dark:text-primary-600 border border-primary-400 dark:border-primary-600">
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold text-primary-500 dark:text-primary-600 border border-primary-300 dark:border-primary-600">
                         {address.code}
                       </span>
                     </td>
@@ -458,7 +489,6 @@ const BookingComponent = () => {
           </p>
         </div>
       )}
-
 
       {/* Booking Modal */}
       <BarcodeModal
