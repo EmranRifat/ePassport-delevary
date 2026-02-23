@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui";
 import { useAuthStore } from "@/store";
@@ -40,17 +40,25 @@ const BookingComponent = () => {
   const [barcodeValue, setBarcodeValue] = useState("");
   const [bookingErrorMessage, setBookingErrorMessage] = useState("");
   const [bookingSuccessMessage, setBookingSuccessMessage] = useState("");
-  const allAddresses = getAllAddress();
-  const filteredAddresses = allAddresses.filter(
-    (address) =>
-      address.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      address.code.includes(searchQuery)
-  );
-
+  // const allAddresses = getAllAddress();
+  // const filteredAddresses = allAddresses.filter(
+  //   (address) =>
+  //     address.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     address.code.includes(searchQuery)
+  // );
+const allAddresses = useMemo(() => getAllAddress(), []);
+  const filteredAddresses = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return allAddresses;
+    return allAddresses.filter(
+      (address) =>
+        address.name.toLowerCase().includes(q) || address.code.includes(searchQuery)
+    );
+  }, [allAddresses, searchQuery]);
   const {
     storeMissingData,
-    loading: missingDataLoading,
-    error: missingDataError,
+    // loading: missingDataLoading,
+    // error: missingDataError,
   } = useStoreMissingData(token);
 
   // handle RPO click button trigger  ============= //======== open modal and fetch barcode
@@ -141,8 +149,6 @@ const BookingComponent = () => {
 
   const {
     bookingBarcodeSubmit,
-    loading: bookingLoading,
-    error: bookingError,
   } = useSubmitBookingData(token);
 
   // second  api call for booking submission
@@ -349,9 +355,9 @@ const BookingComponent = () => {
               <span
                 className="inline-flex items-center justify-center px-3 py-2
                           rounded-md
-                          border border-primary-300
+                          border border-primary-400
                           text-sm font-medium
-                          text-primary-200
+                          text-primary-500
                           transition-colors
                           group-hover:border-primary-600
                           group-hover:text-primary-700

@@ -155,6 +155,12 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </div>
         </div>
       )}
+        {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
     </header>
   );
 };

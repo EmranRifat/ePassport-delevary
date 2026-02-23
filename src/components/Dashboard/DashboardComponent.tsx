@@ -9,14 +9,13 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import { LoadingSpinner } from "@/components/ui";
 
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
 import TableContent from "./TableContent";
 import DatePickerModal from "@/components/modals/datePickerModal";
-import LoaderSpinner from "../Common/LoaderSpinner";
+
 
 const statusOptions = [
   { key: "All", label: "All Status" },
@@ -302,7 +301,6 @@ const DashboardComponent = () => {
                 }
                 classNames={{
                   input: "text-sm outline-none",
-                  
                 }}
               />
             </div>
@@ -350,23 +348,20 @@ const DashboardComponent = () => {
           </div>
 
           {/* Data Table */}
-          {isInitialLoad ? (
-            <LoaderSpinner />
-          ) : (
-            <TableContent
-              data={data}
-              loading={loading}
-              error={error}
-              passportData={passportData}
-              currentPage={currentPage}
-              pageSize={pageSize}
-              totalPages={totalPages}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              setCurrentPage={setCurrentPage}
-              setPageSize={setPageSize}
-            />
-          )}
+
+          <TableContent
+            loading={loading}
+            data={data}
+            error={error}
+            passportData={passportData}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            setCurrentPage={setCurrentPage}
+            setPageSize={setPageSize}
+          />
         </main>
       </Card>
 
