@@ -1,19 +1,6 @@
 import { useCallback, useState } from "react";
-import { EpassportResponse } from "../types";
+import { EpassportResponse, SubmitEpassportInput } from "../types";
 
-type SubmitEpassportInput = {
-  userId: string;
-  barcodeId: string;
-  serviceType: string;
-  itemWeight: string | number;
-  recName: string;
-  recAddress: string;
-  recPhoneNo: string;
-  token?: string;
-  cityPostStatus?: string | null;
-  shift?: string | null;
-  hnddevice?: string | null;
-};
 
 const APP_CONSTANTS = {
   USER_GROUP: "POSTAGE_POS",
@@ -24,6 +11,9 @@ const APP_CONSTANTS = {
   ITEM_DESC: "ePassport_RPO",
   VAS_TYPE: "GEP",
 } as const;
+
+
+
 
 
 export const useSubmitEpassport = (token?: string) => {
@@ -39,88 +29,46 @@ export const useSubmitEpassport = (token?: string) => {
       setError(null);
 
       try {
-        // const requestBody = {
-        //   user_id: input.userId || "",
-        //   user_group: APP_CONSTANTS.USER_GROUP,
-        //   city_post_status: input.cityPostStatus ?? "",
-        //   is_city_post: "No",
-        //   isCharge: "Yes",
-        //   is_charge: "Yes",
-        //   is_bulk_mail: "No",
-        //   isBulkMail: "No",
-        //   emts_branch_code: APP_CONSTANTS.EMTS_BRANCH_CODE,
-        //   emtsBranchCode: APP_CONSTANTS.EMTS_BRANCH_CODE,
-        //   my_branch_code: APP_CONSTANTS.MY_BRANCH_CODE,
-        //   myBranchCode: APP_CONSTANTS.MY_BRANCH_CODE,
-        //   shift: input.shift ?? "",
-        //   hnddevice: input.hnddevice ?? "",
-        //   service_type: input.serviceType,
-        //   serviceType: input.serviceType,
-        //   printed_item_id: input.barcodeId,
-        //   printedItemId: input.barcodeId,
-        //   item_weight: String(input.itemWeight),
-        //   itemWeight: String(input.itemWeight),
-        //   is_station: "No",
-        //   delivery_Branch_Code: "0",
-        //   vas_type: APP_CONSTANTS.VAS_TYPE,
-        //   set_ad: "No",
-        //   vp_service: "No",
-        //   vp_amount: "0",
-        //   item_price: "0",
-        //   insurance_price: "0",
-
-        //   rec_name: input.recName,
-        //   rec_contact: input.recPhoneNo || "0",
-        //   rec_address: input.recAddress,
-
-        //   sen_name: APP_CONSTANTS.SENDER_NAME,
-        //   sen_contact: input.recPhoneNo || "0",
-        //   sen_address: APP_CONSTANTS.SENDER_ADDRESS,
-        //   item_desc: APP_CONSTANTS.ITEM_DESC,
-        //   image_src: "No",
-        //   image_pod: "0",
-        //   ad_pod_id: "0",
-        // };
-
+       
         const requestBody = {
-          userId: input.userId || "",
-          userGroup: APP_CONSTANTS.USER_GROUP,
-          cityPostStatus: input.cityPostStatus ?? "",
-          isCityPost: "No",
+          user_id: input.userId || "",
+          user_group: APP_CONSTANTS.USER_GROUP,
+          city_post_status: input.cityPostStatus ?? "",
+          is_city_post: "No",
           isCharge: "Yes",
-          isBulkMail: "No",
+          is_bulk_mail: "No",
 
-          // emtsBranchCode: sharedPreferences.getString(AppConstants.MY_EMTS_BRANCH_CODE),
-          // myBranchCode: sharedPreferences.getString(AppConstants.BRANCH_CODE),
-          emtsBranchCode: "121500",
-          myBranchCode: "121500",
+          emts_branch_code: "121500",
+          my_branch_code: "121500",
+
           shift: input.shift ?? "",
           hnddevice: input.hnddevice ?? "",
-          serviceType: input.serviceType,
-          printedItemId: input.barcodeId,
-          itemWeight: String(input.itemWeight),
+          service_type: input.serviceType,
+          printed_item_id: input.barcodeId,
+          item_weight: String(input.itemWeight),
+
           isStation: "No",
-          deliveryBranchCode: "0",
-          vasType: APP_CONSTANTS.VAS_TYPE,
-          setAd: "No",
-          vpService: "No",
-          vpAmount: "0",
-          itemPrice: "0",
-          insurancePrice: "0",
+          delivery_Branch_Code: "0",
 
-          recName: input.recName,
-          recContact: "0",
-          recAddress: input.recAddress,
+          vas_type: APP_CONSTANTS.VAS_TYPE,
+          set_ad: "No",
+          vp_service: "No",
+          vp_amount: "0",
+          item_price: "0",
+          insurance_price: "0",
 
-          senName: APP_CONSTANTS.SENDER_NAME,
-          // need checker for phone number, if empty send
-          senContact: input.recPhoneNo ,
-          
-          senAddress: APP_CONSTANTS.SENDER_ADDRESS,
-          itemDesc: APP_CONSTANTS.ITEM_DESC,
-          imageSrc: "No",
-          imagePod: "0",
-          adPodId: "0",
+          rec_name: input.recName,
+          rec_contact: "0",
+          rec_address: input.recAddress,
+
+          sen_name: APP_CONSTANTS.SENDER_NAME,
+          sen_contact: input.recPhoneNo || "",
+          sen_address: APP_CONSTANTS.SENDER_ADDRESS,
+
+          item_desc: APP_CONSTANTS.ITEM_DESC,
+          image_src: "No",
+          image_pod: "0",
+          ad_pod_id: "0",
         };
         const payload = {
           token: input.token ?? token ?? "",
@@ -137,11 +85,12 @@ export const useSubmitEpassport = (token?: string) => {
               "Content-Type": "application/json",
               // ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
+
             body: payload ? JSON.stringify(payload) : null,
           },
         );
 
-        console.log("yes", response);
+        console.log("epassport response-->>", response);
 
         const responseText = await response.text();
         console.log("[useSubmitEpassport] responseText", responseText);
