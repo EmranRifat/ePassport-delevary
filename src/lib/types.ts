@@ -111,6 +111,24 @@ export interface EpassportRequest {
   booking_status: "Booked";
 }
 
+
+
+export type SubmitEpassportInput = {
+  userId: string;
+  barcodeId: string;
+  serviceType: string;
+  itemWeight: string | number;
+  recName: string;
+  recAddress: string;
+  recPhoneNo: string;
+  token?: string;
+  cityPostStatus?: string | null;
+  shift?: string | null;
+  hnddevice?: string | null;
+};
+
+
+
 export interface EpassportResponse {
   status_code?: string;
   status?: string;
