@@ -19,7 +19,7 @@ type ViewMode = "grid" | "list";
 const token = Cookies.get("auth-token");
 
 const BookingComponent = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const { user } = useAuthStore();
 
   const {
@@ -181,6 +181,7 @@ const allAddresses = useMemo(() => getAllAddress(), []);
       };
 
       const response = await bookingBarcodeSubmit(requestData);
+      
 
       // Check for errors in response
       if (!response.success || response.status_code !== "200") {
