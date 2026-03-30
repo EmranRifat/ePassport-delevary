@@ -31,6 +31,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   const [barcodeInput, setBarcodeInput] = React.useState("");
   const [scanBarcodeInput, setScanBarcodeInput] = React.useState("");
   const [isScanning, setIsScanning] = React.useState(false);
+  const [isScanSuccess, setIsScanSuccess] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { user } = useAuthStore();
@@ -43,6 +44,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       setBarcodeInput(initialBarcode || "");
       setScanBarcodeInput("");
       setIsScanning(false);
+      setIsScanSuccess(false);
       setIsPrinted(false);
     }
   }, [showModal, initialBarcode]);
@@ -77,6 +79,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
         console.log("Scanning Barcode Input:", scanBarcodeInput);
         setBarcodeInput(scanBarcodeInput); // Copy to main barcode
         setIsScanning(false);
+        setIsScanSuccess(true);
         externalHandleScan();
       }, 100);
       return () => clearTimeout(timer);
@@ -132,6 +135,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   const onScan = () => {
     setIsPrinted(false);
     setScanBarcodeInput(""); // Clear scan input before new scan
+    setIsScanSuccess(false);
     setIsScanning(true);
     externalHandleScan();
     // Focus input immediately for handheld scanner
@@ -140,6 +144,18 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
         inputRef.current.focus();
       }
     }, 50);
+  };
+
+  const handleBarcodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Track scanner value internally using full typed value
+    setScanBarcodeInput(value);
+
+    // Auto-activate scanning when data starts coming in
+    if (value && !isScanning) {
+      setIsScanning(true);
+    }
   };
 
   return (
@@ -271,26 +287,16 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               </div>
             </div>
 
-            {/* Barcode Input (visible only when scanning) */}
+            {/* Barcode Input hidden from UI, still used for scanner capture */}
             {
-              <div className="h-10 w-full bg-white dark:bg-gray-800 mb-4">
+              <div className="sr-only">
                 <Input
                   ref={inputRef}
                   type="text"
                   placeholder="Ready to scan..."
                   value={scanBarcodeInput}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setScanBarcodeInput(value);
-                    // Auto-activate scanning when data starts coming in
-                    if (value && !isScanning) {
-                      setIsScanning(true);
-                    }
-                  }}
+                  onChange={handleBarcodeInputChange}
                   className="w-full h-full border border-gray-300 dark:border-gray-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg font-semibold dark:bg-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                  style={{
-                    color: isScanning ? "blue" : "green",
-                  }}
                   autoComplete="off"
                   autoFocus
                 />
@@ -366,7 +372,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 onClick={onScan}
                 disabled={isScanning}
               >
-                {isScanning && !scanBarcodeInput ? (
+                {!isScanning && !scanBarcodeInput.length ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                       <circle
@@ -391,17 +397,18 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 )}
               </Button>
 
-              <Button
-                variant="primary"
-                className="h-[42px] w-[250px]"
-                onClick={async () => {
-                  const res = await handleOk(barcodeInput);
-                  console.log("handleOk result:", res);
-                }}
-                disabled={!barcodeInput}
-              >
-                Ok
-              </Button>
+              {isScanSuccess && (
+                <Button
+                  variant="primary"
+                  className="h-[42px] w-[250px]"
+                  onClick={async () => {
+                    const res = await handleOk(barcodeInput);
+                    console.log("handleOk result:", res);
+                  }}
+                >
+                  Ok
+                </Button>
+              )}
             </div>
           </div>
         </div>

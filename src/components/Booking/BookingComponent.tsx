@@ -42,6 +42,7 @@ const BookingComponent = () => {
   const [barcodeValue, setBarcodeValue] = useState("");
   const [bookingErrorMessage, setBookingErrorMessage] = useState("");
   const [bookingSuccessMessage, setBookingSuccessMessage] = useState("");
+   const [isScanComplete, setIsScanComplete] =  useState(false);
   const allAddresses = getAllAddress();
   const filteredAddresses = allAddresses.filter(
     (address) =>
@@ -135,6 +136,7 @@ const BookingComponent = () => {
   const handleScan = () => {
     // Toggle scanning state in modal
     console.log("Scan triggered");
+    setIsScanComplete(true);
   };
 
   // *****************submit Action after ok button in modal************//
