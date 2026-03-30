@@ -18,6 +18,7 @@ import { Input } from "@heroui/react";
 
 type ViewMode = "grid" | "list";
 const token = Cookies.get("auth-token");
+// const token = Cookies.get("access");
 
 const BookingComponent = () => {
   const router = useRouter();
@@ -149,7 +150,8 @@ const BookingComponent = () => {
   // second  api call for booking submission
 
   const { submitEpassport, loading, error } = useSubmitEpassport(token);
-
+  console.log("submitEpassport data-->", submitEpassport);
+  console.log("submitEpassport error-->", error);
   // Third API Call for BRTA Booking Licence Check
 
   const {
@@ -165,88 +167,173 @@ const BookingComponent = () => {
   // handle Ok button click in modal
   // ==========================================================================
 
+  // const handleOk = async (barcode: string) => {
+  //   if (!barcode.trim()) return;
+
+  //   try {
+  //     const requestData = {
+  //       ...BOOKING_BASE_PAYLOAD,
+  //       user_id: user?.user_id || "",
+  //       printed_item_id: barcode.trim(),
+  //     };
+
+  //     const response = await bookingBarcodeSubmit(requestData);
+
+  //     // Check for errors in response
+  //     if (!response.success || response.status_code !== "200") {
+  //       const errorMessage =
+  //         response.status || response.message || "Booking failed";
+  //       setBookingErrorMessage(
+  //         `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`,
+  //       );
+  //       console.error("Booking failed:", response);
+  //       return;
+  //     }
+
+  //     if (response.success) {
+  //       console.log(
+  //         "Booking processed successfully:",
+  //         response.item_id,
+  //         "for RPO:",
+  //         selectedRPO?.name,
+  //       );
+
+  //       // Call submitEpassport after successful booking
+  //       try {
+  //         const epassportRes = await submitEpassport({
+  //           user_id: user?.user_id || "",
+  //           item_id: response.item_id || barcode.trim(), // 🔥 fallback
+  //           total_charge: 0,
+  //           service_type: "Parcel",
+  //           vas_type: "GEP",
+  //           price: 0,
+  //           insured: 0,
+  //           booking_status: "Booked",
+  //         });
+
+  //         console.log("E-passport response:", epassportRes);
+
+  //         if (!epassportRes.success || epassportRes.status_code !== "200") {
+  //           console.warn("E-passport API returned non-success:", epassportRes);
+  //           handleCloseModal();
+  //           return;
+  //         }
+
+  //         // Set success message only when status_code is 200
+  //         setBookingSuccessMessage("E-passport submission successful");
+
+  //         // Clear success message after 3 seconds
+  //         setTimeout(() => {
+  //           setBookingSuccessMessage("");
+  //         }, 3000);
+
+  //         console.log("E-passport submission successful");
+
+  //         // Call getBrtaBookingLicence only if epassport was successful
+  //         try {
+  //           console.log("Step 3: Fetching BRTA booking licence...");
+  //           const brtaRes = await getBrtaBookingLicence();
+  //           console.log("BRTA booking licence data:", brtaRes);
+
+  //           if (!brtaRes.success) {
+  //             console.warn("BRTA API returned non-success:", brtaRes);
+  //           }
+  //         } catch (brtaErr) {
+  //           console.error("BRTA booking licence check failed:", brtaErr);
+  //         }
+  //       } catch (epassportErr) {
+  //         console.error("E-passport submission failed:", epassportErr);
+  //       }
+
+  //       handleCloseModal();
+  //     }
+  //   } catch (err) {
+  //     console.error("Booking submission failed:", err);
+  //   }
+  // };
+
   const handleOk = async (barcode: string) => {
-    if (!barcode.trim()) return;
+    if (!barcode?.trim()) {
+      setBookingErrorMessage("Barcode is required to submit.");
+      return {
+        success: false,
+        status_code: "400",
+        message: "Barcode is required",
+      };
+    }
+
+    if (!selectedRPO) {
+      setBookingErrorMessage("Please choose a RPO location before submitting.");
+      return {
+        success: false,
+        status_code: "400",
+        message: "No RPO selected",
+      };
+    }
 
     try {
-      const requestData = {
-        ...BOOKING_BASE_PAYLOAD,
-        user_id: user?.user_id || "",
-        printed_item_id: barcode.trim(),
-      };
+      console.log(
+        "handleOk invoked with barcode:",
+        barcode,
+        "selectedRPO:",
+        selectedRPO,
+      );
 
-      const response = await bookingBarcodeSubmit(requestData);
+      const epassportRes = await submitEpassport({
+        userId: user?.user_id || "",
+        barcodeId: barcode.trim(),
+        serviceType: "Parcel",
+        itemWeight: BOOKING_BASE_PAYLOAD.item_weight,
+        recName: selectedRPO.name || BOOKING_BASE_PAYLOAD.rec_name,
+        recAddress: selectedRPO.address || BOOKING_BASE_PAYLOAD.rec_address,
+        recPhoneNo: selectedRPO.mobile || BOOKING_BASE_PAYLOAD.rec_contact,
+        token: token || "",
+        cityPostStatus: BOOKING_BASE_PAYLOAD.city_post_status,
+        shift: BOOKING_BASE_PAYLOAD.shift,
+        hnddevice: BOOKING_BASE_PAYLOAD.hnddevice,
+      });
 
-      // Check for errors in response
-      if (!response.success || response.status_code !== "200") {
-        const errorMessage =
-          response.status || response.message || "Booking failed";
+      console.log("E-passport response:", epassportRes);
+
+      if (!epassportRes.success || epassportRes.status_code !== "200") {
+        console.warn("E-passport API returned non-success:", epassportRes);
         setBookingErrorMessage(
-          `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`,
+          epassportRes.message || "E-passport submission failed from server",
         );
-        console.error("Booking failed:", response);
-        return;
+        // keep the modal open so the user can see the error state and retry
+        return epassportRes;
       }
 
-      if (response.success) {
-        console.log(
-          "Booking processed successfully:",
-          response.item_id,
-          "for RPO:",
-          selectedRPO?.name,
-        );
+      setBookingSuccessMessage("E-passport submission successful");
+      setBookingErrorMessage("");
 
-        // Call submitEpassport after successful booking
-        try {
-          const epassportRes = await submitEpassport({
-            user_id: user?.user_id || "",
-            item_id: response.item_id || barcode.trim(), // 🔥 fallback
-            total_charge: 0,
-            service_type: "Parcel",
-            vas_type: "GEP",
-            price: 0,
-            insured: 0,
-            booking_status: "Booked",
-          });
+      setTimeout(() => {
+        setBookingSuccessMessage("");
+      }, 3000);
 
-          console.log("E-passport response:", epassportRes);
+      try {
+        console.log("Step 3: Fetching BRTA booking licence...");
+        const brtaRes = await getBrtaBookingLicence();
+        console.log("BRTA booking licence data:", brtaRes);
 
-          if (!epassportRes.success || epassportRes.status_code !== "200") {
-            console.warn("E-passport API returned non-success:", epassportRes);
-            handleCloseModal();
-            return;
-          }
-
-          // Set success message only when status_code is 200
-          setBookingSuccessMessage("E-passport submission successful");
-
-          // Clear success message after 3 seconds
-          setTimeout(() => {
-            setBookingSuccessMessage("");
-          }, 3000);
-
-          console.log("E-passport submission successful");
-
-          // Call getBrtaBookingLicence only if epassport was successful
-          try {
-            console.log("Step 3: Fetching BRTA booking licence...");
-            const brtaRes = await getBrtaBookingLicence();
-            console.log("BRTA booking licence data:", brtaRes);
-
-            if (!brtaRes.success) {
-              console.warn("BRTA API returned non-success:", brtaRes);
-            }
-          } catch (brtaErr) {
-            console.error("BRTA booking licence check failed:", brtaErr);
-          }
-        } catch (epassportErr) {
-          console.error("E-passport submission failed:", epassportErr);
+        if (!brtaRes.success) {
+          console.warn("BRTA API returned non-success:", brtaRes);
         }
-
-        handleCloseModal();
+      } catch (brtaErr) {
+        console.error("BRTA booking licence check failed:", brtaErr);
       }
-    } catch (err) {
-      console.error("Booking submission failed:", err);
+
+      // close modal after success so the UI does not hide before you can see toast
+      handleCloseModal();
+
+      return epassportRes;
+    } catch (epassportErr: any) {
+      console.error("E-passport submission failed:", epassportErr);
+      return {
+        success: false,
+        message: epassportErr?.message || "E-passport submission failed",
+        status_code: "500",
+      };
     }
   };
 
@@ -270,7 +357,6 @@ const BookingComponent = () => {
             <h3 className="text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
               RPO Name
             </h3>
-
 
             <div className="flex-1 max-w-md">
               <Input

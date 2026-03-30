@@ -48,7 +48,7 @@ export default function LoginPage() {
     console.log("response.user_id:", response.user_id);
 
     if (!isSuccess) {
-      throw new Error(response.message || "Login failed. Please try again.");
+      throw new Error(response.status || "Login failed. Please try again.");
     }
 
     if (!response.user_id) {
@@ -97,36 +97,30 @@ export default function LoginPage() {
   // Combine and store auth data
   const saveAuthData = (
     initialResponse: LoginResponse,
-    dmsResponse: DmsLoginResponse,
+    // dmsResponse: DmsLoginResponse,
   ) => {
     const authData = {
       ...initialResponse,
-      token: dmsResponse.token,
-      branch_code: dmsResponse.branch_code,
-      my_emts_branch_code: dmsResponse.my_emts_branch_code,
-      rms_code: dmsResponse.rms_code,
-      shift: dmsResponse.shift,
-      city_post_status: dmsResponse.city_post_status,
     };
 
     // Store auth data in store
     setAuth(authData);
 
     // Store token and user_id in cookies for middleware
-    document.cookie = `auth-token=${dmsResponse.token}; path=/; max-age=86400`;
+    document.cookie = `auth-token=${initialResponse.apiresponse.token}; path=/; max-age=86400`;
     document.cookie = `user_id=${initialResponse.user_id}; path=/; max-age=86400`;
     document.cookie = `branch_code=${
-      dmsResponse.branch_code || ""
+      initialResponse.apiresponse.branch_code || ""
     }; path=/; max-age=86400`;
     document.cookie = `my_emts_branch_code=${
-      dmsResponse.my_emts_branch_code || ""
+      initialResponse.apiresponse.my_emts_branch_code || ""
     }; path=/; max-age=86400`;
     document.cookie = `rms_code=${
-      dmsResponse.rms_code || ""
+      initialResponse.apiresponse.rms_code || ""
     }; path=/; max-age=86400`;
-    document.cookie = `shift=${dmsResponse.shift || ""}; path=/; max-age=86400`;
+    document.cookie = `shift=${initialResponse.apiresponse.shift || ""}; path=/; max-age=86400`;
     document.cookie = `city_post_status=${
-      dmsResponse.city_post_status || ""
+      initialResponse.apiresponse.city_post_status || ""
     }; path=/; max-age=86400`;
   };
 
@@ -146,10 +140,10 @@ export default function LoginPage() {
       const initialResponse = await performInitialLogin();
 
       // Step 2: Perform DMS login
-      const dmsResponse = await performDmsLogin(initialResponse);
+      // const dmsResponse = await performDmsLogin(initialResponse);
 
       // Step 3: Save auth data
-      saveAuthData(initialResponse, dmsResponse);
+      saveAuthData(initialResponse);
 
       // Step 4: Redirect to dashboard or specified page
       router.push(redirectUrl);
