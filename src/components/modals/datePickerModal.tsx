@@ -72,7 +72,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
           </style>
         </head>
         <body>
-          <img src="/bpo.png" alt="BPO Logo" class="logo" />
+           <img src="/bpo.png" alt="BPO Logo" class="logo" />
           <div class="header">
             <h1>Bangladesh Post Office</h1>
             <h2>e-Passport Booking</h2>

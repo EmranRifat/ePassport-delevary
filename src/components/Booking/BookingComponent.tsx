@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui";
+// import { Input } from "@/components/ui";
 import { useAuthStore } from "@/store";
 import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
 import BarcodeModal from "@/components/modals/barcode_modal";
@@ -14,9 +14,11 @@ import Cookies from "js-cookie";
 import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
 import { useGetBrtaBookingLicence } from "@/lib/hooks/useGetBookingSubmissionCheck";
 import { useStoreMissingData } from "@/lib/hooks/useStoreMissingData";
+import { Input } from "@heroui/react";
 
 type ViewMode = "grid" | "list";
 const token = Cookies.get("auth-token");
+// const token = Cookies.get("access");
 
 const BookingComponent = () => {
   // const router = useRouter();
@@ -34,27 +36,19 @@ const BookingComponent = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedRPO, setSelectedRPO] = useState<RegionalPassportOffice | null>(
-    null
+    null,
   );
   const [showModal, setShowModal] = useState(false);
   const [barcodeValue, setBarcodeValue] = useState("");
   const [bookingErrorMessage, setBookingErrorMessage] = useState("");
   const [bookingSuccessMessage, setBookingSuccessMessage] = useState("");
-  // const allAddresses = getAllAddress();
-  // const filteredAddresses = allAddresses.filter(
-  //   (address) =>
-  //     address.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     address.code.includes(searchQuery)
-  // );
-const allAddresses = useMemo(() => getAllAddress(), []);
-  const filteredAddresses = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
-    if (!q) return allAddresses;
-    return allAddresses.filter(
-      (address) =>
-        address.name.toLowerCase().includes(q) || address.code.includes(searchQuery)
-    );
-  }, [allAddresses, searchQuery]);
+  const allAddresses = getAllAddress();
+  const filteredAddresses = allAddresses.filter(
+    (address) =>
+      address.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      address.code.includes(searchQuery),
+  );
+
   const {
     storeMissingData,
     // loading: missingDataLoading,
@@ -154,7 +148,8 @@ const allAddresses = useMemo(() => getAllAddress(), []);
   // second  api call for booking submission
 
   const { submitEpassport, loading, error } = useSubmitEpassport(token);
-
+  console.log("submitEpassport data-->", submitEpassport);
+  console.log("submitEpassport error-->", error);
   // Third API Call for BRTA Booking Licence Check
 
   const {
@@ -170,89 +165,173 @@ const allAddresses = useMemo(() => getAllAddress(), []);
   // handle Ok button click in modal
   // ==========================================================================
 
+  // const handleOk = async (barcode: string) => {
+  //   if (!barcode.trim()) return;
+
+  //   try {
+  //     const requestData = {
+  //       ...BOOKING_BASE_PAYLOAD,
+  //       user_id: user?.user_id || "",
+  //       printed_item_id: barcode.trim(),
+  //     };
+
+  //     const response = await bookingBarcodeSubmit(requestData);
+
+  //     // Check for errors in response
+  //     if (!response.success || response.status_code !== "200") {
+  //       const errorMessage =
+  //         response.status || response.message || "Booking failed";
+  //       setBookingErrorMessage(
+  //         `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`,
+  //       );
+  //       console.error("Booking failed:", response);
+  //       return;
+  //     }
+
+  //     if (response.success) {
+  //       console.log(
+  //         "Booking processed successfully:",
+  //         response.item_id,
+  //         "for RPO:",
+  //         selectedRPO?.name,
+  //       );
+
+  //       // Call submitEpassport after successful booking
+  //       try {
+  //         const epassportRes = await submitEpassport({
+  //           user_id: user?.user_id || "",
+  //           item_id: response.item_id || barcode.trim(), // 🔥 fallback
+  //           total_charge: 0,
+  //           service_type: "Parcel",
+  //           vas_type: "GEP",
+  //           price: 0,
+  //           insured: 0,
+  //           booking_status: "Booked",
+  //         });
+
+  //         console.log("E-passport response:", epassportRes);
+
+  //         if (!epassportRes.success || epassportRes.status_code !== "200") {
+  //           console.warn("E-passport API returned non-success:", epassportRes);
+  //           handleCloseModal();
+  //           return;
+  //         }
+
+  //         // Set success message only when status_code is 200
+  //         setBookingSuccessMessage("E-passport submission successful");
+
+  //         // Clear success message after 3 seconds
+  //         setTimeout(() => {
+  //           setBookingSuccessMessage("");
+  //         }, 3000);
+
+  //         console.log("E-passport submission successful");
+
+  //         // Call getBrtaBookingLicence only if epassport was successful
+  //         try {
+  //           console.log("Step 3: Fetching BRTA booking licence...");
+  //           const brtaRes = await getBrtaBookingLicence();
+  //           console.log("BRTA booking licence data:", brtaRes);
+
+  //           if (!brtaRes.success) {
+  //             console.warn("BRTA API returned non-success:", brtaRes);
+  //           }
+  //         } catch (brtaErr) {
+  //           console.error("BRTA booking licence check failed:", brtaErr);
+  //         }
+  //       } catch (epassportErr) {
+  //         console.error("E-passport submission failed:", epassportErr);
+  //       }
+
+  //       handleCloseModal();
+  //     }
+  //   } catch (err) {
+  //     console.error("Booking submission failed:", err);
+  //   }
+  // };
+
   const handleOk = async (barcode: string) => {
-    if (!barcode.trim()) return;
+    if (!barcode?.trim()) {
+      setBookingErrorMessage("Barcode is required to submit.");
+      return {
+        success: false,
+        status_code: "400",
+        message: "Barcode is required",
+      };
+    }
+
+    if (!selectedRPO) {
+      setBookingErrorMessage("Please choose a RPO location before submitting.");
+      return {
+        success: false,
+        status_code: "400",
+        message: "No RPO selected",
+      };
+    }
 
     try {
-      const requestData = {
-        ...BOOKING_BASE_PAYLOAD,
-        user_id: user?.user_id || "",
-        printed_item_id: barcode.trim(),
-      };
+      console.log(
+        "handleOk invoked with barcode:",
+        barcode,
+        "selectedRPO:",
+        selectedRPO,
+      );
 
-      const response = await bookingBarcodeSubmit(requestData);
-      
+      const epassportRes = await submitEpassport({
+        userId: user?.user_id || "",
+        barcodeId: barcode.trim(),
+        serviceType: "Parcel",
+        itemWeight: BOOKING_BASE_PAYLOAD.item_weight,
+        recName: selectedRPO.name || BOOKING_BASE_PAYLOAD.rec_name,
+        recAddress: selectedRPO.address || BOOKING_BASE_PAYLOAD.rec_address,
+        recPhoneNo: selectedRPO.mobile || BOOKING_BASE_PAYLOAD.rec_contact,
+        token: token || "",
+        cityPostStatus: BOOKING_BASE_PAYLOAD.city_post_status,
+        shift: BOOKING_BASE_PAYLOAD.shift,
+        hnddevice: BOOKING_BASE_PAYLOAD.hnddevice,
+      });
 
-      // Check for errors in response
-      if (!response.success || response.status_code !== "200") {
-        const errorMessage =
-          response.status || response.message || "Booking failed";
+      console.log("E-passport response:", epassportRes);
+
+      if (!epassportRes.success || epassportRes.status_code !== "200") {
+        console.warn("E-passport API returned non-success:", epassportRes);
         setBookingErrorMessage(
-          `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`
+          epassportRes.message || "E-passport submission failed from server",
         );
-        console.error("Booking failed:", response);
-        return;
+        // keep the modal open so the user can see the error state and retry
+        return epassportRes;
       }
 
-      if (response.success) {
-        console.log(
-          "Booking processed successfully:",
-          response.item_id,
-          "for RPO:",
-          selectedRPO?.name
-        );
+      setBookingSuccessMessage("E-passport submission successful");
+      setBookingErrorMessage("");
 
-        // Call submitEpassport after successful booking
-        try {
-          const epassportRes = await submitEpassport({
-            user_id: user?.user_id || "",
-            item_id: response.item_id || barcode.trim(), // 🔥 fallback
-            total_charge: 0,
-            service_type: "Parcel",
-            vas_type: "GEP",
-            price: 0,
-            insured: 0,
-            booking_status: "Booked",
-          });
+      setTimeout(() => {
+        setBookingSuccessMessage("");
+      }, 3000);
 
-          console.log("E-passport response:", epassportRes);
+      try {
+        console.log("Step 3: Fetching BRTA booking licence...");
+        const brtaRes = await getBrtaBookingLicence();
+        console.log("BRTA booking licence data:", brtaRes);
 
-          if (!epassportRes.success || epassportRes.status_code !== "200") {
-            console.warn("E-passport API returned non-success:", epassportRes);
-            handleCloseModal();
-            return;
-          }
-
-          // Set success message only when status_code is 200
-          setBookingSuccessMessage("E-passport submission successful");
-
-          // Clear success message after 3 seconds
-          setTimeout(() => {
-            setBookingSuccessMessage("");
-          }, 3000);
-
-          console.log("E-passport submission successful");
-
-          // Call getBrtaBookingLicence only if epassport was successful
-          try {
-            console.log("Step 3: Fetching BRTA booking licence...");
-            const brtaRes = await getBrtaBookingLicence();
-            console.log("BRTA booking licence data:", brtaRes);
-
-            if (!brtaRes.success) {
-              console.warn("BRTA API returned non-success:", brtaRes);
-            }
-          } catch (brtaErr) {
-            console.error("BRTA booking licence check failed:", brtaErr);
-          }
-        } catch (epassportErr) {
-          console.error("E-passport submission failed:", epassportErr);
+        if (!brtaRes.success) {
+          console.warn("BRTA API returned non-success:", brtaRes);
         }
-
-        handleCloseModal();
+      } catch (brtaErr) {
+        console.error("BRTA booking licence check failed:", brtaErr);
       }
-    } catch (err) {
-      console.error("Booking submission failed:", err);
+
+      // close modal after success so the UI does not hide before you can see toast
+      handleCloseModal();
+
+      return epassportRes;
+    } catch (epassportErr: any) {
+      console.error("E-passport submission failed:", epassportErr);
+      return {
+        success: false,
+        message: epassportErr?.message || "E-passport submission failed",
+        status_code: "500",
+      };
     }
   };
 
@@ -269,30 +348,59 @@ const allAddresses = useMemo(() => getAllAddress(), []);
     <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
       {/* Toast Notifications */}
 
+      {/* Search Bar Section */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1">
+            <h3 className="text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+              RPO Name
+            </h3>
 
-     
-        {/* Search Bar Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 flex-1">
-              <h3 className="text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
-                RPO Name
-              </h3>
-
-              {/* Search Input */}
-              <div className="flex-1 max-w-md">
-                <Input
-                  type="text"
-                  placeholder="Search by name or code..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-9 md:h-10 lg:h-12 shadow-sm bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-300 border border-gray-300 dark:border-gray-600 rounded-md"
-                />
-              </div>
+            <div className="flex-1 max-w-md">
+              <Input
+                type="text"
+                placeholder="Search by Name or RPO..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search RPO by Name or Code"
+                startContent={
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                }
+                classNames={{
+                  inputWrapper: [
+                    "h-11",
+                    "bg-white",
+                    "dark:bg-gray-700",
+                    "border",
+                    "border-gray-300",
+                    "dark:border-gray-600",
+                    "hover:border-primary-500",
+                    "focus-within:border-primary-500",
+                    "rounded-lg",
+                    "shadow-sm",
+                    "!outline-none",
+                    "focus-within:!outline-none",
+                  ],
+                  input: ["text-sm", "!outline-none", "focus:!outline-none"],
+                }}
+              />
             </div>
+          </div>
 
-            {/* View Toggle */}
-           <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+          {/* View Toggle */}
+          <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
             <button
               onClick={() => setViewMode("grid")}
               className={`px-2 md:px-4 py-1 md:py-2 text-sm font-medium transition-colors ${
@@ -349,8 +457,8 @@ const allAddresses = useMemo(() => getAllAddress(), []);
             <button
               key={address.code}
               onClick={() => handleRPOClick(address)}
-              className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
-                   hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-primary-400 transition-all duration-200 
+              className="bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 
+                   hover:bg-gray-50 dark:hover:bg-gray-600 hover:border-primary-500 transition-all duration-200 
                    text-left flex items-center space-x-3 group"
             >
               <span
@@ -379,12 +487,12 @@ const allAddresses = useMemo(() => getAllAddress(), []);
         </div>
       )}
 
-        {/* RPO List */}
-        {viewMode === "list" && (
+      {/* RPO List */}
+      {viewMode === "list" && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-200 dark:bg-gray-900/50 py-4">
+              <thead className="bg-gray-200 dark:bg-gray-800 py-4">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">
                     SL
@@ -411,10 +519,10 @@ const allAddresses = useMemo(() => getAllAddress(), []);
                   <tr
                     key={address.code}
                     className={
-                    index % 2 === 0
-                      ? "bg-white dark:bg-gray-600/80 hover:bg-gray-100 hover:dark:bg-slate-600"
-                      : "bg-gray-50/5 dark:bg-gray-800/50 hover:bg-gray-100 hover:dark:bg-slate-700"
-                  }
+                      index % 2 === 0
+                        ? "bg-white dark:bg-gray-900/80 hover:bg-gray-100 hover:dark:bg-slate-600"
+                        : "bg-gray-50/5 dark:bg-gray-900/50 hover:bg-gray-100 hover:dark:bg-slate-700"
+                    }
                   >
                     <td className="px-6 py-3 whitespace-nowrap">
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -422,7 +530,7 @@ const allAddresses = useMemo(() => getAllAddress(), []);
                       </span>
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap">
-                      <span className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold text-primary-800 dark:text-primary-600 border border-primary-400 dark:border-primary-600">
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-semibold text-primary-500 dark:text-primary-600 border border-primary-300 dark:border-primary-600">
                         {address.code}
                       </span>
                     </td>
@@ -465,7 +573,6 @@ const allAddresses = useMemo(() => getAllAddress(), []);
           </p>
         </div>
       )}
-
 
       {/* Booking Modal */}
       <BarcodeModal

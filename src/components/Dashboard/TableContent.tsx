@@ -49,7 +49,7 @@ const columns = [
 ];
 const TableContent: React.FC<TableContentProps> = ({
   data,
-  loading,
+  loading: loading,
   error,
   passportData,
   currentPage,
@@ -110,7 +110,7 @@ const TableContent: React.FC<TableContentProps> = ({
 
           <TableBody
             items={passportData ?? []}
-            isLoading={loading}
+            isLoading={loading && (!passportData || passportData.length === 0)}
             loadingContent={
               <div className="mt-6 flex justify-center">
                 <Spinner />

@@ -101,19 +101,13 @@ export default function LoginPage() {
   ) => {
     const authData = {
       ...initialResponse,
-      // token: dmsResponse.token,
-      // branch_code: dmsResponse.branch_code,
-      // my_emts_branch_code: dmsResponse.my_emts_branch_code,
-      // rms_code: dmsResponse.rms_code,
-      // shift: dmsResponse.shift,
-      // city_post_status: dmsResponse.city_post_status,
     };
 
     // Store auth data in store
     setAuth(authData);
 
     // Store token and user_id in cookies for middleware
-    document.cookie = `auth-token=${initialResponse.token}; path=/; max-age=86400`;
+    document.cookie = `auth-token=${initialResponse.apiresponse.token}; path=/; max-age=86400`;
     document.cookie = `user_id=${initialResponse.user_id}; path=/; max-age=86400`;
     document.cookie = `branch_code=${
       initialResponse.apiresponse.branch_code || ""
@@ -149,7 +143,7 @@ export default function LoginPage() {
       // const dmsResponse = await performDmsLogin(initialResponse);
 
       // Step 3: Save auth data
-      saveAuthData(initialResponse );
+      saveAuthData(initialResponse);
 
       // Step 4: Redirect to dashboard or specified page
       router.push(redirectUrl);
@@ -163,8 +157,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
-     
-
       <Card className="relative w-full max-w-md backdrop-blur-xl bg-white/80 dark:bg-gray-800/80 border border-gray-200/60 dark:border-gray-700/60 shadow-2xl rounded-2xl p-2 md:p-6 transition-all duration-300">
         <div className="flex justify-center mb-4">
           <Image
@@ -186,9 +178,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          
-
+        <form onSubmit={handleSubmit} className="space-y-3">
           <Input
             label="Email Address"
             name="email"
@@ -222,8 +212,9 @@ export default function LoginPage() {
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </Button>
+
           {error && (
-            <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/40 border border-red-200 dark:border-red-500 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl text-sm">
+            <div className="flex items-start gap-3 bg-red-50 dark:bg-red-900/40  border-red-200 dark:border-red-500 text-red-600 dark:text-red-300 px-4 py-2 rounded-xl text-sm">
               <span className="font-semibold">Error :</span>
               <span>{error}</span>
             </div>

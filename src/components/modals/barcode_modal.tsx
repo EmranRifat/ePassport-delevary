@@ -394,7 +394,10 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               <Button
                 variant="primary"
                 className="h-[42px] w-[250px]"
-                onClick={() => handleOk(barcodeInput)}
+                onClick={async () => {
+                  const res = await handleOk(barcodeInput);
+                  console.log("handleOk result:", res);
+                }}
                 disabled={!barcodeInput}
               >
                 Ok

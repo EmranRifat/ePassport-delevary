@@ -227,7 +227,7 @@ export interface BarcodeModalProps {
   status_code?: number | string;
   handleCloseModal: () => void;
   handleScan: () => void;
-  handleOk: (barcode: string) => void;
+  handleOk: (barcode: string) => Promise<any> | void;
   getTodayDate: () => string;
   handlePrint?: () => void;
   bookingErrorMessage?: string;

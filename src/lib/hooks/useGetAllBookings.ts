@@ -9,7 +9,7 @@ export const useGetAllBookings = ({
 }: {
   token: string | undefined;
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AllBookingResponse | null>(null);
 
@@ -18,6 +18,8 @@ export const useGetAllBookings = ({
     if (!token) {
       const message = "Authentication token missing";
       setError(message);
+     setLoading(false);
+
       return Promise.reject(new Error(message));
     }
     setLoading(true);

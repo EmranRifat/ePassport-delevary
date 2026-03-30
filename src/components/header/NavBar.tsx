@@ -43,8 +43,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   if (!mounted) return null;
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-green-50 via-white to-green-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 shadow">
-      <div className="px-4">
+   
+   <header className="sticky top-0 z-50 bg-gradient-to-r from-green-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 shadow-sm ">
+    <div className="px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
             <button

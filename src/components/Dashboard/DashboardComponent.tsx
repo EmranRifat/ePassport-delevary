@@ -8,6 +8,7 @@ import {
   Input,
   Select,
   SelectItem,
+  Spinner,
 } from "@heroui/react";
 
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
@@ -206,10 +207,14 @@ const DashboardComponent = () => {
                     <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">
                       Booked
                     </p>
-                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {totalBooked}
-                    </p>
-                  </div>
+                    {loading && !dashboardData ? (
+                      <Spinner size="sm" color="primary" /> 
+                    ) : (
+                      <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                        {totalBooked}
+                      </p>
+                    )}
+                  </div> 
                 </div>
               </div>
 
@@ -234,9 +239,13 @@ const DashboardComponent = () => {
                     <p className="text-xs font-medium text-gray-600 dark:text-gray-300 uppercase">
                       Delivered
                     </p>
-                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      {totalDelivered}
-                    </p>
+                    {loading && !dashboardData ? (
+                      <Spinner size="sm" color="success" />
+                    ) : (
+                      <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        {totalDelivered}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -347,11 +356,9 @@ const DashboardComponent = () => {
             </div>
           </div>
 
-          {/* Data Table */}
-
           <TableContent
-            loading={loading}
             data={data}
+            loading={loading}
             error={error}
             passportData={passportData}
             currentPage={currentPage}
@@ -364,6 +371,7 @@ const DashboardComponent = () => {
           />
         </main>
       </Card>
+
 
       {/* Date Range Modal */}
       <DatePickerModal

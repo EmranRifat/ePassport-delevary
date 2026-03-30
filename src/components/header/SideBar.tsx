@@ -49,7 +49,7 @@ export default function SideBar() {
     text-white
     bg-gradient-to-b
     from-primary-700 via-primary-700 to-primary-800
-    dark:from-gray-900 dark:via-gray-900 dark:to-gray-800
+    dark:from-gray-800 dark:to-gray-800
     shadow-xl
   "
 >
