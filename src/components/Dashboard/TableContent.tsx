@@ -108,7 +108,7 @@ const TableContent: React.FC<TableContentProps> = ({
             {(column) => (
               <TableColumn
                 key={column.uid}
-                className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base mb-0"
+                className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base mb-0 "
               >
                 {column.name}
               </TableColumn>

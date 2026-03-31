@@ -107,8 +107,6 @@ const RenderCell = ({
       ): "success" | "danger" | "warning" | "default" => {
         switch (status.toLowerCase()) {
           case "parcel":
-            return "danger";
-          case "delivered":
             return "success";
           default:
             return "default";
@@ -167,7 +165,7 @@ const RenderCell = ({
               setSelectedRowData(data);
               setIsOpen(true);
             }}
-            className="text-blue-600 hover:underline text-sm font-medium"
+            className="text-gray-700  hover:text-blue-600  text-sm font-medium"
           >
             View
           </button>
