@@ -12,6 +12,7 @@ import {
 import { TableContentProps } from "@/lib/types";
 
 import renderCell from "./renderCell";
+import RowDetailsModal from "../modals/dashboardModal";
 
 const columns = [
   {
@@ -46,6 +47,10 @@ const columns = [
     name: "Status",
     uid: "status",
   },
+  {
+    name: "View",
+    uid: "view",
+  },
 ];
 const TableContent: React.FC<TableContentProps> = ({
   data,
@@ -58,6 +63,8 @@ const TableContent: React.FC<TableContentProps> = ({
   setCurrentPage,
   setPageSize,
 }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
   // console.log("Passport data==", passportData);
   return (
     <div>
@@ -129,16 +136,18 @@ const TableContent: React.FC<TableContentProps> = ({
             {passportData?.map((item, index) => (
               <TableRow
                 key={item.id}
-                className={
+                className={`cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
                   index % 2 === 0
                     ? "bg-white dark:bg-gray-800"
                     : "bg-gray-50 dark:bg-gray-700/30"
-                }
+                }`}
               >
                 {(columnKey) => (
                   <TableCell className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base">
                     {renderCell({
                       data: item,
+                      setSelectedRowData: setSelectedRowData,
+                      setIsOpen: setIsOpen,
                       columnKey,
                       index,
                       serial: (currentPage - 1) * pageSize,
@@ -164,6 +173,15 @@ const TableContent: React.FC<TableContentProps> = ({
           />
         )}
       </div>
+
+      <RowDetailsModal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          setSelectedRowData(null);
+        }}
+        data={selectedRowData}
+      />
     </div>
   );
 };

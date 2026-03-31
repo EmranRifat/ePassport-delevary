@@ -18,9 +18,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   handleCloseModal,
   handleScan: externalHandleScan,
   handleOk: handleOk,
-  status_code,
   barcodeLoading,
-  barcodeError,
   getTodayDate,
   handlePrint,
   bookingErrorMessage,
@@ -32,6 +30,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   const [scanBarcodeInput, setScanBarcodeInput] = React.useState("");
   const [isScanning, setIsScanning] = React.useState(false);
   const [isScanSuccess, setIsScanSuccess] = React.useState(false);
+  const [scanSuccessToast, setScanSuccessToast] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const { user } = useAuthStore();
@@ -86,6 +85,17 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [scanBarcodeInput, externalHandleScan]);
 
+  // Show in-modal scan toast 
+  React.useEffect(() => {
+    if (isScanSuccess) {
+      setScanSuccessToast("Scan successful!");
+      const toastTimer = setTimeout(() => {
+        setScanSuccessToast("");
+      }, 5000);
+      return () => clearTimeout(toastTimer);
+    }
+  }, [isScanSuccess]);
+
   if (!showModal || !selectedRPO) {
     return null;
   }
@@ -93,13 +103,12 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   const onCancel = () => {
     setBarcodeInput("");
     setIsPrinted(false);
+    setScanSuccessToast("");
     handleCloseModal();
   };
 
   const onPrint = async () => {
-    if (handlePrint) {
-      handlePrint();
-    } else {
+    
       try {
         await submitPrintStatusServer({
           user_id: user?.user_id || "",
@@ -120,8 +129,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
         console.error("Failed to submit pending booking:", error);
         // Optionally show error message to user
       }
-    }
-  };
+    };
+   
 
   const onRePrint = () => {
     // Re-print without submitting to server again
@@ -170,7 +179,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             {/* Booking Preview Card */}
             <div
               id="booking-preview-card"
-              className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-6"
+              className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-8"
             >
               {/* Header with Icons */}
               <div className="flex items-center justify-between px-5 mb-5">
@@ -259,7 +268,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* To Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   To
                 </p>
                 <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
@@ -272,7 +281,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* From Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   From
                 </p>
                 <p className="text-lg text-gray-900 dark:text-gray-100">
@@ -289,7 +298,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
             {/* Barcode Input hidden from UI, still used for scanner capture */}
             {
-              <div className="sr-only">
+              <div className="absolute opacity-0 pointer-events-none">
                 <Input
                   ref={inputRef}
                   type="text"
@@ -302,6 +311,14 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 />
               </div>
             }
+
+            {scanSuccessToast && (
+              <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg">
+                <p className="text-green-800 dark:text-green-200 text-sm font-medium text-center">
+                  {scanSuccessToast}
+                </p>
+              </div>
+            )}
 
             {/*================ all buttons here ==================*/}
 
@@ -359,7 +376,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 <Button
                   variant="primary"
                   className="h-[42px] w-[250px]"
-                  onClick={onRePrint}
+                  onClick={onPrint}
                   disabled={!barcodeInput}
                 >
                   Re-Print
@@ -372,7 +389,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 onClick={onScan}
                 disabled={isScanning}
               >
-                {!isScanning && !scanBarcodeInput.length ? (
+                {isScanning && !scanBarcodeInput.length ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                       <circle
@@ -405,6 +422,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                     const res = await handleOk(barcodeInput);
                     console.log("handleOk result:", res);
                   }}
+                  
                 >
                   Ok
                 </Button>

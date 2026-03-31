@@ -14,7 +14,7 @@ export const printBookingPreview = ({
   const printContent = document.getElementById("booking-preview-card");
   if (!printContent) return;
 
-  const printWindow = window.open("", "_blank");
+  const printWindow = window.open();
   if (!printWindow) return;
 
   printWindow.document.write(`
@@ -22,6 +22,7 @@ export const printBookingPreview = ({
 <html>
 <head>
   <title>Print Booking - ${barcodeInput}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
   <style>
     @page {
       size: 4in 6in;
@@ -30,7 +31,8 @@ export const printBookingPreview = ({
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+       font-family: 'Open Sans';
+       font-weight: 500;
       width: 4in;
       height: 6in;
       display: flex;
@@ -53,8 +55,8 @@ export const printBookingPreview = ({
     }
 
     .header img {
-      width: 38px;
-      height: 38px;
+      width: 45px;
+      height: 45px;
     }
 
     .header-center {
@@ -76,6 +78,7 @@ export const printBookingPreview = ({
     /* Issue date */
     .issue-date {
       font-size: 13px;
+      margin-left: 6px;
       margin-bottom: 12px;
     }
 
@@ -89,7 +92,7 @@ export const printBookingPreview = ({
       width: 100%;
       height: 48px;
       display: flex;
-      justify-content: center;
+       
       align-items: center;
     }
 
@@ -102,6 +105,7 @@ export const printBookingPreview = ({
     /* Address */
     .address-section {
       margin-bottom: 16px;
+      margin-left: 6px;
     }
 
     .address-title,
@@ -129,13 +133,14 @@ export const printBookingPreview = ({
   <div class="preview-card">
 
     <div class="header">
-           <img src="/bpo.png" />
-
+          
+ <img src="/passport.png" />
       <div class="header-center">
         <div class="header-title">BPO</div>
         <div class="header-subtitle">e-Passport Booking</div>
       </div>
-             <img src="/passport.png" />
+            
+              <img src="/bpo.png" />
 
     </div>
 

@@ -1,7 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 // import { Input } from "@/components/ui";
 import { useAuthStore } from "@/store";
 import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
@@ -42,7 +41,7 @@ const BookingComponent = () => {
   const [barcodeValue, setBarcodeValue] = useState("");
   const [bookingErrorMessage, setBookingErrorMessage] = useState("");
   const [bookingSuccessMessage, setBookingSuccessMessage] = useState("");
-   const [isScanComplete, setIsScanComplete] =  useState(false);
+
   const allAddresses = getAllAddress();
   const filteredAddresses = allAddresses.filter(
     (address) =>
@@ -136,16 +135,13 @@ const BookingComponent = () => {
   const handleScan = () => {
     // Toggle scanning state in modal
     console.log("Scan triggered");
-    setIsScanComplete(true);
   };
 
   // *****************submit Action after ok button in modal************//
 
   // first api call for booking submission
 
-  const {
-    bookingBarcodeSubmit,
-  } = useSubmitBookingData(token);
+  // const { bookingBarcodeSubmit } = useSubmit BookingData(token);
 
   // second  api call for booking submission
 
@@ -309,7 +305,7 @@ const BookingComponent = () => {
 
       setTimeout(() => {
         setBookingSuccessMessage("");
-      }, 3000);
+      }, 5000);
 
       try {
         console.log("Step 3: Fetching BRTA booking licence...");
@@ -324,7 +320,9 @@ const BookingComponent = () => {
       }
 
       // close modal after success so the UI does not hide before you can see toast
-      handleCloseModal();
+      setTimeout(() => {
+        handleCloseModal();
+      }, 5000);
 
       return epassportRes;
     } catch (epassportErr: any) {
