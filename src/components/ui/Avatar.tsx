@@ -8,7 +8,7 @@ interface AvatarProps {
 const sizeMap = {
   sm: "w-8 h-8 text-sm",
   md: "w-9 h-9 text-sm",
-  lg: "w-11 h-11 text-base",
+  lg: "w-9 h-9 md:w-11 md:h-11 text-sm md:text-base",
 };
 
 const Avatar = ({ name = "User", size = "md" }: AvatarProps) => {

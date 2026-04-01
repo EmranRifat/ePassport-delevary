@@ -6,10 +6,12 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  Button,
+   
 } from "@heroui/react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { printBookingPreview } from "@/utils/print-booking";
+import { Button } from "../ui";
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
 
@@ -59,7 +61,192 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
   data,
 }) => {
   console.log("modal data>>>>>>>", data);
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
+  const printBookingPreview = () => {
+    const printContent = document.getElementById("booking-preview-card");
+    if (!printContent) return;
+
+    const printWindow = window.open();
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Print Booking - ${data.barcode}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: 4in 6in;
+      margin: 0;
+    }
+
+    body {
+      margin: 0;
+       font-family: 'Open Sans';
+       font-weight: 600;
+       font-size: 16px;
+      width: 4in;
+      height: 6in;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .preview-card {
+      width: 3.2in;
+      padding-top: 0.4in;
+      color: #000;
+    }
+
+    /* Header */
+    .header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 16px;
+      font-weight: 600;
+
+    }
+
+    .header img {
+      width: 45px;
+      height: 45px;
+    }
+
+    .header-center {
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .header-title {
+      font-size: 16px;
+      margin: 0;
+      font-weight: normal;
+    }
+
+    .header-subtitle {
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* Issue date */
+    .issue-date {
+      font-size: 13px;
+      margin-left: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* Barcode */
+    .barcode-section {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .barcode-container {
+      width: 100%;
+      height: 48px;
+      display: flex;
+       
+      align-items: center;
+    }
+
+    .barcode-text {
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    /* Address */
+    .address-section {
+      margin-bottom: 16px;
+      margin-left: 6px;
+    }
+
+    .address-title,
+    .from-title {
+      margin: 0 0 4px 0;
+    }
+
+    .address-text {
+      margin: 2px 0;
+      line-height: 1.3;
+    }
+
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="preview-card">
+
+    <div class="header">
+          
+ <img src="/passport.png" />
+      <div class="header-center">
+        <div class="header-title">BPO</div>
+        <div class="header-subtitle">e-Passport Booking</div>
+      </div>
+            
+              <img src="/bpo.png" />
+
+    </div>
+
+    <div class="issue-date">
+      Issue Date: ${getTodayDate()}
+    </div>
+
+    <div class="barcode-section">
+      <div class="barcode-container">
+        ${printContent.querySelector(".barcode-container")?.innerHTML || ""}
+      </div>
+      <div class="barcode-text">${data.barcode}</div>
+    </div>
+
+    <div class="address-section">
+      <div class="address-title">To</div>
+      <div class="address-text">${data.rpo_address}</div>
+      <div class="address-text">Phone: ${data.phone}</div>
+    </div>
+
+    <div class="address-section">
+      <div class="from-title">From</div>
+      <div class="address-text">Passport Personalization Complex</div>
+      <div class="address-text">Plot-4, Road-1, Sector-16(i), Diabari, Uttara</div>
+      <div class="address-text">Dhaka-1711</div>
+    </div>
+
+  </div>
+
+  <script>
+  window.onload = async () => {
+    await document.fonts.ready; // wait for Open Sans to load
+    window.print();
+    window.onafterprint = () => window.close();
+  };
+</script>
+</body>
+</html>
+`);
+    printWindow.document.close();
+  };
+  const onPrint = () => {
+    // Print on success
+    printBookingPreview();
+  };
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose} placement="center" size="2xl">
       <ModalContent>
@@ -69,7 +256,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
               Passport Details
             </ModalHeader>
 
-            <ModalBody className="py-6 px-6">
+            <ModalBody className="py-2 px-6">
               {/* Title */}
               <h2 className="text-center text-lg font-semibold mb-4">
                 Barcode Already Booked
@@ -177,22 +364,10 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
               </div>
 
               {/* Buttons */}
-              <div className="flex justify-between gap-4 mt-6">
-                <Button
-                  className="w-full bg-purple-500 text-white"
-                  onPress={close}
-                >
-                  Cancel
-                </Button>
+              <div className="flex justify-between gap-4 mt-4">
+                <Button variant="danger"   onClick={close}>cancel</Button>
 
-                <Button
-                  className="w-full bg-purple-500 text-white"
-                  onPress={() => {
-                    window.print(); // or your print function
-                  }}
-                >
-                  Print
-                </Button>
+                <Button variant="primary" onClick={onPrint}>print</Button>
               </div>
             </ModalBody>
           </div>

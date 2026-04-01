@@ -7,7 +7,7 @@ import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
 import BarcodeModal from "@/components/modals/barcode_modal";
 import { useGetBarcodeData } from "@/lib/hooks/useGetBarcodeInfo";
 import { useGetMissingBarcode } from "@/lib/hooks/useMisBarcode";
-import { useSubmitBookingData } from "@/lib/hooks/usePostBookingData";
+// import { useSubmitBookingData } from "@/lib/hooks/usePostBookingData";
 import { BOOKING_BASE_PAYLOAD } from "./BookingBasePayload";
 import Cookies from "js-cookie";
 import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
@@ -300,12 +300,13 @@ const BookingComponent = () => {
         return epassportRes;
       }
 
-      setBookingSuccessMessage("E-passport submission successful");
-      setBookingErrorMessage("");
-
+      setTimeout(() => {
+        setBookingSuccessMessage("E-passport submission successful");
+        setBookingErrorMessage("");
+      }, 0);
       setTimeout(() => {
         setBookingSuccessMessage("");
-      }, 5000);
+      }, 3000);
 
       try {
         console.log("Step 3: Fetching BRTA booking licence...");

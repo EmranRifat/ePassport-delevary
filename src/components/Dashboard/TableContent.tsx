@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   TableHeader,
   TableColumn,
@@ -47,10 +47,6 @@ const columns = [
     name: "Status",
     uid: "status",
   },
-  {
-    name: "View",
-    uid: "view",
-  },
 ];
 const TableContent: React.FC<TableContentProps> = ({
   data,
@@ -66,6 +62,16 @@ const TableContent: React.FC<TableContentProps> = ({
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
   // console.log("Passport data==", passportData);
+
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const handleCopy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+
+    setTimeout(() => {
+      setCopiedKey(null);
+    }, 1500); // 1.5 sec পরে hide
+  };
   return (
     <div>
       {/* Pagination Controls */}
@@ -136,6 +142,10 @@ const TableContent: React.FC<TableContentProps> = ({
             {passportData?.map((item, index) => (
               <TableRow
                 key={item.id}
+                onClick={() => {
+                  setSelectedRowData(item);
+                  setIsOpen(true);
+                }}
                 className={`cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
                   index % 2 === 0
                     ? "bg-white dark:bg-gray-800"
@@ -146,11 +156,11 @@ const TableContent: React.FC<TableContentProps> = ({
                   <TableCell className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base">
                     {renderCell({
                       data: item,
-                      setSelectedRowData: setSelectedRowData,
-                      setIsOpen: setIsOpen,
                       columnKey,
                       index,
                       serial: (currentPage - 1) * pageSize,
+                      copiedKey,
+                      handleCopy,
                     })}
                   </TableCell>
                 )}

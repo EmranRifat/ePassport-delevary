@@ -30,6 +30,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
   const themeHandler = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+     setMobileMenuOpen((prev) => !prev)
   };
 
   const avatarHandler = () => {
@@ -55,12 +56,12 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
               <Menu size={24} />
             </button>
 
-            <div className="w-7 sm:w-8 md:w-9 md:h-10">
+            <div className="w-7 sm:w-8 md:w-12 md:h-12">
               <Image
                 src="/bpo.png"
                 alt="BPO"
-                width={40}
-                height={40}
+                width={45}
+                height={45}
                 className="w-full h-full object-contain"
               />
             </div>
@@ -75,54 +76,29 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </div>
 
           {/* Right */}
-          <div className="flex md:hidden gap-2">
-            <div>
+          <div className="flex mr-4">
+            {/* <div>
               <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">
                 {user?.name || user?.user_id || "User"}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 Welcome
               </p>
-            </div>
+            </div> */}
             <button
               onClick={avatarHandler}
-              className="md:hidden rounded-full focus:outline-none 
+              className="rounded-full focus:outline-none 
                     hover:ring-2 hover:ring-purple-400 transition"
             >
-              <Avatar size="md" name={user?.name || user?.user_id} />
+              <Avatar size="lg" name={user?.name || user?.user_id} />
             </button>
-          </div>
-          <div className="hidden md:flex items-center space-x-3">
-            <button
-              onClick={themeHandler}
-              className="p-2 md:p-3 rounded-full bg-gray-200 dark:bg-gray-600"
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? (
-                <Sun size={18} className="text-yellow-400" />
-              ) : (
-                <Moon size={18} className="text-gray-700" />
-              )}
-            </button>
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {user?.name || user?.user_id || "User"}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Welcome
-              </p>
-            </div>
-
-            <Button variant="danger" size="sm" onClick={handleLogout}>
-              Logout
-            </Button>
           </div>
         </div>
       </div>
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-16 right-4 w-48 rounded-xl bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className=" absolute top-16 right-4 w-48 rounded-xl bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 z-50">
           <div className="flex flex-col p-2 space-y-2">
             {/* Theme Toggle */}
             <button

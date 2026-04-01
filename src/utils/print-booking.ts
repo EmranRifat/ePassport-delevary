@@ -33,6 +33,7 @@ export const printBookingPreview = ({
       margin: 0;
        font-family: 'Open Sans';
        font-weight: 500;
+       font-size: 16px;
       width: 4in;
       height: 6in;
       display: flex;
@@ -52,6 +53,9 @@ export const printBookingPreview = ({
       grid-template-columns: auto 1fr auto;
       align-items: center;
       margin-bottom: 14px;
+      font-size: 16px;
+       
+
     }
 
     .header img {
@@ -97,7 +101,6 @@ export const printBookingPreview = ({
     }
 
     .barcode-text {
-      font-size: 14px;
       margin-top: 6px;
       letter-spacing: 1px;
     }
@@ -110,12 +113,10 @@ export const printBookingPreview = ({
 
     .address-title,
     .from-title {
-      font-size: 14px;
       margin: 0 0 4px 0;
     }
 
     .address-text {
-      font-size: 14px;
       margin: 2px 0;
       line-height: 1.3;
     }
@@ -171,11 +172,12 @@ export const printBookingPreview = ({
   </div>
 
   <script>
-    window.onload = () => {
-      window.print();
-      window.onafterprint = () => window.close();
-    };
-  </script>
+  window.onload = async () => {
+    await document.fonts.ready; // wait for Open Sans to load
+    window.print();
+    window.onafterprint = () => window.close();
+  };
+</script>
 </body>
 </html>
 `);
