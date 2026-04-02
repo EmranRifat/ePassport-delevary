@@ -152,10 +152,10 @@ const RenderCell = ({
       const service_type = data.service_type || "-";
       const getServiceTypeColor = (
         status: string,
-      ): "success" | "danger" | "warning" | "default" => {
+      ): "success" |"secondary" | "danger" | "warning" | "default" => {
         switch (status.toLowerCase()) {
           case "parcel":
-            return "warning";
+            return "secondary";
           default:
             return "default";
         }
@@ -184,11 +184,13 @@ const RenderCell = ({
       const status = data.booking_status || "-";
       const getStatusColor = (
         status: string,
-      ): "success" | "danger" | "warning" | "default" => {
+      ): "primary" | "success" | "danger" | "warning" | "default" => {
         switch (status.toLowerCase()) {
           case "booked":
-            return "success";
+            return "primary";
           case "delivered":
+            return "success";
+             case "pending":
             return "warning";
           default:
             return "default";

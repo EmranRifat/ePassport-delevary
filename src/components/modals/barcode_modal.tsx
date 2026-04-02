@@ -20,7 +20,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   handleOk: handleOk,
   barcodeLoading,
   getTodayDate,
-  handlePrint,
   bookingErrorMessage,
   bookingSuccessMessage,
 }) => {

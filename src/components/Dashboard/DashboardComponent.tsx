@@ -211,7 +211,7 @@ const DashboardComponent = () => {
                       <Spinner size="sm" color="primary" /> 
                     ) : (
                       <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {totalBooked}
+                        {data?.total_booked || "0"}
                       </p>
                     )}
                   </div> 
@@ -243,7 +243,7 @@ const DashboardComponent = () => {
                       <Spinner size="sm" color="success" />
                     ) : (
                       <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {totalDelivered}
+                        {data?.total_delivered || "0"}
                       </p>
                     )}
                   </div>
