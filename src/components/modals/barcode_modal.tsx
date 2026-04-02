@@ -25,14 +25,16 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 }) => {
   const { submitPrintStatusServer, loading: submitting } = usePrintServerRes();
   const [isPrinted, setIsPrinted] = React.useState(false);
+  const [isPrintTrigger, setIsPrintTrigger] = React.useState(false);
   const [barcodeInput, setBarcodeInput] = React.useState("");
   const [scanBarcodeInput, setScanBarcodeInput] = React.useState("");
   const [isScanning, setIsScanning] = React.useState(false);
   const [isScanSuccess, setIsScanSuccess] = React.useState(false);
+
   const [scanSuccessToast, setScanSuccessToast] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [showScanButton, setShowScanButton] = React.useState(false);
-  const [okCountdown, setOkCountdown] = React.useState(10); // 10 seconds countdown
+  const [okCountdown, setOkCountdown] = React.useState(5); // 5 seconds countdown
   const [showSuccessToast, setShowSuccessToast] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
 
@@ -48,8 +50,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       setIsScanning(false);
       setIsScanSuccess(false);
       setIsPrinted(false);
+      setIsPrintTrigger(false);
       setShowScanButton(false);
-      setOkCountdown(10);
+      setOkCountdown(5);
       setIsSubmitted(false); // 🔥 ADD THIS LINE
       if (autoOkTimerRef.current) {
         clearInterval(autoOkTimerRef.current);
@@ -59,19 +62,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [showModal, initialBarcode]);
 
-  // Update internal barcode when initialBarcode prop changes while modal is open
-  React.useEffect(() => {
-    if (showModal && initialBarcode) {
-      setBarcodeInput(initialBarcode);
-    }
-  }, [initialBarcode, showModal]);
-
-  // Auto-activate scanning when scanBarcodeInput has value
-  React.useEffect(() => {
-    if (scanBarcodeInput && !isScanning) {
-      setIsScanning(true);
-    }
-  }, [scanBarcodeInput, isScanning]);
+  // console.log("isSubmitted -----",isSubmitted)
 
   // Auto-focus input when scanning mode is active (like focusNode in Flutter)
   React.useEffect(() => {
@@ -100,23 +91,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [isScanSuccess]);
 
-
-
-
-
-
-console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
-
-
-
-
-
-
-
-
-
-
-
   // Show in-modal scan toast
   React.useEffect(() => {
     if (isScanSuccess) {
@@ -130,7 +104,7 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
 
   React.useEffect(() => {
     if (isScanSuccess && !isSubmitted) {
-      setOkCountdown(10);
+      setOkCountdown(5); // reset countdown on new scan
 
       const timer = setInterval(() => {
         setOkCountdown((prev) => {
@@ -156,9 +130,6 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
     }
   }, [isScanSuccess, isSubmitted]);
 
-
-
-
   React.useEffect(() => {
     if (bookingSuccessMessage) {
       setShowSuccessToast(true);
@@ -168,6 +139,14 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
       }, 1500);
     }
   }, [bookingSuccessMessage]);
+
+  React.useEffect(() => {
+    if (isSubmitted) {
+      setTimeout(() => {
+        handleCloseModal();
+      }, 500);
+    }
+  }, [isSubmitted]);
 
   if (!showModal || !selectedRPO) {
     return null;
@@ -181,13 +160,13 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
     setIsScanning(false);
     setIsScanSuccess(false);
     if (autoOkTimerRef.current) {
-    clearInterval(autoOkTimerRef.current);
-    autoOkTimerRef.current = null;
-  }
+      clearInterval(autoOkTimerRef.current);
+      autoOkTimerRef.current = null;
+    }
     handleCloseModal();
   };
 
-
+  // Handle print action - submit to server, then print on success
   const onPrint = async () => {
     try {
       await submitPrintStatusServer({
@@ -205,6 +184,7 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
 
       // Enable scan button after print
       setIsPrinted(true);
+      setIsPrintTrigger(true);
       setShowScanButton(true);
     } catch (error) {
       console.error("Failed to submit pending booking:", error);
@@ -221,12 +201,13 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
     });
   };
 
-  
   const onScan = () => {
-    setIsPrinted(false);
     setScanBarcodeInput(""); // Clear scan input before new scan
     setIsScanSuccess(false);
     setIsScanning(true);
+    setIsPrinted(true);
+
+    setIsPrintTrigger(false); // Keep Cancel button active during scan
     // Focus input immediately for handheld scanner
     setTimeout(() => {
       if (inputRef.current) {
@@ -234,7 +215,6 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
       }
     }, 50);
   };
-
 
   const handleBarcodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -246,6 +226,11 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
     if (value && !isScanning) {
       setIsScanning(true);
     }
+  };
+
+  const handleInputBlur = () => {
+    // When cursor leaves input, show scan button again
+    setIsScanning(false);
   };
 
   const handleSubmitOk = async () => {
@@ -408,6 +393,7 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
 
             {/* Barcode Input hidden from UI, still used for scanner capture */}
             {
+              // className="absolute opacity-0 pointer-events-none"
               <div className="absolute opacity-0 pointer-events-none">
                 <Input
                   ref={inputRef}
@@ -415,6 +401,7 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
                   placeholder="Ready to scan..."
                   value={scanBarcodeInput}
                   onChange={handleBarcodeInputChange}
+                  onBlur={handleInputBlur}
                   className="w-full h-full border border-gray-300 dark:border-gray-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg font-semibold dark:bg-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                   autoComplete="off"
                   autoFocus
@@ -423,11 +410,9 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
             }
 
             {scanSuccessToast && (
-              <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg">
-                <p className="text-green-800 dark:text-green-200 text-sm font-medium text-center">
-                  {scanSuccessToast}
-                </p>
-              </div>
+              <p className="mb-4 p-2 w-full text-center text-sm text-green-700 rounded bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700">
+                {scanSuccessToast}
+              </p>
             )}
 
             {/*================ all buttons here ==================*/}
@@ -447,6 +432,7 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
                 variant="primary"
                 className="h-[42px] w-[250px]"
                 onClick={onCancel}
+                disabled={isPrintTrigger}
               >
                 Cancel
               </Button>
@@ -482,17 +468,17 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
                     "Print"
                   )}
                 </Button>
-              ) : (
+              ) : !isScanSuccess ? (
                 <Button
                   variant="primary"
                   className="h-[42px] w-[250px]"
                   onClick={onRePrint}
-                  disabled={!barcodeInput}
+                  disabled={!barcodeInput || isScanning}
                 >
                   Re-Print
                 </Button>
-              )}
-              {showScanButton && (
+              ) : null}
+              {showScanButton && !isScanSuccess && (
                 <Button
                   variant="primary"
                   className="h-[42px] w-[250px]"
@@ -524,13 +510,14 @@ console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
                   )}
                 </Button>
               )}
-              {isScanSuccess && !isSubmitted && (
+              {/* {isScanSuccess && !isSubmitted && ( */}
+              {isScanSuccess && (
                 <Button
                   variant="primary"
                   className="h-[42px] w-[250px]"
                   onClick={handleSubmitOk}
                 >
-                  Ok {okCountdown > 0 ? `(${okCountdown})` : ""}
+                  Ok {okCountdown > -1 ? `(${okCountdown})` : ""}
                 </Button>
               )}
             </div>
