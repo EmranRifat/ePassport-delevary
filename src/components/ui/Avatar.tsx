@@ -18,9 +18,9 @@ const Avatar = ({ name = "User", size = "md" }: AvatarProps) => {
     <div
       className={`${sizeMap[size]} 
         rounded-full 
-        bg-gradient-to-br from-purple-500 to-indigo-600
+        bg-green-200 dark:bg-gray-400
         flex items-center justify-center
-        font-semibold text-white
+        font-semibold text-gray-800
         select-none`}
     >
       {initial}

@@ -20,7 +20,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   handleOk: handleOk,
   barcodeLoading,
   getTodayDate,
-  bookingErrorMessage,
+  handlePrint,
   bookingSuccessMessage,
 }) => {
   const { submitPrintStatusServer, loading: submitting } = usePrintServerRes();
@@ -32,7 +32,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   const [scanSuccessToast, setScanSuccessToast] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [showScanButton, setShowScanButton] = React.useState(false);
-  const [okCountdown, setOkCountdown] = React.useState(5); // 5 seconds countdown
+  const [okCountdown, setOkCountdown] = React.useState(10); // 10 seconds countdown
   const [showSuccessToast, setShowSuccessToast] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
 
@@ -49,7 +49,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       setIsScanSuccess(false);
       setIsPrinted(false);
       setShowScanButton(false);
-      setOkCountdown(5);
+      setOkCountdown(10);
       setIsSubmitted(false); // 🔥 ADD THIS LINE
       if (autoOkTimerRef.current) {
         clearInterval(autoOkTimerRef.current);
@@ -100,6 +100,23 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [isScanSuccess]);
 
+
+
+
+
+
+console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
+
+
+
+
+
+
+
+
+
+
+
   // Show in-modal scan toast
   React.useEffect(() => {
     if (isScanSuccess) {
@@ -113,14 +130,17 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
   React.useEffect(() => {
     if (isScanSuccess && !isSubmitted) {
-      setOkCountdown(5);
+      setOkCountdown(10);
 
       const timer = setInterval(() => {
         setOkCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
             setIsSubmitted(true); // stop repeat
-            handleSubmitOk(); // use wrapper
+            // Schedule handleSubmitOk to run after render using queueMicrotask
+            queueMicrotask(() => {
+              handleSubmitOk();
+            });
             return 0;
           }
           return prev - 1;
@@ -135,6 +155,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       };
     }
   }, [isScanSuccess, isSubmitted]);
+
+
+
 
   React.useEffect(() => {
     if (bookingSuccessMessage) {
@@ -163,6 +186,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   }
     handleCloseModal();
   };
+
 
   const onPrint = async () => {
     try {
@@ -197,6 +221,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     });
   };
 
+  
   const onScan = () => {
     setIsPrinted(false);
     setScanBarcodeInput(""); // Clear scan input before new scan
@@ -209,6 +234,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       }
     }, 50);
   };
+
 
   const handleBarcodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -407,13 +433,13 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             {/*================ all buttons here ==================*/}
 
             {/* Booking Error Message Display */}
-            {bookingErrorMessage && (
+            {/* {bookingErrorMessage && (
               <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg">
                 <p className="text-red-700 dark:text-red-400 text-sm font-medium text-center">
                   {bookingErrorMessage}
                 </p>
               </div>
-            )}
+            )} */}
 
             {/* Action Buttons */}
             <div className="flex items-center justify-center gap-5">

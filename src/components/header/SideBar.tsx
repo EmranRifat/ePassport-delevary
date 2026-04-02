@@ -46,19 +46,18 @@ export default function SideBar() {
    <aside
   className="
     h-full w-64 flex flex-col
-    text-white
-    bg-gradient-to-b
-    from-primary-700 via-primary-700 to-primary-800
-    dark:from-gray-800 dark:to-gray-800
+    text-gray-900 dark:text-gray-100
+    bg-white dark:bg-gray-800
+     
     shadow-xl
   "
 >
   {/* 🔹 Header */}
-  <div className="px-5 py-4 border-b border-white/10 dark:border-white/5">
+  <div className="px-5 py-4 border-b border-gray-200 dark:border-white/5">
     <h2 className="text-lg font-semibold tracking-wide">
       BPO
     </h2>
-    <p className="text-xs text-primary-200 dark:text-gray-400">
+    <p className="text-xs lg:text-sm text-gray-800  dark:text-gray-400">
       ePassport Portal
     </p>
   </div>
@@ -77,8 +76,8 @@ export default function SideBar() {
             text-sm font-medium transition-all duration-200
             ${
               isActive
-                ? "bg-white/15 dark:bg-white/10 border-l-4 border-white pl-4"
-                : "hover:bg-white/10 dark:hover:bg-white/5"
+                ? "bg-blue-400 dark:bg-white/10 border-l-4 border-white pl-4"
+                : "hover:bg-blue-200 dark:hover:bg-white/5"
             }
           `}
         >
@@ -88,10 +87,10 @@ export default function SideBar() {
               transition-colors
               ${
                 isActive
-                  ? "text-white"
-                  : "text-primary-200 dark:text-gray-400"
+                  ? "text-gray-800 dark:text-gray-100"
+                  : "text-gray-800 dark:text-gray-100"
               }
-              group-hover:text-white
+              group-hover:text-blue-800 dark:group-hover:text-gray-100
             `}
           >
             {item.icon}

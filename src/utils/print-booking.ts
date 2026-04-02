@@ -11,18 +11,12 @@ export const printBookingPreview = ({
   selectedRPO,
   getTodayDate,
 }: PrintBookingParams): void => {
-  const printContent = document.getElementById("booking-preview-card");
-  if (!printContent) return;
-
-  const printWindow = window.open();
-  if (!printWindow) return;
-
-  printWindow.document.write(`
+  const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head>
   <title>Print Booking - ${barcodeInput}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     @page {
       size: 4in 6in;
@@ -31,17 +25,18 @@ export const printBookingPreview = ({
 
     body {
       margin: 0;
-       font-family: 'Open Sans';
-       font-weight: 500;
-       font-size: 16px;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
       width: 4in;
       height: 6in;
       display: flex;
       justify-content: center;
       align-items: flex-start;
+      background: white;
     }
 
-    .preview-card {
+    .print-card {
       width: 3.2in;
       padding-top: 0.4in;
       color: #000;
@@ -53,9 +48,7 @@ export const printBookingPreview = ({
       grid-template-columns: auto 1fr auto;
       align-items: center;
       margin-bottom: 14px;
-      font-size: 16px;
-       
-
+      gap: 10px;
     }
 
     .header img {
@@ -69,9 +62,9 @@ export const printBookingPreview = ({
     }
 
     .header-title {
-      font-size: 16px;
+      font-size: 18px;
       margin: 0;
-      font-weight: normal;
+      font-weight: bold;
     }
 
     .header-subtitle {
@@ -81,9 +74,10 @@ export const printBookingPreview = ({
 
     /* Issue date */
     .issue-date {
-      font-size: 13px;
+      font-size: 12px;
       margin-left: 6px;
       margin-bottom: 12px;
+      text-align: center;
     }
 
     /* Barcode */
@@ -94,31 +88,35 @@ export const printBookingPreview = ({
 
     .barcode-container {
       width: 100%;
-      height: 48px;
+      height: auto;
       display: flex;
-       
+      justify-content: center;
       align-items: center;
+      margin-bottom: 8px;
     }
 
     .barcode-text {
-      margin-top: 6px;
-      letter-spacing: 1px;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 2px;
     }
 
     /* Address */
     .address-section {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       margin-left: 6px;
+      font-size: 12px;
     }
 
     .address-title,
     .from-title {
+      font-weight: bold;
       margin: 0 0 4px 0;
     }
 
     .address-text {
       margin: 2px 0;
-      line-height: 1.3;
+      line-height: 1.4;
     }
 
     @media print {
@@ -131,18 +129,15 @@ export const printBookingPreview = ({
 </head>
 
 <body>
-  <div class="preview-card">
+  <div class="print-card">
 
     <div class="header">
-          
- <img src="/passport.png" />
+      <img src="/passport.png" alt="Passport" />
       <div class="header-center">
         <div class="header-title">BPO</div>
         <div class="header-subtitle">e-Passport Booking</div>
       </div>
-            
-              <img src="/bpo.png" />
-
+      <img src="/bpo.png" alt="BPO" />
     </div>
 
     <div class="issue-date">
@@ -151,7 +146,7 @@ export const printBookingPreview = ({
 
     <div class="barcode-section">
       <div class="barcode-container">
-        ${printContent.querySelector(".barcode-container")?.innerHTML || ""}
+        <svg id="barcode"></svg>
       </div>
       <div class="barcode-text">${barcodeInput}</div>
     </div>
@@ -172,14 +167,53 @@ export const printBookingPreview = ({
   </div>
 
   <script>
-  window.onload = async () => {
-    await document.fonts.ready; // wait for Open Sans to load
-    window.print();
-    window.onafterprint = () => window.close();
+  const cleanupIframe = () => {
+    // Signal to parent to remove iframe
+    window.top?.postMessage({ type: 'print-complete' }, '*');
+  };
+
+  window.onafterprint = cleanupIframe;
+  
+  window.onload = () => {
+    // Generate barcode
+    JsBarcode("#barcode", "${barcodeInput}", {
+      format: "CODE128",
+      width: 2.6,
+      height: 55,
+      displayValue: false
+    });
+    
+    // Trigger print immediately after barcode renders
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
 </script>
 </body>
 </html>
-`);
-  printWindow.document.close();
+`;
+
+  // Create a hidden iframe
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  document.body.appendChild(iframe);
+
+  // Write content to iframe
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (iframeDoc) {
+    iframeDoc.open();
+    iframeDoc.write(htmlContent);
+    iframeDoc.close();
+
+    // Clean up iframe after print dialog closes (with delay to account for print dialog duration)
+    setTimeout(() => {
+      try {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      } catch (error) {
+        // Silently fail if iframe is already removed
+      }
+    }, 3000);
+  }
 };
