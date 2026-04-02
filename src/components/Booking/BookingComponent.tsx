@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 // import { Input } from "@/components/ui";
 import { useAuthStore } from "@/store";
 import { getAllAddress, RegionalPassportOffice } from "@/utils/address-util";
 import BarcodeModal from "@/components/modals/barcode_modal";
 import { useGetBarcodeData } from "@/lib/hooks/useGetBarcodeInfo";
 import { useGetMissingBarcode } from "@/lib/hooks/useMisBarcode";
-import { useSubmitBookingData } from "@/lib/hooks/usePostBookingData";
+// import { useSubmitBookingData } from "@/lib/hooks/usePostBookingData";
 import { BOOKING_BASE_PAYLOAD } from "./BookingBasePayload";
 import Cookies from "js-cookie";
 import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
@@ -21,7 +20,7 @@ const token = Cookies.get("auth-token");
 // const token = Cookies.get("access");
 
 const BookingComponent = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const { user } = useAuthStore();
 
   const {
@@ -41,7 +40,8 @@ const BookingComponent = () => {
   const [showModal, setShowModal] = useState(false);
   const [barcodeValue, setBarcodeValue] = useState("");
   const [bookingErrorMessage, setBookingErrorMessage] = useState("");
-  const [bookingSuccessMessage, setBookingSuccessMessage] = useState("");
+  const [bookingMessage, setBookingMessage] = useState("");
+
   const allAddresses = getAllAddress();
   const filteredAddresses = allAddresses.filter(
     (address) =>
@@ -51,8 +51,8 @@ const BookingComponent = () => {
 
   const {
     storeMissingData,
-    loading: missingDataLoading,
-    error: missingDataError,
+    // loading: missingDataLoading,
+    // error: missingDataError,
   } = useStoreMissingData(token);
 
   // handle RPO click button trigger  ============= //======== open modal and fetch barcode
@@ -129,7 +129,7 @@ const BookingComponent = () => {
     setSelectedRPO(null);
     setBarcodeValue("");
     setBookingErrorMessage("");
-    setBookingSuccessMessage("");
+    setBookingMessage("");
   };
 
   const handleScan = () => {
@@ -141,18 +141,19 @@ const BookingComponent = () => {
 
   // first api call for booking submission
 
-  const {
-    bookingBarcodeSubmit,
-    loading: bookingLoading,
-    error: bookingError,
-  } = useSubmitBookingData(token);
+  // const { bookingBarcodeSubmit } = useSubmit BookingData(token);
 
   // second  api call for booking submission
 
-  const { submitEpassport, loading, error } = useSubmitEpassport(token);
-  console.log("submitEpassport data-->", submitEpassport);
-  console.log("submitEpassport error-->", error);
+  const {
+    submitEpassport,
+    loading,
+    error,
+    data: epassportData,
+  } = useSubmitEpassport(token);
   // Third API Call for BRTA Booking Licence Check
+
+  // console.log("E-passport data 333:", epassportData);
 
   const {
     getBrtaBookingLicence,
@@ -160,97 +161,6 @@ const BookingComponent = () => {
     error: brtaError,
     data: brtaData,
   } = useGetBrtaBookingLicence(token);
-
-  // const res = await getBrtaBookingLicence();
-
-  // ===========================================================================
-  // handle Ok button click in modal
-  // ==========================================================================
-
-  // const handleOk = async (barcode: string) => {
-  //   if (!barcode.trim()) return;
-
-  //   try {
-  //     const requestData = {
-  //       ...BOOKING_BASE_PAYLOAD,
-  //       user_id: user?.user_id || "",
-  //       printed_item_id: barcode.trim(),
-  //     };
-
-  //     const response = await bookingBarcodeSubmit(requestData);
-
-  //     // Check for errors in response
-  //     if (!response.success || response.status_code !== "200") {
-  //       const errorMessage =
-  //         response.status || response.message || "Booking failed";
-  //       setBookingErrorMessage(
-  //         `${errorMessage} (Status Code: ${response.status_code || "Unknown"})`,
-  //       );
-  //       console.error("Booking failed:", response);
-  //       return;
-  //     }
-
-  //     if (response.success) {
-  //       console.log(
-  //         "Booking processed successfully:",
-  //         response.item_id,
-  //         "for RPO:",
-  //         selectedRPO?.name,
-  //       );
-
-  //       // Call submitEpassport after successful booking
-  //       try {
-  //         const epassportRes = await submitEpassport({
-  //           user_id: user?.user_id || "",
-  //           item_id: response.item_id || barcode.trim(), // 🔥 fallback
-  //           total_charge: 0,
-  //           service_type: "Parcel",
-  //           vas_type: "GEP",
-  //           price: 0,
-  //           insured: 0,
-  //           booking_status: "Booked",
-  //         });
-
-  //         console.log("E-passport response:", epassportRes);
-
-  //         if (!epassportRes.success || epassportRes.status_code !== "200") {
-  //           console.warn("E-passport API returned non-success:", epassportRes);
-  //           handleCloseModal();
-  //           return;
-  //         }
-
-  //         // Set success message only when status_code is 200
-  //         setBookingSuccessMessage("E-passport submission successful");
-
-  //         // Clear success message after 3 seconds
-  //         setTimeout(() => {
-  //           setBookingSuccessMessage("");
-  //         }, 3000);
-
-  //         console.log("E-passport submission successful");
-
-  //         // Call getBrtaBookingLicence only if epassport was successful
-  //         try {
-  //           console.log("Step 3: Fetching BRTA booking licence...");
-  //           const brtaRes = await getBrtaBookingLicence();
-  //           console.log("BRTA booking licence data:", brtaRes);
-
-  //           if (!brtaRes.success) {
-  //             console.warn("BRTA API returned non-success:", brtaRes);
-  //           }
-  //         } catch (brtaErr) {
-  //           console.error("BRTA booking licence check failed:", brtaErr);
-  //         }
-  //       } catch (epassportErr) {
-  //         console.error("E-passport submission failed:", epassportErr);
-  //       }
-
-  //       handleCloseModal();
-  //     }
-  //   } catch (err) {
-  //     console.error("Booking submission failed:", err);
-  //   }
-  // };
 
   const handleOk = async (barcode: string) => {
     if (!barcode?.trim()) {
@@ -293,23 +203,13 @@ const BookingComponent = () => {
         hnddevice: BOOKING_BASE_PAYLOAD.hnddevice,
       });
 
-      console.log("E-passport response:", epassportRes);
+      console.log("E-passport response 999:", epassportRes);
 
-      if (!epassportRes.success || epassportRes.status_code !== "200") {
-        console.warn("E-passport API returned non-success:", epassportRes);
-        setBookingErrorMessage(
-          epassportRes.message || "E-passport submission failed from server",
-        );
-        // keep the modal open so the user can see the error state and retry
-        return epassportRes;
-      }
-
-      setBookingSuccessMessage("E-passport submission successful");
-      setBookingErrorMessage("");
-
-      setTimeout(() => {
-        setBookingSuccessMessage("");
-      }, 3000);
+      setBookingMessage(
+        epassportRes?.status === "Success"
+          ? "E-passport submission successful"
+          : epassportRes.status || "E-passport submission failed",
+      );
 
       try {
         console.log("Step 3: Fetching BRTA booking licence...");
@@ -324,7 +224,9 @@ const BookingComponent = () => {
       }
 
       // close modal after success so the UI does not hide before you can see toast
-      handleCloseModal();
+      setTimeout(() => {
+        handleCloseModal();
+      }, 5000);
 
       return epassportRes;
     } catch (epassportErr: any) {
@@ -466,7 +368,7 @@ const BookingComponent = () => {
               <span
                 className="inline-flex items-center justify-center px-3 py-2
                           rounded-md
-                          border border-primary-300
+                          border border-primary-400
                           text-sm font-medium
                           text-primary-500
                           transition-colors
@@ -589,7 +491,7 @@ const BookingComponent = () => {
         handleOk={handleOk}
         getTodayDate={getTodayDate}
         bookingErrorMessage={bookingErrorMessage}
-        bookingSuccessMessage={bookingSuccessMessage}
+        bookingSuccessMessage={bookingMessage}
       />
     </div>
   );

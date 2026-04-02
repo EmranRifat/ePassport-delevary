@@ -18,11 +18,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         {/* Sidebar */}
         <aside
           className={`mt-16 md:mt-0
-            fixed md:static inset-y-0 left-0 z-50 w-64 bg-primary-700
+            fixed md:static inset-y-0 left-0 z-50 w-64
             transform transition-transform duration-300 ease-in-out
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
             md:translate-x-0
           `}
+          aria-hidden={!sidebarOpen}
+          aria-label="Navigation sidebar"
         >
           <SideBar />
         </aside>
@@ -36,6 +38,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div
           className="fixed inset-0 z-40 bg-black/40 md:hidden"
           onClick={() => setSidebarOpen(false)}
+          role="button"
+          aria-label="Close sidebar overlay"
         />
       )}
     </div>

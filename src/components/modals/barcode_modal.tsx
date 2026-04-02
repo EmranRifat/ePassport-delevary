@@ -18,12 +18,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   handleCloseModal,
   handleScan: externalHandleScan,
   handleOk: handleOk,
-  status_code,
   barcodeLoading,
-  barcodeError,
   getTodayDate,
   handlePrint,
-  bookingErrorMessage,
   bookingSuccessMessage,
 }) => {
   const { submitPrintStatusServer, loading: submitting } = usePrintServerRes();
@@ -31,19 +28,34 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   const [barcodeInput, setBarcodeInput] = React.useState("");
   const [scanBarcodeInput, setScanBarcodeInput] = React.useState("");
   const [isScanning, setIsScanning] = React.useState(false);
+  const [isScanSuccess, setIsScanSuccess] = React.useState(false);
+  const [scanSuccessToast, setScanSuccessToast] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const [showScanButton, setShowScanButton] = React.useState(false);
+  const [okCountdown, setOkCountdown] = React.useState(10); // 10 seconds countdown
+  const [showSuccessToast, setShowSuccessToast] = React.useState(false);
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
 
   const { user } = useAuthStore();
   //   console.log("initial Barcode ===>>", initialBarcode);
 
-  // Reset all states when modal opens
+  const autoOkTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+
   React.useEffect(() => {
     if (showModal) {
-      // Reset all states for fresh start
       setBarcodeInput(initialBarcode || "");
       setScanBarcodeInput("");
       setIsScanning(false);
+      setIsScanSuccess(false);
       setIsPrinted(false);
+      setShowScanButton(false);
+      setOkCountdown(10);
+      setIsSubmitted(false); // 🔥 ADD THIS LINE
+      if (autoOkTimerRef.current) {
+        clearInterval(autoOkTimerRef.current);
+        autoOkTimerRef.current = null;
+      }
+      setScanSuccessToast("");
     }
   }, [showModal, initialBarcode]);
 
@@ -71,17 +83,91 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   // Auto-stop scanning when barcode is scanned
   React.useEffect(() => {
     if (scanBarcodeInput && scanBarcodeInput.length >= 13) {
-      console.log("Barcode scan detected, length:", scanBarcodeInput.length);
-      // Barcode has been scanned, stop scanning state
       const timer = setTimeout(() => {
-        console.log("Scanning Barcode Input:", scanBarcodeInput);
-        setBarcodeInput(scanBarcodeInput); // Copy to main barcode
+        setBarcodeInput(scanBarcodeInput);
         setIsScanning(false);
-        externalHandleScan();
+        setIsScanSuccess(true);
       }, 100);
+
       return () => clearTimeout(timer);
     }
-  }, [scanBarcodeInput, externalHandleScan]);
+  }, [scanBarcodeInput]);
+
+  // 👉 NEW EFFECT
+  React.useEffect(() => {
+    if (isScanSuccess) {
+      externalHandleScan(); // ✅ safe now
+    }
+  }, [isScanSuccess]);
+
+
+
+
+
+
+console.log("bookingSuccessMessage in modal:", bookingSuccessMessage);
+
+
+
+
+
+
+
+
+
+
+
+  // Show in-modal scan toast
+  React.useEffect(() => {
+    if (isScanSuccess) {
+      setScanSuccessToast("Scan successful!");
+      const toastTimer = setTimeout(() => {
+        setScanSuccessToast("");
+      }, 5000);
+      return () => clearTimeout(toastTimer);
+    }
+  }, [isScanSuccess]);
+
+  React.useEffect(() => {
+    if (isScanSuccess && !isSubmitted) {
+      setOkCountdown(10);
+
+      const timer = setInterval(() => {
+        setOkCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setIsSubmitted(true); // stop repeat
+            // Schedule handleSubmitOk to run after render using queueMicrotask
+            queueMicrotask(() => {
+              handleSubmitOk();
+            });
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      autoOkTimerRef.current = timer;
+
+      return () => {
+        clearInterval(timer);
+        autoOkTimerRef.current = null;
+      };
+    }
+  }, [isScanSuccess, isSubmitted]);
+
+
+
+
+  React.useEffect(() => {
+    if (bookingSuccessMessage) {
+      setShowSuccessToast(true);
+
+      setTimeout(() => {
+        setShowSuccessToast(false);
+      }, 1500);
+    }
+  }, [bookingSuccessMessage]);
 
   if (!showModal || !selectedRPO) {
     return null;
@@ -90,33 +176,39 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   const onCancel = () => {
     setBarcodeInput("");
     setIsPrinted(false);
+    setScanSuccessToast("");
+    setShowScanButton(false); // Reset
+    setIsScanning(false);
+    setIsScanSuccess(false);
+    if (autoOkTimerRef.current) {
+    clearInterval(autoOkTimerRef.current);
+    autoOkTimerRef.current = null;
+  }
     handleCloseModal();
   };
 
+
   const onPrint = async () => {
-    if (handlePrint) {
-      handlePrint();
-    } else {
-      try {
-        await submitPrintStatusServer({
-          user_id: user?.user_id || "",
-          barcode: barcodeInput,
-          booking_status: "Pending",
-        });
+    try {
+      await submitPrintStatusServer({
+        user_id: user?.user_id || "",
+        barcode: barcodeInput,
+        booking_status: "Pending",
+      });
 
-        // Print on success
-        printBookingPreview({
-          barcodeInput,
-          selectedRPO,
-          getTodayDate,
-        });
+      // Print on success
+      printBookingPreview({
+        barcodeInput,
+        selectedRPO,
+        getTodayDate,
+      });
 
-        // Enable scan button after print
-        setIsPrinted(true);
-      } catch (error) {
-        console.error("Failed to submit pending booking:", error);
-        // Optionally show error message to user
-      }
+      // Enable scan button after print
+      setIsPrinted(true);
+      setShowScanButton(true);
+    } catch (error) {
+      console.error("Failed to submit pending booking:", error);
+      // Optionally show error message to user
     }
   };
 
@@ -129,11 +221,12 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     });
   };
 
+  
   const onScan = () => {
     setIsPrinted(false);
     setScanBarcodeInput(""); // Clear scan input before new scan
+    setIsScanSuccess(false);
     setIsScanning(true);
-    externalHandleScan();
     // Focus input immediately for handheld scanner
     setTimeout(() => {
       if (inputRef.current) {
@@ -142,19 +235,60 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }, 50);
   };
 
+
+  const handleBarcodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Track scanner value internally using full typed value
+    setScanBarcodeInput(value);
+
+    // Auto-activate scanning when data starts coming in
+    if (value && !isScanning) {
+      setIsScanning(true);
+    }
+  };
+
+  const handleSubmitOk = async () => {
+    if (isSubmitted) return; // ✅ prevent double submit
+
+    try {
+      setIsSubmitted(true); // ✅ stop countdown
+
+      if (autoOkTimerRef.current) {
+        clearInterval(autoOkTimerRef.current);
+        autoOkTimerRef.current = null;
+      }
+
+      setOkCountdown(0);
+
+      await handleOk(barcodeInput);
+
+      setShowSuccessToast(true);
+
+      setTimeout(() => {
+        setShowSuccessToast(false);
+        setTimeout(() => {
+          handleCloseModal();
+        }, 0);
+      }, 1500);
+    } catch (error) {
+      console.error("Submit failed:", error);
+    }
+  };
+
   return (
     <>
-      {bookingSuccessMessage && (
-        <ToastSuccess message={bookingSuccessMessage} />
+      {showSuccessToast && (
+        <ToastSuccess
+          message={bookingSuccessMessage || "Booking successful!"}
+        />
       )}
-
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <div className="p-6">
-            {/* Booking Preview Card */}
             <div
               id="booking-preview-card"
-              className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-6"
+              className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-8"
             >
               {/* Header with Icons */}
               <div className="flex items-center justify-between px-5 mb-5">
@@ -228,6 +362,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                     <div className="barcode-container h-9 w-[250px] md:w-[350px] flex items-center justify-center">
                       <Barcode
                         value={initialBarcode}
+                        format="CODE128"
                         height={55}
                         width={2.6}
                         displayValue={false}
@@ -243,7 +378,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* To Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   To
                 </p>
                 <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
@@ -256,7 +391,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* From Section */}
               <div className="w-full px-2.5 py-2.5">
-                <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   From
                 </p>
                 <p className="text-lg text-gray-900 dark:text-gray-100">
@@ -271,42 +406,40 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               </div>
             </div>
 
-            {/* Barcode Input (visible only when scanning) */}
+            {/* Barcode Input hidden from UI, still used for scanner capture */}
             {
-              <div className="h-10 w-full bg-white dark:bg-gray-800 mb-4">
+              <div className="absolute opacity-0 pointer-events-none">
                 <Input
                   ref={inputRef}
                   type="text"
                   placeholder="Ready to scan..."
                   value={scanBarcodeInput}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setScanBarcodeInput(value);
-                    // Auto-activate scanning when data starts coming in
-                    if (value && !isScanning) {
-                      setIsScanning(true);
-                    }
-                  }}
+                  onChange={handleBarcodeInputChange}
                   className="w-full h-full border border-gray-300 dark:border-gray-700 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 text-center text-lg font-semibold dark:bg-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                  style={{
-                    color: isScanning ? "blue" : "green",
-                  }}
                   autoComplete="off"
                   autoFocus
                 />
               </div>
             }
 
+            {scanSuccessToast && (
+              <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg">
+                <p className="text-green-800 dark:text-green-200 text-sm font-medium text-center">
+                  {scanSuccessToast}
+                </p>
+              </div>
+            )}
+
             {/*================ all buttons here ==================*/}
 
             {/* Booking Error Message Display */}
-            {bookingErrorMessage && (
+            {/* {bookingErrorMessage && (
               <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg">
                 <p className="text-red-700 dark:text-red-400 text-sm font-medium text-center">
                   {bookingErrorMessage}
                 </p>
               </div>
-            )}
+            )} */}
 
             {/* Action Buttons */}
             <div className="flex items-center justify-center gap-5">
@@ -359,49 +492,47 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                   Re-Print
                 </Button>
               )}
-
-              <Button
-                variant="primary"
-                className="h-[42px] w-[250px]"
-                onClick={onScan}
-                disabled={isScanning}
-              >
-                {isScanning && !scanBarcodeInput ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span className="text-xs">Waiting For Scan</span>
-                  </span>
-                ) : (
-                  "Scan"
-                )}
-              </Button>
-
-              <Button
-                variant="primary"
-                className="h-[42px] w-[250px]"
-                onClick={async () => {
-                  const res = await handleOk(barcodeInput);
-                  console.log("handleOk result:", res);
-                }}
-                disabled={!barcodeInput}
-              >
-                Ok
-              </Button>
+              {showScanButton && (
+                <Button
+                  variant="primary"
+                  className="h-[42px] w-[250px]"
+                  onClick={onScan}
+                  disabled={isScanning}
+                >
+                  {isScanning && !scanBarcodeInput.length ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <span className="text-xs">Waiting For Scan</span>
+                    </span>
+                  ) : (
+                    "Scan"
+                  )}
+                </Button>
+              )}
+              {isScanSuccess && !isSubmitted && (
+                <Button
+                  variant="primary"
+                  className="h-[42px] w-[250px]"
+                  onClick={handleSubmitOk}
+                >
+                  Ok {okCountdown > 0 ? `(${okCountdown})` : ""}
+                </Button>
+              )}
             </div>
           </div>
         </div>

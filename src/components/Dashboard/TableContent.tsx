@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   TableHeader,
   TableColumn,
@@ -9,10 +9,10 @@ import {
   Pagination,
   Spinner,
 } from "@heroui/react";
-// import { LoadingSpinner } from "@/components/ui";
 import { TableContentProps } from "@/lib/types";
 
 import renderCell from "./renderCell";
+import RowDetailsModal from "../modals/dashboardModal";
 
 const columns = [
   {
@@ -59,7 +59,19 @@ const TableContent: React.FC<TableContentProps> = ({
   setCurrentPage,
   setPageSize,
 }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
   // console.log("Passport data==", passportData);
+
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const handleCopy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+
+    setTimeout(() => {
+      setCopiedKey(null);
+    }, 1500); // 1.5 sec পরে hide
+  };
   return (
     <div>
       {/* Pagination Controls */}
@@ -102,7 +114,7 @@ const TableContent: React.FC<TableContentProps> = ({
             {(column) => (
               <TableColumn
                 key={column.uid}
-                className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base mb-0"
+                className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base mb-0 "
               >
                 {column.name}
               </TableColumn>
@@ -130,11 +142,15 @@ const TableContent: React.FC<TableContentProps> = ({
             {passportData?.map((item, index) => (
               <TableRow
                 key={item.id}
-                className={
+                onClick={() => {
+                  setSelectedRowData(item);
+                  setIsOpen(true);
+                }}
+                className={`cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
                   index % 2 === 0
                     ? "bg-white dark:bg-gray-800"
                     : "bg-gray-50 dark:bg-gray-700/30"
-                }
+                }`}
               >
                 {(columnKey) => (
                   <TableCell className="ss:text-xs xxs:text-xs xs:text-sm sm:text-sm md:text-base">
@@ -143,6 +159,8 @@ const TableContent: React.FC<TableContentProps> = ({
                       columnKey,
                       index,
                       serial: (currentPage - 1) * pageSize,
+                      copiedKey,
+                      handleCopy,
                     })}
                   </TableCell>
                 )}
@@ -165,6 +183,15 @@ const TableContent: React.FC<TableContentProps> = ({
           />
         )}
       </div>
+
+      <RowDetailsModal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          setSelectedRowData(null);
+        }}
+        data={selectedRowData}
+      />
     </div>
   );
 };

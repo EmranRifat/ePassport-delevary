@@ -13,7 +13,7 @@ export const usePrintServerRes = () => {
 
         try {
             const response = await api.post<PendingBookingResponse>(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/epassportpanding`,
+                `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/epassportpanding`,
                 requestData
             );
 

@@ -31,6 +31,7 @@ export const useSubmitBookingData = (token?: string) => {
                     body: JSON.stringify(requestData),
                 }
             );
+            console.log("scan response....>>>>>",response)
 
             if (!response.ok) {
                 throw new Error(`Request failed (${response.status})`);

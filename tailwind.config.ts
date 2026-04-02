@@ -398,7 +398,6 @@ const config: Config = {
     alertsWarningLight: "#FDE047",
     alertsWarningBase: "#FACC15",
     stockColor: "#CBCBCB",
-    "primary-new": "#B7FFD1",
     alertsErrorBase: "#FF4747",
 
     /* Add these styles to your global styles or Tailwind CSS configuration file */

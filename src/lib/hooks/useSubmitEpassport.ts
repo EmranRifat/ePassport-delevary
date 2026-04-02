@@ -21,7 +21,7 @@ export const useSubmitEpassport = (token?: string) => {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<EpassportResponse | null>(null);
 
-  console.log("token ,,,,,,", token);
+  // console.log("token ,,,,,,", token);
 
   const submitEpassport = useCallback(
     async (input: SubmitEpassportInput): Promise<EpassportResponse> => {
@@ -29,7 +29,7 @@ export const useSubmitEpassport = (token?: string) => {
       setError(null);
 
       try {
-       
+
         const requestBody = {
           user_id: input.userId || "",
           user_group: APP_CONSTANTS.USER_GROUP,
@@ -121,9 +121,7 @@ export const useSubmitEpassport = (token?: string) => {
 
         const normalizedResponse: EpassportResponse = {
           ...apiResponse,
-          success:
-            apiResponse?.status_code === "200" ||
-            apiResponse?.status?.toLowerCase() === "success",
+          success: apiResponse?.status_code === "200", // Success if status_code is 200
         };
 
         setData(normalizedResponse);

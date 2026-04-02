@@ -2,7 +2,7 @@
 import React from 'react'
  
 
- const page = ( ) => {
+ const Page = () => {
    return (
      <div>
       <BookingComponent />
@@ -10,4 +10,4 @@ import React from 'react'
    )
  }
  
- export default page
+ export default Page

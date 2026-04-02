@@ -10,14 +10,13 @@ import {
   SelectItem,
   Spinner,
 } from "@heroui/react";
-import { LoadingSpinner } from "@/components/ui";
 
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
 import TableContent from "./TableContent";
 import DatePickerModal from "@/components/modals/datePickerModal";
-import LoaderSpinner from "../Common/LoaderSpinner";
+
 
 const statusOptions = [
   { key: "All", label: "All Status" },
