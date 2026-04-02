@@ -90,7 +90,7 @@ export const useSubmitEpassport = (token?: string) => {
           },
         );
 
-        console.log("epassport response-->>", response);
+        console.log("epassport response-->> 999", response);
 
         const responseText = await response.text();
         console.log("[useSubmitEpassport] responseText", responseText);
