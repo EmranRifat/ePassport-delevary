@@ -105,7 +105,7 @@ const TableContent: React.FC<TableContentProps> = ({
         <Table
           aria-label="Passport records table"
           classNames={{
-            th: "bg-[#EDF2F7] dark:bg-gray-700 text-center",
+            th: "bg-[#EDF2F7] dark:bg-gray-700 text-center dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
             td: "dark:text-gray-200 text-center",
           }}
@@ -130,13 +130,13 @@ const TableContent: React.FC<TableContentProps> = ({
               </div>
             }
             emptyContent={
-              error && (
+            
                 <div className="py-8 text-center">
                   <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
                     {error || "No data available."}
                   </p>
                 </div>
-              )
+              
             }
           >
             {passportData?.map((item, index) => (

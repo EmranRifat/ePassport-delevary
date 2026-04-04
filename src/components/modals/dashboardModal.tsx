@@ -1,11 +1,17 @@
 "use client";
 
 import React from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, Button } from "@heroui/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  Button,
+} from "@heroui/react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
- 
- 
+import { printBookingPreview } from "@/utils/print-booking";
+
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
 
@@ -54,195 +60,32 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
   onClose,
   data,
 }) => {
-  console.log("modal data>>>>>>>", data);
-  const getTodayDate = () => {
-    const today = new Date();
-    return today.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  // console.log("modal data>>>>>>>", data);
 
-  const printBookingPreview = () => {
-    const printContent = document.getElementById("booking-preview-card");
-    if (!printContent) return;
+  const formatted = data?.booking_date
+    ? (() => {
+        const d = new Date(data.booking_date.replace(" ", "T"));
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
 
-    const printWindow = window.open();
-    if (!printWindow) return;
+        return `${year}-${month}-${day}`;
+      })()
+    : "-";
 
-    printWindow.document.write(`
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Print Booking - ${data.barcode}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
-  <style>
-    @page {
-      size: 4in 6in;
-      margin: 0;
-    }
-
-    body {
-      margin: 0;
-       font-family: 'Open Sans';
-       font-weight: 600;
-       font-size: 16px;
-      width: 4in;
-      height: 6in;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    .preview-card {
-      width: 3.2in;
-      padding-top: 0.4in;
-      color: #000;
-    }
-
-    /* Header */
-    .header {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      margin-bottom: 14px;
-      font-size: 16px;
-      font-weight: 600;
-
-    }
-
-    .header img {
-      width: 45px;
-      height: 45px;
-    }
-
-    .header-center {
-      text-align: center;
-      line-height: 1.2;
-    }
-
-    .header-title {
-      font-size: 16px;
-      margin: 0;
-      font-weight: normal;
-    }
-
-    .header-subtitle {
-      font-size: 14px;
-      margin: 0;
-    }
-
-    /* Issue date */
-    .issue-date {
-      font-size: 13px;
-      margin-left: 6px;
-      margin-bottom: 12px;
-    }
-
-    /* Barcode */
-    .barcode-section {
-      text-align: center;
-      margin-bottom: 18px;
-    }
-
-    .barcode-container {
-      width: 100%;
-      height: 48px;
-      display: flex;
-       
-      align-items: center;
-    }
-
-    .barcode-text {
-      margin-top: 6px;
-      letter-spacing: 1px;
-    }
-
-    /* Address */
-    .address-section {
-      margin-bottom: 16px;
-      margin-left: 6px;
-    }
-
-    .address-title,
-    .from-title {
-      margin: 0 0 4px 0;
-    }
-
-    .address-text {
-      margin: 2px 0;
-      line-height: 1.3;
-    }
-
-    @media print {
-      body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="preview-card">
-
-    <div class="header">
-          
- <img src="/passport.png" />
-      <div class="header-center">
-        <div class="header-title">BPO</div>
-        <div class="header-subtitle">e-Passport Booking</div>
-      </div>
-            
-              <img src="/bpo.png" />
-
-    </div>
-
-    <div class="issue-date">
-      Issue Date: ${getTodayDate()}
-    </div>
-
-    <div class="barcode-section">
-      <div class="barcode-container">
-        ${printContent.querySelector(".barcode-container")?.innerHTML || ""}
-      </div>
-      <div class="barcode-text">${data.barcode}</div>
-    </div>
-
-    <div class="address-section">
-      <div class="address-title">To</div>
-      <div class="address-text">${data.rpo_address}</div>
-      <div class="address-text">Phone: ${data.phone}</div>
-    </div>
-
-    <div class="address-section">
-      <div class="from-title">From</div>
-      <div class="address-text">Passport Personalization Complex</div>
-      <div class="address-text">Plot-4, Road-1, Sector-16(i), Diabari, Uttara</div>
-      <div class="address-text">Dhaka-1711</div>
-    </div>
-
-  </div>
-
-  <script>
-  window.onload = async () => {
-    await document.fonts.ready; // wait for Open Sans to load
-    window.print();
-    window.onafterprint = () => window.close();
-  };
-</script>
-</body>
-</html>
-`);
-    printWindow.document.close();
-  };
   const onPrint = () => {
     // Print on success
-    printBookingPreview();
+    printBookingPreview({
+      barcodeInput: data.barcode,
+      selectedRPO: {
+        address: data.rpo_address,
+        mobile: data.phone,
+      },
+      getTodayDate: () => formatted,
+    });
   };
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose} placement="center" size="2xl">
+    <Modal isOpen={isOpen} onOpenChange={onClose} placement="center" size="2xl" hideCloseButton >
       <ModalContent>
         {(close) => (
           <div>
@@ -294,17 +137,17 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   </div>
 
                   {/* Issue Date */}
-                  <div className="text-center mb-3.5">
+                  <div className="pl-10 my-3.5">
                     <p className="text-mdDG817791512BD text-gray-900 dark:text-gray-100">
-                      Issue Date : {data?.booking_date || "31-03-2026"}
+                      Issue Date : {formatted || ""}
                     </p>
                   </div>
 
                   {/* Barcode Section */}
-                  <div className="flex flex-col items-center mb-2">
+                  <div className="flex flex-col items-start pl-8 mb-2">
                     {data ? (
                       <>
-                        <div className="barcode-container h-9 w-[250px] md:w-[350px] flex items-center justify-center">
+                        <div className="barcode-container h-10 w-[250px] md:w-[350px] flex items-center  ">
                           <Barcode
                             value={data.barcode}
                             height={55}
@@ -313,7 +156,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                             background="#fefefe"
                           />
                         </div>
-                        <p className="text-lg text-gray-800 mt-3 dark:text-gray-100">
+                        <p className="text-lg text-gray-800 mt-3 ml-24 dark:text-gray-100">
                           {data.barcode}
                         </p>
                       </>
@@ -321,12 +164,12 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   </div>
 
                   {/* To Section */}
-                  <div className="w-full px-2.5 py-2.5">
+                  <div className="w-full pl-10 py-2.5">
                     <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       To
                     </p>
                     <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
-                      {data.rpo_name}
+                      {data.rpo_address}
                     </p>
                     <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
                       Phone: {data.phone}
@@ -334,7 +177,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   </div>
 
                   {/* From Section */}
-                  <div className="w-full px-2.5 py-2.5">
+                  <div className="w-full pl-10 py-2.5">
                     <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                       From
                     </p>
@@ -354,11 +197,11 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
 
                 {/*================ all buttons here ==================*/}
                 <div className="flex justify-between gap-4 my-4">
-                  <Button   size="lg" onPress={close}>
+                  <Button variant="light" color="danger" size="md" onPress={close}>
                     cancel
                   </Button>
 
-                  <Button   size="lg" onPress={onPrint}>
+                  <Button color="primary" size="md" onPress={onPrint}>
                     print
                   </Button>
                 </div>

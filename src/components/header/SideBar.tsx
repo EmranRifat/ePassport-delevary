@@ -76,7 +76,7 @@ export default function SideBar() {
             text-sm font-medium transition-all duration-200
             ${
               isActive
-                ? "bg-blue-400 dark:bg-white/10 border-l-4 border-white pl-4"
+                ? "bg-blue-300 dark:bg-white/10  border-white pl-4"
                 : "hover:bg-blue-200 dark:hover:bg-white/5"
             }
           `}

@@ -1,8 +1,11 @@
-import { RegionalPassportOffice } from "./address-util";
+// import { RegionalPassportOffice } from "./address-util";
 
 interface PrintBookingParams {
   barcodeInput: string;
-  selectedRPO: RegionalPassportOffice;
+  selectedRPO: {
+    address: string;
+    mobile: string;
+  };
   getTodayDate: () => string;
 }
 
@@ -16,24 +19,28 @@ export const printBookingPreview = ({
 <html>
 <head>
   <title>Print Booking - ${barcodeInput}</title>
+   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     @page {
       size: 4in 6in;
       margin: 0;
     }
+      @font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans-Regular.ttf') format('truetype');
+}
 
-    body {
+
+     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Arial', sans-serif;
-      font-size: 14px;
+     font-family: 'Open Sans', sans-serif;
+       
       width: 4in;
       height: 6in;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      background: white;
     }
 
     .print-card {
@@ -58,32 +65,34 @@ export const printBookingPreview = ({
 
     .header-center {
       text-align: center;
+      
       line-height: 1.2;
     }
 
     .header-title {
       font-size: 18px;
       margin: 0;
-      font-weight: bold;
+      font-weight: 500;
     }
 
     .header-subtitle {
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: 500;
       margin: 0;
     }
 
     /* Issue date */
     .issue-date {
-      font-size: 12px;
+      font-size: 13px;
+      margin-top:10px;
       margin-left: 6px;
-      margin-bottom: 12px;
-      text-align: center;
+       
     }
 
     /* Barcode */
     .barcode-section {
       text-align: center;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
     .barcode-container {
@@ -92,37 +101,37 @@ export const printBookingPreview = ({
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 8px;
+      
     }
 
     .barcode-text {
-      font-size: 14px;
-      font-weight: bold;
-      letter-spacing: 2px;
+    margin-top: -6px;
+      font-size: 16px;
+      font-weight: 500;
     }
 
     /* Address */
     .address-section {
-      margin-bottom: 14px;
+      margin-bottom: 25px;
       margin-left: 6px;
-      font-size: 12px;
+      font-size: 15px;
+       font-weight: semi-bold;
     }
 
     .address-title,
     .from-title {
-      font-weight: bold;
-      margin: 0 0 4px 0;
+      
     }
 
     .address-text {
       margin: 2px 0;
-      line-height: 1.4;
+      
     }
 
     @media print {
       body {
         -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    print-color-adjust: exact;
       }
     }
   </style>
@@ -153,7 +162,10 @@ export const printBookingPreview = ({
 
     <div class="address-section">
       <div class="address-title">To</div>
-      <div class="address-text">${selectedRPO.address}</div>
+        <div class="address-text"><div class="address-text">
+          ${selectedRPO.address.split(",").join("<br/>")}
+        </div>
+      </div>
       <div class="address-text">Phone: ${selectedRPO.mobile}</div>
     </div>
 
@@ -213,6 +225,7 @@ export const printBookingPreview = ({
         }
       } catch (error) {
         // Silently fail if iframe is already removed
+        console.log(error);
       }
     }, 3000);
   }
