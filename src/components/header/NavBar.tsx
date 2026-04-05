@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Menu, Sun, Moon } from "lucide-react";
+import { Menu, Sun, Moon, LogOut } from "lucide-react";
 import { Button } from "../ui";
 import { useAuthStore } from "@/store";
 import { authApi } from "@/lib/api-services";
@@ -48,10 +48,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
       <div className="px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
-            <button
-              onClick={onMenuClick}
-              className="md:hidden p-1 rounded "
-            >
+            <button onClick={onMenuClick} className="md:hidden p-1 rounded ">
               <Menu size={24} />
             </button>
 
@@ -74,6 +71,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
             </div>
           </div>
 
+
           {/* Right */}
           <div className="flex gap-2 mr-4">
             {/* Theme Toggle */}
@@ -85,13 +83,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 <>
                   <Sun size={24} className="text-yellow-400" />
                 </>
-                
               ) : (
                 <>
-                  <Moon
-                    size={24}
-                    className="text-gray-100"
-                  />
+                  <Moon size={24} className="text-gray-100" />
                 </>
               )}
             </button>
@@ -102,7 +96,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 className="rounded-full focus:outline-none 
                     hover:ring-2  transition"
               >
-                <Avatar   size="lg" name={user?.name || user?.user_id} />
+                <Avatar size="sm" name={user?.name || user?.user_id} />
               </button>
               <p className="flex items-center text-base text-gray-50">
                 {user?.name || user?.user_id || "User"}
@@ -114,12 +108,26 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className=" absolute top-16 right-12 w-35 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-          <div className="flex flex-col px-4 py-3 space-y-2">
-            {/* Logout */}
-            <Button onClick={handleLogout} variant="danger" size="sm">
-              Logout
-            </Button>
+        <div className="absolute top-16 right-12 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+          <div className="flex flex-col">
+            {/* User Info Section */}
+            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                Logged in as
+              </p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                {user?.name || user?.user_id || "User"}
+              </p>
+            </div>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 w-full px-4 py-3 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 cursor-pointer"
+            >
+              <LogOut size={18} />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       )}
