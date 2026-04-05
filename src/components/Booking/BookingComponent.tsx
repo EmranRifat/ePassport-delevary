@@ -137,6 +137,14 @@ const BookingComponent = () => {
     console.log("Scan triggered");
   };
 
+
+
+
+
+
+
+
+
   // *****************submit Action after ok button in modal************//
 
   // first api call for booking submission
@@ -162,89 +170,6 @@ const BookingComponent = () => {
     data: brtaData,
   } = useGetBrtaBookingLicence(token);
 
-
-
-
-
-
-  // const handleOk = async (barcode: string) => {
-  //   if (!barcode?.trim()) {
-  //     setBookingErrorMessage("Barcode is required to submit.");
-  //     return {
-  //       success: false,
-  //       status_code: "400",
-  //       message: "Barcode is required",
-  //     };
-  //   }
-
-  //   if (!selectedRPO) {
-  //     setBookingErrorMessage("Please choose a RPO location before submitting.");
-  //     return {
-  //       success: false,
-  //       status_code: "400",
-  //       message: "No RPO selected",
-  //     };
-  //   }
-
-  //   try {
-  //     console.log(
-  //       "handleOk invoked with barcode:",
-  //       barcode,
-  //       "selectedRPO:",
-  //       selectedRPO,
-  //     );
-
-  //     const epassportRes = await submitEpassport({
-  //       userId: user?.user_id || "",
-  //       barcodeId: barcode.trim(),
-  //       serviceType: "Parcel",
-  //       itemWeight: BOOKING_BASE_PAYLOAD.item_weight,
-  //       recName: selectedRPO.name || BOOKING_BASE_PAYLOAD.rec_name,
-  //       recAddress: selectedRPO.address || BOOKING_BASE_PAYLOAD.rec_address,
-  //       recPhoneNo: selectedRPO.mobile || BOOKING_BASE_PAYLOAD.rec_contact,
-  //       token: token || "",
-  //       cityPostStatus: BOOKING_BASE_PAYLOAD.city_post_status,
-  //       shift: BOOKING_BASE_PAYLOAD.shift,
-  //       hnddevice: BOOKING_BASE_PAYLOAD.hnddevice,
-  //     });
-
-  //     console.log("E-passport response 999:", epassportRes);
-
-  //     setBookingMessage(
-  //       epassportRes?.status === "Success"
-  //         ? "E-passport submission successful"
-  //         : epassportRes.status || "E-passport submission failed",
-  //     );
-
-  //     try {
-  //       console.log("Step 3: Fetching BRTA booking licence...");
-  //       const brtaRes = await getBrtaBookingLicence();
-  //       console.log("BRTA booking licence data:", brtaRes);
-
-  //       if (!brtaRes.success) {
-  //         console.warn("BRTA API returned non-success:", brtaRes);
-  //       }
-  //     }
-  //      catch (brtaErr) {
-  //       console.error("BRTA booking licence check failed:", brtaErr);
-  //     }
-
-  //     // close modal after success so the UI does not hide before you can see toast
-  //     setTimeout(() => {
-  //       handleCloseModal();
-  //     }, 5000);
-
-  //     return epassportRes;
-
-  //   } catch (epassportErr: any) {
-  //     console.error("E-passport submission failed:", epassportErr);
-  //     return {
-  //       success: false,
-  //       message: epassportErr?.message || "E-passport submission failed",
-  //       status_code: "500",
-  //     };
-  //   }
-  // };
 
 
 
@@ -297,7 +222,7 @@ const handleOk = async (barcode: string) => {
       hnddevice: BOOKING_BASE_PAYLOAD.hnddevice,
     });
 
-    console.log("E-passport response 999:", epassportRes);
+    console.log("E-passport response 999 >>", epassportRes);
 
     const isSuccess =
       epassportRes?.success === true || epassportRes?.status === "Success";
@@ -371,6 +296,10 @@ const handleOk = async (barcode: string) => {
       day: "numeric",
     });
   };
+
+
+
+
 
   return (
     <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
@@ -601,6 +530,9 @@ const handleOk = async (barcode: string) => {
           </p>
         </div>
       )}
+
+
+
 
       {/* Booking Modal */}
       <BarcodeModal

@@ -8,7 +8,7 @@ interface AvatarProps {
 const sizeMap = {
   sm: "w-8 h-8 text-sm",
   md: "w-9 h-9 text-sm",
-  lg: "w-9 h-9 md:w-11 md:h-11 text-sm md:text-base",
+  lg: "w-8 h-8 md:w-10 md:h-10   text-sm md:text-base",
 };
 
 const Avatar = ({ name = "User", size = "md" }: AvatarProps) => {
@@ -18,9 +18,9 @@ const Avatar = ({ name = "User", size = "md" }: AvatarProps) => {
     <div
       className={`${sizeMap[size]} 
         rounded-full 
-        bg-gradient-to-br from-purple-500 to-indigo-600
+        bg-green-200 dark:bg-gray-400
         flex items-center justify-center
-        font-semibold text-white
+        font-semibold text-gray-800
         select-none`}
     >
       {initial}

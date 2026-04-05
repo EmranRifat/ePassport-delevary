@@ -30,7 +30,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
   const themeHandler = () => {
     setTheme(theme === "dark" ? "light" : "dark");
-     setMobileMenuOpen((prev) => !prev)
+    //  setMobileMenuOpen((prev) => !prev)
   };
 
   const avatarHandler = () => {
@@ -44,14 +44,13 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   if (!mounted) return null;
 
   return (
-   
-   <header className="sticky top-0 z-50 bg-gradient-to-r from-green-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 shadow-sm ">
-    <div className="px-4">
+    <header className="sticky top-0 z-50 bg-[#006A4E] text-white dark:bg-gray-800  shadow-sm ">
+      <div className="px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
             <button
               onClick={onMenuClick}
-              className="md:hidden p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
+              className="md:hidden p-1 rounded "
             >
               <Menu size={24} />
             </button>
@@ -66,65 +65,57 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
               />
             </div>
             <div>
-              <p className="text-sm md:text-lg xl:text-xl font-bold md:font-bold text-gray-800 dark:text-gray-200">
+              <p className="text-sm md:text-lg xl:text-xl font-bold md:font-bold text-gray-50">
                 Bangladesh Post Office
               </p>
-              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-200">
+              <p className="text-xs md:text-sm text-gray-50">
                 ePassport Issuing Portal
               </p>
             </div>
           </div>
 
           {/* Right */}
-          <div className="flex mr-4">
-            {/* <div>
-              <p className="text-xs font-semibold text-gray-800 dark:text-gray-200">
+          <div className="flex gap-2 mr-4">
+            {/* Theme Toggle */}
+            <button
+              onClick={themeHandler}
+              className="flex items-center   px-3    rounded-full  "
+            >
+              {theme === "dark" ? (
+                <>
+                  <Sun size={24} className="text-yellow-400" />
+                </>
+                
+              ) : (
+                <>
+                  <Moon
+                    size={24}
+                    className="text-gray-100"
+                  />
+                </>
+              )}
+            </button>
+
+            <div className="flex gap-2">
+              <button
+                onClick={avatarHandler}
+                className="rounded-full focus:outline-none 
+                    hover:ring-2  transition"
+              >
+                <Avatar   size="lg" name={user?.name || user?.user_id} />
+              </button>
+              <p className="flex items-center text-base text-gray-50">
                 {user?.name || user?.user_id || "User"}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Welcome
-              </p>
-            </div> */}
-            <button
-              onClick={avatarHandler}
-              className="rounded-full focus:outline-none 
-                    hover:ring-2 hover:ring-purple-400 transition"
-            >
-              <Avatar size="lg" name={user?.name || user?.user_id} />
-            </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className=" absolute top-16 right-4 w-48 rounded-xl bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-          <div className="flex flex-col p-2 space-y-2">
-            {/* Theme Toggle */}
-            <button
-              onClick={themeHandler}
-              className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              {theme === "dark" ? (
-                <>
-                  <Sun size={16} className="text-yellow-400" />
-                  <span className="text-sm text-gray-800 dark:text-gray-200">
-                    Light Mode
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Moon
-                    size={16}
-                    className="text-gray-700 dark:text-gray-300"
-                  />
-                  <span className="text-sm text-gray-800 dark:text-gray-200">
-                    Dark Mode
-                  </span>
-                </>
-              )}
-            </button>
-
+        <div className=" absolute top-16 right-12 w-35 rounded-xl bg-gray-100 dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+          <div className="flex flex-col px-4 py-3 space-y-2">
             {/* Logout */}
             <Button onClick={handleLogout} variant="danger" size="sm">
               Logout
@@ -132,7 +123,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </div>
         </div>
       )}
-        {mobileMenuOpen && (
+      {mobileMenuOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 md:hidden"
           onClick={() => setMobileMenuOpen(false)}

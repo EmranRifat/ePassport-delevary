@@ -1,17 +1,11 @@
 "use client";
 
 import React from "react";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-   
-} from "@heroui/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, Button } from "@heroui/react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { printBookingPreview } from "@/utils/print-booking";
-import { Button } from "../ui";
+ 
+ 
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
 
@@ -258,7 +252,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
 
             <ModalBody className="py-2 px-6">
               {/* Title */}
-              <h2 className="text-center text-lg font-semibold mb-4">
+              <h2 className="text-center text-xl font-semibold mb-4">
                 Barcode Already Booked
               </h2>
 
@@ -359,15 +353,15 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                 {/* Barcode Input hidden from UI, still used for scanner capture */}
 
                 {/*================ all buttons here ==================*/}
+                <div className="flex justify-between gap-4 my-4">
+                  <Button   size="lg" onPress={close}>
+                    cancel
+                  </Button>
 
-                {/* Action Buttons */}
-              </div>
-
-              {/* Buttons */}
-              <div className="flex justify-between gap-4 mt-4">
-                <Button variant="danger"   onClick={close}>cancel</Button>
-
-                <Button variant="primary" onClick={onPrint}>print</Button>
+                  <Button   size="lg" onPress={onPrint}>
+                    print
+                  </Button>
+                </div>
               </div>
             </ModalBody>
           </div>

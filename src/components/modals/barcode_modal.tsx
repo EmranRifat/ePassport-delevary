@@ -16,12 +16,13 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   selectedRPO,
   initialBarcode,
   handleCloseModal,
+
   handleScan: externalHandleScan,
   handleOk: handleOk,
   barcodeLoading,
   getTodayDate,
-  handlePrint,
   bookingSuccessMessage,
+  bookingErrorMessage,
 }) => {
   const { submitPrintStatusServer, loading: submitting } = usePrintServerRes();
   const [isPrinted, setIsPrinted] = React.useState(false);
@@ -216,6 +217,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }, 50);
   };
 
+
   const handleBarcodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
@@ -233,16 +235,25 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     setIsScanning(false);
   };
 
+
+
+
+
+
+
   const handleSubmitOk = async () => {
     if (isSubmitted) return; // ✅ prevent double submit
 
+
     try {
       setIsSubmitted(true); // ✅ stop countdown
+
 
       if (autoOkTimerRef.current) {
         clearInterval(autoOkTimerRef.current);
         autoOkTimerRef.current = null;
       }
+
 
       setOkCountdown(0);
 
@@ -256,7 +267,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
           handleCloseModal();
         }, 0);
       }, 1500);
-    } catch (error) {
+
+    } 
+    catch (error) {
       console.error("Submit failed:", error);
     }
   };
