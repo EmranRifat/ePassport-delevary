@@ -36,6 +36,7 @@ export interface ApiResponse {
 }
 
 export interface LoginResponse {
+  token: string;
   status_code: string;
   status: string;
   name: string;
