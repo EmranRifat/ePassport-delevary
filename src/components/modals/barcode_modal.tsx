@@ -7,6 +7,7 @@ import { usePrintServerRes } from "@/lib/hooks/usePrintServerRes";
 import { useAuthStore } from "@/store/auth-store";
 import ToastSuccess from "../Common/ToastSuccess";
 import { BarcodeModalProps } from "@/lib/types";
+import { formatAddressLines } from "@/utils/address-util";
 
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
@@ -53,7 +54,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       setIsPrintTrigger(false);
       setShowScanButton(false);
       setOkCountdown(5);
-      setIsSubmitted(false); 
+      setIsSubmitted(false);
       if (autoOkTimerRef.current) {
         clearInterval(autoOkTimerRef.current);
         autoOkTimerRef.current = null;
@@ -261,6 +262,10 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   };
 
+  const formatedAddress = formatAddressLines(selectedRPO.address).map(
+    (line, index) => <p key={index}>{line}</p>,
+  );
+
   return (
     <>
       {showSuccessToast && (
@@ -270,87 +275,92 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       )}
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6">
-         <div
-  id="booking-preview-card"
-  className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-8"
->
-  {/* Header */}
-  <div className="flex items-center justify-between mb-6">
-    <Image src="/bpo.png" alt="BPO" width={45} height={45} />
+          <div className="p-6 ">
+            <div
+              id="booking-preview-card"
+              className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-8"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <Image src="/bpo.png" alt="BPO" width={45} height={45} />
 
-    <div className="text-center">
-      <h2 className="text-xl text-black dark:text-white">BPO</h2>
-      <p className="text-sm text-gray-600 dark:text-gray-300">
-        e-Passport Booking
-      </p>
-    </div>
+                <div className="text-center">
+                  <h2 className="text-2xl font-semibold text-black dark:text-white">BPO</h2>
+                  <p className="text-base font-semibold text-gray-600 dark:text-gray-300">
+                    e-Passport Booking
+                  </p>
+                </div>
 
-    <Image src="/passport.png" alt="Passport" width={45} height={45} />
-  </div>
+                <Image
+                  src="/passport.png"
+                  alt="Passport"
+                  width={45}
+                  height={45}
+                />
+              </div>
 
-  {/* Main Content Wrapper (IMPORTANT 🔥) */}
-  <div className="pl-8">
-    
-    {/* Issue Date */}
-    <div className="mb-4 pl-2">
-      <p className="text-gray-900 dark:text-gray-100">
-        Issue Date : {getTodayDate()}
-      </p>
-    </div>
+              {/* Main Content Wrapper (IMPORTANT 🔥) */}
+              <div className="pl-8 ">
+                {/* Issue Date */}
+                <div className="mb-4 pl-2">
+                  <p className="text-gray-900 dark:text-gray-100 text-base">
+                    Issue Date : {getTodayDate()}
+                  </p>
+                </div>
 
-    {/* Barcode */}
-    <div className="mb-5">
-      {barcodeLoading ? (
-        <div className="h-10 w-[260px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 border rounded">
-          <span className="text-sm text-primary">Loading barcode...</span>
-        </div>
-      ) : initialBarcode ? (
-        <>
-          <div className="w-[260px]">
-            <Barcode
-              value={initialBarcode}
-              format="CODE128"
-              height={55}
-              width={2.6}
-              displayValue={false}
-              background="#ffffff"
-            />
-          </div>
+                {/* Barcode */}
+                <div className="mb-5">
+                  {barcodeLoading ? (
+                    <div className="h-10 w-[260px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 border rounded">
+                      <span className="text-sm text-primary">
+                        Loading barcode...
+                      </span>
+                    </div>
+                  ) : initialBarcode ? (
+                    <>
+                      <div className="w-[260px]">
+                        <Barcode
+                          value={initialBarcode}
+                          format="CODE128"
+                          height={55}
+                          width={2.6}
+                          displayValue={false}
+                          background="#ffffff"
+                        />
+                      </div>
 
-          <p className="mt-2 text-gray-800 dark:text-gray-100 ml-36">
-            {initialBarcode}
-          </p>
-        </>
-      ) : null}
-    </div>
+                      <p className="font-semibold text-gray-800 dark:text-gray-100 ml-36">
+                        {initialBarcode}
+                      </p>
+                    </>
+                  ) : null}
+                </div>
 
-    {/* To */}
-    <div className="mb-4 pl-2">
-      <p className=" text-gray-900 dark:text-gray-100">To</p>
-      <p className="text-gray-900 dark:text-gray-100">
-        {selectedRPO.address}
-      </p>
-      <p className="text-gray-900 dark:text-gray-100">
-        Phone: {selectedRPO.mobile}
-      </p>
-    </div>
+                {/* To */}
+                <div className="mb-4 pl-2 text-xl">
+                  <p className=" text-gray-900 dark:text-gray-100">To</p>
+                  <span className="text-gray-900 dark:text-gray-100">
+                    {formatedAddress}
+                  </span>
 
-    {/* From */}
-    <div className="pl-2">
-      <p className=" text-gray-900 dark:text-gray-100">From</p>
-      <p className="text-gray-900 dark:text-gray-100">
-        Passport Personalization Complex
-      </p>
-      <p className="text-gray-900 dark:text-gray-100">
-        Plot-4, Road-1, Sector-16(i), Diabari, Uttara
-      </p>
-      <p className="text-gray-900 dark:text-gray-100">
-        Dhaka-1711
-      </p>
-    </div>
-  </div>
-</div>
+                  <p className="text-gray-900 dark:text-gray-100">
+                    Phone: {selectedRPO.mobile}
+                  </p>
+                </div>
+
+                {/* From */}
+                <div className="pl-2 text-xl">
+                  <p className=" text-gray-900 dark:text-gray-100">From</p>
+                  <p className="text-gray-900 dark:text-gray-100">
+                    Passport Personalization Complex
+                  </p>
+                  <p className="text-gray-900 dark:text-gray-100">
+                    Plot-4, Road-1, Sector-16(i), Diabari, Uttara
+                  </p>
+                  <p className="text-gray-900 dark:text-gray-100">Dhaka-1711</p>
+                </div>
+              </div>
+            </div>
 
             {/* Barcode Input hidden from UI, still used for scanner capture */}
             {

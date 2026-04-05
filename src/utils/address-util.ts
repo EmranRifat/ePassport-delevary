@@ -82,3 +82,17 @@ export const getAllAddress = (): RegionalPassportOffice[] => {
 
     return allAddress;
 };
+
+export const formatAddressLines = (address = "") => {
+  return address
+    .toLowerCase()
+    .split(",")
+    .map(part =>
+      part
+        .trim()
+        .split(" ")
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    );
+};
+

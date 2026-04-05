@@ -5,6 +5,7 @@ interface PrintBookingParams {
   selectedRPO: {
     address: string;
     mobile: string;
+    code:string
   };
   getTodayDate: () => string;
 }
@@ -14,6 +15,22 @@ export const printBookingPreview = ({
   selectedRPO,
   getTodayDate,
 }: PrintBookingParams): void => {
+
+  
+  const toTitleCase = (str: string) => {
+    const addressFormate = str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+    return addressFormate;
+  };
+
+  const formattedAddress = toTitleCase(selectedRPO.address)
+    .split(",")
+    .join("<br/>");
+
   const htmlContent = `
 <!DOCTYPE html>
 <html>
@@ -54,7 +71,7 @@ export const printBookingPreview = ({
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 24px;
       gap: 10px;
     }
 
@@ -86,6 +103,7 @@ export const printBookingPreview = ({
       font-size: 13px;
       margin-top:10px;
       margin-left: 6px;
+      margin-bottom: -6px;
        
     }
 
@@ -105,7 +123,7 @@ export const printBookingPreview = ({
     }
 
     .barcode-text {
-    margin-top: -6px;
+    margin-top: -11px;
       font-size: 16px;
       font-weight: 500;
     }
@@ -163,7 +181,7 @@ export const printBookingPreview = ({
     <div class="address-section">
       <div class="address-title">To</div>
         <div class="address-text"><div class="address-text">
-          ${selectedRPO.address.split(",").join("<br/>")}
+          ${formattedAddress} ${selectedRPO.code}
         </div>
       </div>
       <div class="address-text">Phone: ${selectedRPO.mobile}</div>

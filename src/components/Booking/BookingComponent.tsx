@@ -13,7 +13,7 @@ import Cookies from "js-cookie";
 import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
 import { useGetBrtaBookingLicence } from "@/lib/hooks/useGetBookingSubmissionCheck";
 import { useStoreMissingData } from "@/lib/hooks/useStoreMissingData";
-import { Input } from "@heroui/react";
+import { Card, Input } from "@heroui/react";
 
 type ViewMode = "grid" | "list";
 const token = Cookies.get("auth-token");
@@ -48,6 +48,7 @@ const BookingComponent = () => {
       address.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       address.code.includes(searchQuery),
   );
+ 
 
   const {
     storeMissingData,
@@ -161,7 +162,7 @@ const BookingComponent = () => {
     error: brtaError,
     data: brtaData,
   } = useGetBrtaBookingLicence(token);
-
+ console.log("address code>>>>>>>>....",selectedRPO)
   const handleOk = async (barcode: string) => {
     if (!barcode?.trim()) {
       setBookingErrorMessage("Barcode is required to submit.");
@@ -249,7 +250,8 @@ const BookingComponent = () => {
   };
 
   return (
-    <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+   <Card className="bg-white dark:bg-gray-900 min-h-screen p-1">
+     <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
       {/* Toast Notifications */}
 
       {/* Search Bar Section */}
@@ -494,6 +496,7 @@ const BookingComponent = () => {
         bookingSuccessMessage={bookingMessage}
       />
     </div>
+   </Card>
   );
 };
 

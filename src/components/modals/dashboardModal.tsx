@@ -11,6 +11,7 @@ import {
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { printBookingPreview } from "@/utils/print-booking";
+import { formatAddressLines } from "@/utils/address-util";
 
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
@@ -80,10 +81,16 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
       selectedRPO: {
         address: data.rpo_address,
         mobile: data.phone,
+        code:data.post_code
       },
       getTodayDate: () => formatted,
     });
   };
+
+
+  const formatedAddress = formatAddressLines(data?.rpo_address).map(
+      (line, index) => <p key={index}>{line}</p>,
+    );
   return (
     <Modal isOpen={isOpen} onOpenChange={onClose} placement="center" size="2xl" hideCloseButton >
       <ModalContent>
@@ -138,7 +145,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
 
                   {/* Issue Date */}
                   <div className="pl-10 my-3.5">
-                    <p className="text-mdDG817791512BD text-gray-900 dark:text-gray-100">
+                    <p className="text-base text-mdDG817791512BD text-gray-900 dark:text-gray-100">
                       Issue Date : {formatted || ""}
                     </p>
                   </div>
@@ -156,7 +163,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                             background="#fefefe"
                           />
                         </div>
-                        <p className="text-lg text-gray-800 mt-3 ml-24 dark:text-gray-100">
+                        <p className="text-lg font-semibold text-gray-800 mt-3 ml-24 dark:text-gray-100">
                           {data.barcode}
                         </p>
                       </>
@@ -164,30 +171,30 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   </div>
 
                   {/* To Section */}
-                  <div className="w-full pl-10 py-2.5">
-                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  <div className="w-full pl-10 py-2.5 text-xl">
+                    <p className="text-lg text-gray-900 dark:text-gray-100">
                       To
                     </p>
-                    <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
-                      {data.rpo_address}
-                    </p>
-                    <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                    <p className="flextext-gray-900 dark:text-gray-100">
+                    {formatedAddress} 
+                  </p>
+                    <p className=" font-normal text-gray-900 dark:text-gray-100">
                       Phone: {data.phone}
                     </p>
                   </div>
 
                   {/* From Section */}
-                  <div className="w-full pl-10 py-2.5">
-                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  <div className="w-full pl-10 py-2.5 text-xl">
+                    <p className=" text-gray-900 dark:text-gray-100">
                       From
                     </p>
-                    <p className="text-lg text-gray-900 dark:text-gray-100">
+                    <p className=" text-gray-900 dark:text-gray-100">
                       Passport Personalization Complex
                     </p>
-                    <p className="text-lg text-gray-900 dark:text-gray-100">
+                    <p className=" text-gray-900 dark:text-gray-100">
                       Plot-4, Road-1, Sector-16(i), Diabari, Uttara
                     </p>
-                    <p className="text-lg text-gray-900 dark:text-gray-100">
+                    <p className=" text-gray-900 dark:text-gray-100">
                       Dhaka-1711
                     </p>
                   </div>

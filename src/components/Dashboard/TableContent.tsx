@@ -101,13 +101,15 @@ const TableContent: React.FC<TableContentProps> = ({
           </select>
         </div>
       </div>
-      <div className="w-full relative mb-2">
+      <div className="w-full relative mb-2 ">
         <Table
           aria-label="Passport records table"
           classNames={{
             th: "bg-[#EDF2F7] dark:bg-gray-700 text-center dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
             td: "dark:text-gray-200 text-center",
+            table: "shadow-none"
+            
           }}
         >
           <TableHeader columns={columns}>

@@ -57,7 +57,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
             <div className="w-7 sm:w-8 md:w-12 md:h-12">
               <Image
-                src="/bpo.png"
+                src="/bpo_logo_white.svg"
                 alt="BPO"
                 width={45}
                 height={45}

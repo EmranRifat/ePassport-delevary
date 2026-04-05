@@ -17,7 +17,9 @@ body {
   color: rgb(var(--text));
   transition: background-color 0.3s, color 0.3s;
 }
-
+.heroui-table {
+  box-shadow: none !important;
+}
 /* .dark body{
   background-color: rgb(var(--bg));
   color: rgb(var(--text));
