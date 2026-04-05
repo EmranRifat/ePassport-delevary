@@ -43,10 +43,7 @@ export const printBookingPreview = ({
       size: 4in 6in;
       margin: 0;
     }
-      @font-face {
-  font-family: 'Open Sans';
-  src: url('/fonts/OpenSans-Regular.ttf') format('truetype');
-}
+       
 
 
      body {

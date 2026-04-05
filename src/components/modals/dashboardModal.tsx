@@ -81,18 +81,23 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
       selectedRPO: {
         address: data.rpo_address,
         mobile: data.phone,
-        code:data.post_code
+        code: data.post_code,
       },
       getTodayDate: () => formatted,
     });
   };
 
-
   const formatedAddress = formatAddressLines(data?.rpo_address).map(
-      (line, index) => <p key={index}>{line}</p>,
-    );
+    (line, index) => <p key={index}>{line}</p>,
+  );
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose} placement="center" size="2xl" hideCloseButton >
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onClose}
+      placement="center"
+      size="2xl"
+      hideCloseButton
+    >
       <ModalContent>
         {(close) => (
           <div>
@@ -171,23 +176,24 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   </div>
 
                   {/* To Section */}
+                  {/* To Section */}
                   <div className="w-full pl-10 py-2.5 text-xl">
                     <p className="text-lg text-gray-900 dark:text-gray-100">
                       To
                     </p>
-                    <p className="flextext-gray-900 dark:text-gray-100">
-                    {formatedAddress} 
-                  </p>
-                    <p className=" font-normal text-gray-900 dark:text-gray-100">
+
+                    <div className="text-gray-900 dark:text-gray-100">
+                      {formatedAddress}
+                    </div>
+
+                    <p className="font-normal text-gray-900 dark:text-gray-100">
                       Phone: {data.phone}
                     </p>
                   </div>
 
                   {/* From Section */}
                   <div className="w-full pl-10 py-2.5 text-xl">
-                    <p className=" text-gray-900 dark:text-gray-100">
-                      From
-                    </p>
+                    <p className=" text-gray-900 dark:text-gray-100">From</p>
                     <p className=" text-gray-900 dark:text-gray-100">
                       Passport Personalization Complex
                     </p>
@@ -204,7 +210,12 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
 
                 {/*================ all buttons here ==================*/}
                 <div className="flex justify-between gap-4 my-4">
-                  <Button variant="light" color="danger" size="md" onPress={close}>
+                  <Button
+                    variant="light"
+                    color="danger"
+                    size="md"
+                    onPress={close}
+                  >
                     cancel
                   </Button>
 
