@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Menu, Sun, Moon, LogOut } from "lucide-react";
-import { Button } from "../ui";
 import { useAuthStore } from "@/store";
 import { authApi } from "@/lib/api-services";
 import { useTheme } from "next-themes";

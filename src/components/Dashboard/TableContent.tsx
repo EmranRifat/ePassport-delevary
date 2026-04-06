@@ -67,10 +67,6 @@ const TableContent: React.FC<TableContentProps> = ({
   const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
-
-    setTimeout(() => {
-      setCopiedKey(null);
-    }, 1500); // 1.5 sec পরে hide
   };
   return (
     <div>
@@ -108,8 +104,7 @@ const TableContent: React.FC<TableContentProps> = ({
             th: "bg-[#EDF2F7] dark:bg-gray-700 text-center dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
             td: "dark:text-gray-200 text-center",
-            table: "shadow-none"
-            
+            table: "shadow-none",
           }}
         >
           <TableHeader columns={columns}>
@@ -132,13 +127,11 @@ const TableContent: React.FC<TableContentProps> = ({
               </div>
             }
             emptyContent={
-            
-                <div className="py-8 text-center">
-                  <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
-                    {error || "No data available."}
-                  </p>
-                </div>
-              
+              <div className="py-8 text-center">
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
+                  {error || "No data available."}
+                </p>
+              </div>
             }
           >
             {passportData?.map((item, index) => (

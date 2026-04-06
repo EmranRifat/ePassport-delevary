@@ -1,7 +1,6 @@
 import { Chip } from "@heroui/react";
 import { PassportBookingResponse } from "@/types/passport";
 
-
 interface Props {
   data: PassportBookingResponse;
   columnKey: string | React.Key;
@@ -39,7 +38,7 @@ const RenderCell = ({
         let hours = dateObj.getHours();
         const minutes = dateObj.getMinutes().toString().padStart(2, "0");
         const ampm = hours >= 12 ? "PM" : "AM";
-        hours = hours % 12 || 12; 
+        hours = hours % 12 || 12;
         const timePart = `${hours}:${minutes} ${ampm}`;
         formatted = `${datePart} ${timePart}`;
       }
@@ -53,13 +52,13 @@ const RenderCell = ({
         </div>
       );
 
-   case "booking_id":
-  return (
-    <div className="relative flex items-center justify-center group">
-      {/* Tooltip */}
-      {data.item_id && (
-        <span
-          className={`
+    case "booking_id":
+      return (
+        <div className="relative flex items-center justify-center group">
+          {/* Tooltip */}
+          {data.item_id && (
+            <span
+              className={`
             absolute -top-8 left-1/2 -translate-x-1/2
             text-[11px] px-2 py-0.5 rounded-md shadow-md
             opacity-0 scale-90
@@ -68,33 +67,33 @@ const RenderCell = ({
             whitespace-nowrap
             ${copiedKey === `booking-${index}` ? "bg-gray-600 text-white" : "bg-gray-50 text-gray-700"}
           `}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCopy(data.item_id, `booking-${index}`);
-          }}
-        >
-          {copiedKey === `booking-${index}` ? "Copied" : "Copy"}
-        </span>
-      )}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCopy(data.item_id, `booking-${index}`);
+              }}
+            >
+              {copiedKey === `booking-${index}` ? "Copied" : "Copy"}
+            </span>
+          )}
 
-      {/* Arrow */}
-      {data.item_id && (
-        <span
-          className={`
+          {/* Arrow */}
+          {data.item_id && (
+            <span
+              className={`
             absolute -top-2 left-1/2 -translate-x-1/2
             w-2 h-2 rotate-45
             transition
             opacity-0 group-hover:opacity-100
           `}
-        />
-      )}
+            />
+          )}
 
-      {/* Main Text */}
-      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-        {data.item_id || "-"}
-      </span>
-    </div>
-  );
+          {/* Main Text */}
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+            {data.item_id || "-"}
+          </span>
+        </div>
+      );
 
     case "rpo_id":
       return (
@@ -109,16 +108,14 @@ const RenderCell = ({
             group-hover:opacity-100 group-hover:scale-100
             transition-all duration-200
              whitespace-nowrap
-             ${copiedKey === `booking-${index}` ? "bg-gray-800 text-white" : "bg-gray-50 text-gray-700"}
+             ${copiedKey === `rpo-${index}` ? "bg-gray-600 text-white" : "bg-gray-50 text-gray-700"}
            `}
-            
-           
               onClick={(e) => {
                 e.stopPropagation();
-                handleCopy(data.post_code, `booking-${index}`);
+                handleCopy(data.post_code, `rpo-${index}`);
               }}
             >
-              {copiedKey === `booking-${index}` ? "Copied" : "Copy"}
+              {copiedKey === `rpo-${index}` ? "Copied" : "Copy"}
             </span>
           )}
 
@@ -152,7 +149,7 @@ const RenderCell = ({
       const service_type = data.service_type || "-";
       const getServiceTypeColor = (
         status: string,
-      ): "success" |"secondary" | "danger" | "warning" | "default" => {
+      ): "success" | "secondary" | "danger" | "warning" | "default" => {
         switch (status.toLowerCase()) {
           case "parcel":
             return "secondary";
@@ -190,7 +187,7 @@ const RenderCell = ({
             return "primary";
           case "delivered":
             return "success";
-             case "pending":
+          case "pending":
             return "warning";
           default:
             return "default";

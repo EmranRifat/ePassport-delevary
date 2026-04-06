@@ -36,7 +36,7 @@ export const printBookingPreview = ({
 <html>
 <head>
   <title>Print Booking - ${barcodeInput}</title>
-   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     @page {
@@ -44,7 +44,10 @@ export const printBookingPreview = ({
       margin: 0;
     }
        
-
+    @font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans-Regular.ttf') format('truetype');
+}
 
      body {
       margin: 0;
