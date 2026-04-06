@@ -98,9 +98,9 @@ export const printBookingPreview = ({
     /* Issue date */
     .issue-date {
       font-size: 13px;
-      margin-top:10px;
-      margin-left: 6px;
-      
+      margin-top:15px;
+      margin-left: 8px;
+      margin-bottom: 3px;
        
     }
 
@@ -121,7 +121,7 @@ export const printBookingPreview = ({
     }
 
     .barcode-text {
-       
+       mergin-top: -2px;
       font-size: 16px;
       font-weight: 500;
     }
