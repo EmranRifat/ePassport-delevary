@@ -174,6 +174,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [bookingSuccessMessage, handleCloseModal]);
 
+  
   React.useEffect(() => {
     if (bookingErrorMessage) {
       setShowErrorToast(true);
