@@ -356,7 +356,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 <Image src="/bpo.png" alt="BPO" width={45} height={45} />
 
                 <div className="text-center">
-                  <h2 className="text-2xl font-semibold text-black dark:text-white">BPO</h2>
+                  <h2 className="text-2xl font-semibold text-black dark:text-white">
+                    BPO
+                  </h2>
                   <p className="text-base font-semibold text-gray-600 dark:text-gray-300">
                     e-Passport Booking
                   </p>
@@ -389,18 +391,27 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                     </div>
                   ) : initialBarcode ? (
                     <>
-                      <div className="w-[260px]">
+                      {/* <div className="w-[260px]">
                         <Barcode
                           value={initialBarcode}
-                          format="CODE128"
+                          format="CODE39"
                           height={55}
                           width={2.6}
                           displayValue={false}
                           background="#ffffff"
                         />
+                      </div> */}
+                      <div>
+                        <Barcode
+                          displayValue={false}
+                          value={initialBarcode}
+                          height={55}
+                          width={1.9}
+                          format="CODE39"
+                        />
                       </div>
 
-                      <p className="font-semibold text-gray-800 dark:text-gray-100 ml-36">
+                      <p className="font-semibold text-gray-800 dark:text-gray-100 text-center">
                         {initialBarcode}
                       </p>
                     </>

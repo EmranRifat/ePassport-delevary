@@ -100,7 +100,7 @@ export const printBookingPreview = ({
       font-size: 13px;
       margin-top:10px;
       margin-left: 6px;
-      margin-bottom: -6px;
+      
        
     }
 
@@ -114,13 +114,14 @@ export const printBookingPreview = ({
       width: 100%;
       height: auto;
       display: flex;
-      justify-content: center;
+      justify-content: start;
       align-items: center;
+      
       
     }
 
     .barcode-text {
-    margin-top: -11px;
+       
       font-size: 16px;
       font-weight: 500;
     }
@@ -204,9 +205,9 @@ export const printBookingPreview = ({
   window.onload = () => {
     // Generate barcode
     JsBarcode("#barcode", "${barcodeInput}", {
-      format: "CODE128",
-      width: 2.6,
-      height: 55,
+      format: "CODE39",
+      width: 1.2,
+      height: 45,
       displayValue: false
     });
     
