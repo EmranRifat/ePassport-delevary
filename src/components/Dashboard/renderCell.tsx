@@ -21,7 +21,7 @@ const RenderCell = ({
     case "serial_no":
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
             {serial + index + 1}
           </span>
         </div>
@@ -45,7 +45,7 @@ const RenderCell = ({
 
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
             {" "}
             {formatted || "-"}{" "}
           </span>
@@ -54,7 +54,7 @@ const RenderCell = ({
 
     case "booking_id":
       return (
-        <div className="relative flex items-center justify-center group">
+        <div className="relative flex items-center justify-start group">
           {/* Tooltip */}
           {data.item_id && (
             <span
@@ -97,7 +97,7 @@ const RenderCell = ({
 
     case "rpo_id":
       return (
-        <div className="relative flex items-center justify-center group">
+        <div className="relative flex items-center justify-start group">
           {/* Tooltip */}
           {data.item_id && (
             <span
@@ -131,7 +131,7 @@ const RenderCell = ({
           )}
 
           {/* Main Text */}
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 ">
             {data.post_code || "-"}
           </span>
         </div>
@@ -140,7 +140,7 @@ const RenderCell = ({
     case "rpo_name":
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
             {data.rpo_name || "-"}
           </span>
         </div>
@@ -171,7 +171,7 @@ const RenderCell = ({
     case "rpo_address":
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
             {data.rpo_address || "-"}
           </span>
         </div>

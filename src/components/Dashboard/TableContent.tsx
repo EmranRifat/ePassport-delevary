@@ -101,9 +101,9 @@ const TableContent: React.FC<TableContentProps> = ({
         <Table
           aria-label="Passport records table"
           classNames={{
-            th: "bg-[#EDF2F7] dark:bg-gray-700 text-center dark:text-gray-200",
+            th: "bg-[#EDF2F7] dark:bg-gray-700  dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
-            td: "dark:text-gray-200 text-center",
+            td: "dark:text-gray-200 ",
             table: "shadow-none",
           }}
         >
