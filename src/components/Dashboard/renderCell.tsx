@@ -33,8 +33,10 @@ const RenderCell = ({
       if (data.booking_date) {
         const dateObj = new Date(data.booking_date.replace(" ", "T"));
 
-        // Date part
-        const datePart = dateObj.toLocaleDateString("en-US");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const year = dateObj.getFullYear();
+        const datePart = `${day}-${month}-${year}`;
         let hours = dateObj.getHours();
         const minutes = dateObj.getMinutes().toString().padStart(2, "0");
         const ampm = hours >= 12 ? "PM" : "AM";
@@ -46,8 +48,7 @@ const RenderCell = ({
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
-            {" "}
-            {formatted || "-"}{" "}
+            {formatted || "-"}
           </span>
         </div>
       );

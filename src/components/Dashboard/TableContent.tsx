@@ -71,7 +71,7 @@ const TableContent: React.FC<TableContentProps> = ({
   return (
     <div>
       {/* Pagination Controls */}
-      <div className="flex items-center justify-between my-2 md:my-3">
+      <div className="flex items-center justify-between my-3">
         <h1 className="text-sm  text-gray-700 dark:text-gray-300">
           Total : {data?.total_item} items
         </h1>

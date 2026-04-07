@@ -25,16 +25,16 @@ const menuItems: MenuItem[] = [
     path: "/booking",
     icon: <ClipboardList size={18} />,
   },
-  {
-    name: "Delivery",
-    path: "/delivery",
-    icon: <Truck size={18} />,
-  },
-  {
-    name: "Passport Status",
-    path: "/passport",
-    icon: <BookMarked size={18} />,
-  },
+  // {
+  //   name: "Delivery",
+  //   path: "/delivery",
+  //   icon: <Truck size={18} />,
+  // },
+  // {
+  //   name: "Passport Status",
+  //   path: "/passport",
+  //   icon: <BookMarked size={18} />,
+  // },
 ];
 
 export default function SideBar() {

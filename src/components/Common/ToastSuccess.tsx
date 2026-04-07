@@ -1,6 +1,6 @@
 import React from "react";
 
-const ToastSuccess = ({ message }: { message: string }) => {
+const ToastSuccess = ({ message }: { message: any }) => {
   return (
     <div
       className="fixed top-5 right-5 z-[60] animate-slide-in-left"

@@ -7,7 +7,6 @@ import { usePrintServerRes } from "@/lib/hooks/usePrintServerRes";
 import { useAuthStore } from "@/store/auth-store";
 import ToastSuccess from "../Common/ToastSuccess";
 import { BarcodeModalProps } from "@/lib/types";
-import { formatAddressLines } from "@/utils/address-util";
 
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
@@ -57,7 +56,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       setIsPrintTrigger(false);
       setShowScanButton(false);
       setOkCountdown(5);
-      setIsSubmitted(false);
+      setIsSubmitted(false); // 🔥 ADD THIS LINE
       if (autoOkTimerRef.current) {
         clearInterval(autoOkTimerRef.current);
         autoOkTimerRef.current = null;
@@ -106,43 +105,16 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [isScanSuccess]);
 
-  // React.useEffect(() => {
-  //   if (isScanSuccess && !isSubmitted) {
-  //     setOkCountdown(5); // reset countdown on new scan
-
-  //     const timer = setInterval(() => {
-  //       setOkCountdown((prev) => {
-  //         if (prev <= 1) {
-  //           clearInterval(timer);
-  //           setIsSubmitted(true); // stop repeat
-  //           // Schedule handleSubmitOk to run after render using queueMicrotask
-  //           queueMicrotask(() => {
-  //             handleSubmitOk();
-  //           });
-  //           return 0;
-  //         }
-  //         return prev - 1;
-  //       });
-  //     }, 1000);
-
-  //     autoOkTimerRef.current = timer;
-
-  //     return () => {
-  //       clearInterval(timer);
-  //       autoOkTimerRef.current = null;
-  //     };
-  //   }
-  // }, [isScanSuccess, isSubmitted]);
-
   React.useEffect(() => {
     if (isScanSuccess && !isSubmitted) {
-      setOkCountdown(5);
+      setOkCountdown(5); // reset countdown on new scan
 
       const timer = setInterval(() => {
         setOkCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            setIsSubmitted(true);
+            setIsSubmitted(true); // stop repeat
+            // Schedule handleSubmitOk to run after render using queueMicrotask
             queueMicrotask(() => {
               handleSubmitOk();
             });
@@ -150,7 +122,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
           }
           return prev - 1;
         });
-      }, 1000);
+      }, 1500);
 
       autoOkTimerRef.current = timer;
 
@@ -281,34 +253,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     setIsScanning(false);
   };
 
-  // const handleSubmitOk = async () => {
-  //   if (isSubmitted) return; // ✅ prevent double submit
-
-  //   try {
-  //     setIsSubmitted(true); // ✅ stop countdown
-
-  //     if (autoOkTimerRef.current) {
-  //       clearInterval(autoOkTimerRef.current);
-  //       autoOkTimerRef.current = null;
-  //     }
-
-  //     setOkCountdown(0);
-
-  //     await handleOk(barcodeInput);
-
-  //     setShowSuccessToast(true);
-
-  //     setTimeout(() => {
-  //       setShowSuccessToast(false);
-  //       setTimeout(() => {
-  //         handleCloseModal();
-  //       }, 0);
-  //     }, 1500);
-  //   } catch (error) {
-  //     console.error("Submit failed:", error);
-  //   }
-  // };
-
   const handleSubmitOk = async () => {
     if (isSubmitting || isSubmitted) return;
 
@@ -332,10 +276,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   };
 
-  const formatedAddress = formatAddressLines(selectedRPO.address).map(
-    (line, index) => <p key={index}>{line}</p>,
-  );
-
   return (
     <>
       {showSuccessToast && (
@@ -346,101 +286,124 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6 ">
+          <div className="p-6">
             <div
               id="booking-preview-card"
               className="border-2 border-black dark:border-gray-700 rounded-lg p-6 mb-8"
             >
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <Image src="/bpo.png" alt="BPO" width={45} height={45} />
-
+              {/* Header with Icons */}
+              <div className="flex items-center justify-between px-5 mb-5">
+                <div className="w-[45px] h-[45px] relative">
+                  <Image
+                    src="/bpo.png"
+                    alt="BPO"
+                    width={65}
+                    height={65}
+                    className="object-contain"
+                  />
+                </div>
                 <div className="text-center">
-                  <h2 className="text-2xl font-semibold text-black dark:text-white">
+                  <h2 className="text-[22px] font-normal text-black dark:text-white leading-tight">
                     BPO
                   </h2>
-                  <p className="text-base font-semibold text-gray-600 dark:text-gray-300">
+                  <p className="text-lg text-black dark:text-gray-100">
                     e-Passport Booking
                   </p>
                 </div>
-
-                <Image
-                  src="/passport.png"
-                  alt="Passport"
-                  width={45}
-                  height={45}
-                />
+                <div className="w-[45px] h-[45px] relative">
+                  <Image
+                    src="/passport.png"
+                    alt="Passport"
+                    width={65}
+                    height={65}
+                    className="object-contain"
+                  />
+                </div>
               </div>
 
-              {/* Main Content Wrapper (IMPORTANT 🔥) */}
-              <div className="pl-8 ">
-                {/* Issue Date */}
-                <div className="mb-4 pl-2">
-                  <p className="text-gray-900 dark:text-gray-100 text-base">
-                    Issue Date : {getTodayDate()}
-                  </p>
-                </div>
+              {/* Issue Date */}
+              <div className="text-center mb-3.5">
+                <p className="text-md text-gray-900 dark:text-gray-100">
+                  Issue Date: {getTodayDate()}
+                </p>
+              </div>
 
-                {/* Barcode */}
-                <div className="mb-5">
-                  {barcodeLoading ? (
-                    <div className="h-10 w-[260px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 border rounded">
-                      <span className="text-sm text-primary">
-                        Loading barcode...
+              {/* Barcode Section */}
+              <div className="flex flex-col items-center mb-2">
+                {barcodeLoading ? (
+                  <>
+                    <div className="barcode-container h-9 w-[350px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded">
+                      <span className="flex items-center gap-2 text-primary-600">
+                        <svg
+                          className="animate-spin h-5 w-5"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        <span className="text-sm">Loading barcode...</span>
                       </span>
                     </div>
-                  ) : initialBarcode ? (
-                    <>
-                      {/* <div className="w-[260px]">
-                        <Barcode
-                          value={initialBarcode}
-                          format="CODE39"
-                          height={55}
-                          width={2.6}
-                          displayValue={false}
-                          background="#ffffff"
-                        />
-                      </div> */}
-                      <div>
-                        <Barcode
-                          displayValue={false}
-                          value={initialBarcode}
-                          height={55}
-                          width={1.9}
-                          format="CODE39"
-                        />
-                      </div>
+                    <p className="text-lg text-transparent mt-1.5">.</p>
+                  </>
+                ) : initialBarcode ? (
+                  <>
+                    <div className="barcode-container h-9 w-[250px] md:w-[350px] flex items-center justify-center">
+                      <Barcode
+                        value={initialBarcode}
+                        format="CODE39"
+                        height={55}
+                        width={1.9}
+                        displayValue={false}
+                        background="#fefefe"
+                      />
+                    </div>
+                    <p className="text-lg text-gray-8DP741503837BD 00 mt-3 dark:text-gray-100">
+                      {initialBarcode}
+                    </p>
+                  </>
+                ) : null}
+              </div>
 
-                      <p className="font-semibold text-gray-800 dark:text-gray-100 text-center">
-                        {initialBarcode}
-                      </p>
-                    </>
-                  ) : null}
-                </div>
+              {/* To Section */}
+              <div className="w-full px-2.5 py-2.5">
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  To
+                </p>
+                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                  {selectedRPO.address}
+                </p>
+                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                  Phone: {selectedRPO.mobile}
+                </p>
+              </div>
 
-                {/* To */}
-                <div className="mb-4 pl-2 text-xl">
-                  <p className=" text-gray-900 dark:text-gray-100">To</p>
-                  <span className="text-gray-900 dark:text-gray-100">
-                    {formatedAddress}
-                  </span>
-
-                  <p className="text-gray-900 dark:text-gray-100">
-                    Phone: {selectedRPO.mobile}
-                  </p>
-                </div>
-
-                {/* From */}
-                <div className="pl-2 text-xl">
-                  <p className=" text-gray-900 dark:text-gray-100">From</p>
-                  <p className="text-gray-900 dark:text-gray-100">
-                    Passport Personalization Complex
-                  </p>
-                  <p className="text-gray-900 dark:text-gray-100">
-                    Plot-4, Road-1, Sector-16(i), Diabari, Uttara
-                  </p>
-                  <p className="text-gray-900 dark:text-gray-100">Dhaka-1711</p>
-                </div>
+              {/* From Section */}
+              <div className="w-full px-2.5 py-2.5">
+                <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  From
+                </p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  Passport Personalization Complex
+                </p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  Plot-4, Road-1, Sector-16(i), Diabari, Uttara
+                </p>
+                <p className="text-lg text-gray-900 dark:text-gray-100">
+                  Dhaka-1711
+                </p>
               </div>
             </div>
 

@@ -175,7 +175,7 @@ const DashboardComponent = () => {
 
   return (
     <div>
-      <Card   className="bg-white dark:bg-gray-900 min-h-screen p-1">
+      <div   className="bg-white dark:bg-gray-900 min-h-screen rounded-lg shadow p-1">
         {/* Main Content */}
         <main className="flex-1 w-full px-1 md:px-3 py-4">
           <div className="mb-4">
@@ -370,7 +370,7 @@ const DashboardComponent = () => {
             setPageSize={setPageSize}
           />
         </main>
-      </Card>
+      </div>
 
 
       {/* Date Range Modal */}
