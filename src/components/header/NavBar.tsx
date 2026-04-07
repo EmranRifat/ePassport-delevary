@@ -27,7 +27,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     clearAuth();
     router.push("/login");
   };
-
+const logoHandler = () => {
+  router.push("/dashboard");
+}
   const themeHandler = () => {
     setTheme(theme === "dark" ? "light" : "dark");
     //  setMobileMenuOpen((prev) => !prev)
@@ -52,16 +54,16 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
               <Menu size={24} />
             </button>
 
-            <div className="w-7 sm:w-8 md:w-12 md:h-12">
+            <div onClick={logoHandler} className="w-7 sm:w-8 md:w-12 md:h-12 cursor-pointer">
               <Image
-                src="/bpo.png"
+                src="/BPO.png"
                 alt="BPO"
                 width={45}
                 height={45}
                 className="w-full h-full object-contain"
               />
             </div>
-            <div>
+            <div onClick={logoHandler} className="cursor-pointer">
               <p className="text-sm md:text-lg xl:text-xl font-bold md:font-bold text-gray-50">
                 Bangladesh Post Office
               </p>

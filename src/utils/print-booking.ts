@@ -1,8 +1,12 @@
-import { RegionalPassportOffice } from "./address-util";
+// import { RegionalPassportOffice } from "./address-util";
 
 interface PrintBookingParams {
   barcodeInput: string;
-  selectedRPO: RegionalPassportOffice;
+  selectedRPO: {
+    address: string;
+    mobile: string;
+    code:string
+  };
   getTodayDate: () => string;
 }
 
@@ -11,29 +15,46 @@ export const printBookingPreview = ({
   selectedRPO,
   getTodayDate,
 }: PrintBookingParams): void => {
+
+  
+  const toTitleCase = (str: string) => {
+    const addressFormate = str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+
+    return addressFormate;
+  };
+
+  const formattedAddress = toTitleCase(selectedRPO.address)
+    .split(",")
+    .join("<br/>");
+
   const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head>
   <title>Print Booking - ${barcodeInput}</title>
+   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     @page {
       size: 4in 6in;
       margin: 0;
     }
+       
 
-    body {
+
+     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Arial', sans-serif;
-      font-size: 14px;
+     font-family: 'Open Sans', sans-serif;
+       
       width: 4in;
       height: 6in;
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      background: white;
     }
 
     .print-card {
@@ -47,7 +68,7 @@ export const printBookingPreview = ({
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 24px;
       gap: 10px;
     }
 
@@ -58,71 +79,75 @@ export const printBookingPreview = ({
 
     .header-center {
       text-align: center;
+      
       line-height: 1.2;
     }
 
     .header-title {
       font-size: 18px;
       margin: 0;
-      font-weight: bold;
+      font-weight: 500;
     }
 
     .header-subtitle {
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: 500;
       margin: 0;
     }
 
     /* Issue date */
     .issue-date {
-      font-size: 12px;
-      margin-left: 6px;
-      margin-bottom: 12px;
-      text-align: center;
+      font-size: 13px;
+      margin-top:15px;
+      margin-left: 8px;
+      margin-bottom: 3px;
+       
     }
 
     /* Barcode */
     .barcode-section {
       text-align: center;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
     .barcode-container {
       width: 100%;
       height: auto;
       display: flex;
-      justify-content: center;
+      justify-content: start;
       align-items: center;
-      margin-bottom: 8px;
+      
+      
     }
 
     .barcode-text {
-      font-size: 14px;
-      font-weight: bold;
-      letter-spacing: 2px;
+       mergin-top: -2px;
+      font-size: 16px;
+      font-weight: 500;
     }
 
     /* Address */
     .address-section {
-      margin-bottom: 14px;
+      margin-bottom: 25px;
       margin-left: 6px;
-      font-size: 12px;
+      font-size: 15px;
+       font-weight: semi-bold;
     }
 
     .address-title,
     .from-title {
-      font-weight: bold;
-      margin: 0 0 4px 0;
+      
     }
 
     .address-text {
       margin: 2px 0;
-      line-height: 1.4;
+      
     }
 
     @media print {
       body {
         -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    print-color-adjust: exact;
       }
     }
   </style>
@@ -153,7 +178,10 @@ export const printBookingPreview = ({
 
     <div class="address-section">
       <div class="address-title">To</div>
-      <div class="address-text">${selectedRPO.address}</div>
+        <div class="address-text"><div class="address-text">
+          ${formattedAddress} ${selectedRPO.code}
+        </div>
+      </div>
       <div class="address-text">Phone: ${selectedRPO.mobile}</div>
     </div>
 
@@ -177,9 +205,9 @@ export const printBookingPreview = ({
   window.onload = () => {
     // Generate barcode
     JsBarcode("#barcode", "${barcodeInput}", {
-      format: "CODE128",
-      width: 2.6,
-      height: 55,
+      format: "CODE39",
+      width: 1.2,
+      height: 45,
       displayValue: false
     });
     
@@ -213,6 +241,7 @@ export const printBookingPreview = ({
         }
       } catch (error) {
         // Silently fail if iframe is already removed
+        console.log(error);
       }
     }, 3000);
   }

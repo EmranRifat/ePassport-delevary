@@ -246,18 +246,18 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
       <ModalContent>
         {(close) => (
           <div>
-            <ModalHeader className="text-lg font-semibold">
+            {/* <ModalHeader className="text-lg font-semibold">
               Passport Details
-            </ModalHeader>
+            </ModalHeader> */}
 
             <ModalBody className="py-2 px-6">
               {/* Title */}
-              <h2 className="text-center text-xl font-semibold mb-4">
+              <h2 className="text-center text-xl font-mono pt-4">
                 Barcode Already Booked
               </h2>
 
               {/* Card */}
-              <div className="p-6">
+              <div className="py-2">
                 {/* Booking Preview Card */}
                 <div
                   id="booking-preview-card"
@@ -301,17 +301,18 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   </div>
 
                   {/* Barcode Section */}
-                  <div className="flex flex-col items-center mb-2">
+                  <div className="flex flex-col items-center ">
                     {data ? (
                       <>
                         <div className="barcode-container h-9 w-[250px] md:w-[350px] flex items-center justify-center">
-                          <Barcode
-                            value={data.barcode}
-                            height={55}
-                            width={2.6}
-                            displayValue={false}
-                            background="#fefefe"
-                          />
+                        <Barcode
+                        value={data.barcode}
+                        format="CODE39"
+                        height={55}
+                        width={1.9}
+                        displayValue={false}
+                        background="#fefefe"
+                      />
                         </div>
                         <p className="text-lg text-gray-800 mt-3 dark:text-gray-100">
                           {data.barcode}
@@ -353,12 +354,22 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                 {/* Barcode Input hidden from UI, still used for scanner capture */}
 
                 {/*================ all buttons here ==================*/}
-                <div className="flex justify-between gap-4 my-4">
-                  <Button   size="lg" onPress={close}>
-                    cancel
+              <div className="flex justify-between gap-4 my-4">
+                  <Button
+                    variant="light"
+                    color="danger"
+                    size="md"
+                    onPress={close}
+                  >
+                    Cancel
                   </Button>
 
-                  <Button   size="lg" onPress={onPrint}>
+                  <Button
+                    color="primary"
+                    size="md"
+                    onPress={onPrint}
+                    isDisabled={!!data.barcode}
+                  >
                     print
                   </Button>
                 </div>
