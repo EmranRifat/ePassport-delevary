@@ -33,7 +33,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     const year = date.year;
     const month = String(date.month).padStart(2, "0");
     const day = String(date.day).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    return `${day}-${month}-${year}`;
   };
 
   const handlePrint = () => {
@@ -42,8 +42,8 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     const printStartDate = formatDate(tempDateRange.start);
     const printEndDate = formatDate(tempDateRange.end);
 
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
+    // const printWindow = window.open("", "_blank");
+    // if (!printWindow) return;
 
     const printContent = `
       <!DOCTYPE html>
@@ -72,7 +72,6 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
           </style>
         </head>
         <body>
-           <img src="/bpo.png" alt="BPO Logo" class="logo" />
           <div class="header">
             <h1>Bangladesh Post Office</h1>
             <h2>e-Passport Booking</h2>
@@ -82,9 +81,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
             <div>Operator Name: Samsu</div>
             <div>Total page 1</div>
           </div>
-          <div class="summary">
-            <p><strong>Total Booked:</strong> ${totalBooked} | <strong>Total Delivered:</strong> ${totalDelivered}</p>
-          </div>
+         
           ${
             passportData.length === 0
               ? '<div class="no-data">No data available for the selected date range</div>'
@@ -129,10 +126,29 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
       </html>
     `;
 
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    setTempDateRange(null);
-    onClose();
+    const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  document.body.appendChild(iframe);
+
+  // Write content to iframe
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (iframeDoc) {
+    iframeDoc.open();
+    iframeDoc.write(printContent);
+    iframeDoc.close();
+
+    // Clean up iframe after print dialog closes (with delay to account for print dialog duration)
+    setTimeout(() => {
+      try {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      } catch (error) {
+        // Silently fail if iframe is already removed
+        console.log(error);
+      }
+    }, 3000);
+  }
   };
 
   const handleApply = () => {
@@ -192,7 +208,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                     setTempDateRange(value);
                   }}
                 />
-                {tempDateRange && tempDateRange.start && tempDateRange.end && (
+                {/* {tempDateRange && tempDateRange.start && tempDateRange.end && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p className="text-sm text-blue-800 font-medium mb-2">
                       Selected Range:
@@ -219,7 +235,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                       </span>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
             </ModalBody>
             <ModalFooter className="border-t border-gray-200 pt-4">

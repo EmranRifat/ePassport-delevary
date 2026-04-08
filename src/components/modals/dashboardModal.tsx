@@ -4,7 +4,6 @@ import React from "react";
 import {
   Modal,
   ModalContent,
-  ModalHeader,
   ModalBody,
   Button,
 } from "@heroui/react";
