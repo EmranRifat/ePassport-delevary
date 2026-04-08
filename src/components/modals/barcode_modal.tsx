@@ -349,8 +349,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
               {/* Issue Date */}
               <div className="text-center mb-3.5">
-                <p className="text-mdDG817791512BD text-gray-900 dark:text-gray-100">
-                  Issue Date : {getTodayDate()}
+                <p className="text-md text-gray-900 dark:text-gray-100">
+                  Issue Date: {getTodayDate()}
                 </p>
               </div>
 

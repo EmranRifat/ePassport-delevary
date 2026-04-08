@@ -48,36 +48,38 @@ const columns = [
     uid: "status",
   },
 ];
+
+
+
 const TableContent: React.FC<TableContentProps> = ({
-  data,
   loading: loading,
   error,
   passportData,
   currentPage,
   pageSize,
   totalPages,
+  totalItems,
   setCurrentPage,
   setPageSize,
 }) => {
+
+
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
+
   // console.log("Passport data==", passportData);
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(key);
-
-    setTimeout(() => {
-      setCopiedKey(null);
-    }, 1500); // 1.5 sec পরে hide
   };
   return (
     <div>
       {/* Pagination Controls */}
-      <div className="flex items-center justify-between my-2 md:my-3">
+      <div className="flex items-center justify-between my-3">
         <h1 className="text-sm  text-gray-700 dark:text-gray-300">
-          Total : {data?.total_item} items
+          Total : {totalItems} items
         </h1>
 
         <div className="flex items-center space-x-2">
@@ -105,11 +107,10 @@ const TableContent: React.FC<TableContentProps> = ({
         <Table
           aria-label="Passport records table"
           classNames={{
-            th: "bg-[#EDF2F7] dark:bg-gray-700 text-center dark:text-gray-200",
+            th: "bg-[#EDF2F7] dark:bg-gray-700  dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
-            td: "dark:text-gray-200 text-center",
-            table: "shadow-none"
-            
+            td: "dark:text-gray-200 ",
+            table: "shadow-none",
           }}
         >
           <TableHeader columns={columns}>
@@ -132,13 +133,11 @@ const TableContent: React.FC<TableContentProps> = ({
               </div>
             }
             emptyContent={
-            
-                <div className="py-8 text-center">
-                  <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
-                    {error || "No data available."}
-                  </p>
-                </div>
-              
+              <div className="py-8 text-center">
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
+                  {error || "No data available."}
+                </p>
+              </div>
             }
           >
             {passportData?.map((item, index) => (

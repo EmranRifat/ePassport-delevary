@@ -5,7 +5,7 @@ interface PrintBookingParams {
   selectedRPO: {
     address: string;
     mobile: string;
-    code:string
+    code: string;
   };
   getTodayDate: () => string;
 }
@@ -15,8 +15,6 @@ export const printBookingPreview = ({
   selectedRPO,
   getTodayDate,
 }: PrintBookingParams): void => {
-
-  
   const toTitleCase = (str: string) => {
     const addressFormate = str
       .toLowerCase()
@@ -36,7 +34,7 @@ export const printBookingPreview = ({
 <html>
 <head>
   <title>Print Booking - ${barcodeInput}</title>
-   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     @page {
@@ -44,12 +42,14 @@ export const printBookingPreview = ({
       margin: 0;
     }
        
-
+    @font-face {
+  font-family: 'Open Sans';
+  src: url('/fonts/OpenSans-Regular.ttf') format('truetype');
+}
 
      body {
       margin: 0;
      font-family: 'Open Sans', sans-serif;
-       
       width: 4in;
       height: 6in;
       display: flex;
@@ -59,7 +59,7 @@ export const printBookingPreview = ({
 
     .print-card {
       width: 3.2in;
-      padding-top: 0.4in;
+      padding: 0.45in 0.25in 0.2in;
       color: #000;
     }
 
@@ -111,7 +111,7 @@ export const printBookingPreview = ({
     }
 
     .barcode-container {
-      width: 100%;
+      min-width: 100%;
       height: auto;
       display: flex;
       justify-content: start;

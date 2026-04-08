@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Menu, Sun, Moon, LogOut } from "lucide-react";
-import { Button } from "../ui";
 import { useAuthStore } from "@/store";
 import { authApi } from "@/lib/api-services";
 import { useTheme } from "next-themes";
@@ -19,6 +18,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   const { user, clearAuth } = useAuthStore();
   const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAvatereMenuOpen, setIsAvaterMenuOpen] = useState(false);
 
   const [mounted, setMounted] = useState(false);
 
@@ -27,16 +27,16 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
     clearAuth();
     router.push("/login");
   };
-const logoHandler = () => {
-  router.push("/dashboard");
-}
+  const logoHandler = () => {
+    router.push("/dashboard");
+  };
   const themeHandler = () => {
     setTheme(theme === "dark" ? "light" : "dark");
     //  setMobileMenuOpen((prev) => !prev)
   };
 
   const avatarHandler = () => {
-    setMobileMenuOpen((prev) => !prev);
+    setIsAvaterMenuOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -54,7 +54,10 @@ const logoHandler = () => {
               <Menu size={24} />
             </button>
 
-            <div onClick={logoHandler} className="w-7 sm:w-8 md:w-12 md:h-12 cursor-pointer">
+            <div
+              onClick={logoHandler}
+              className="w-7 sm:w-8 md:w-12 md:h-12 cursor-pointer"
+            >
               <Image
                 src="/BPO.png"
                 alt="BPO"
@@ -73,13 +76,12 @@ const logoHandler = () => {
             </div>
           </div>
 
-
           {/* Right */}
           <div className="flex gap-2 mr-4">
             {/* Theme Toggle */}
             <button
               onClick={themeHandler}
-              className="flex items-center   px-3    rounded-full  "
+              className="flex items-center px-3 rounded-full "
             >
               {theme === "dark" ? (
                 <>
@@ -87,7 +89,7 @@ const logoHandler = () => {
                 </>
               ) : (
                 <>
-                  <Moon size={24} className="text-gray-100" />
+                  <Moon size={22} className="text-gray-100" />
                 </>
               )}
             </button>
@@ -100,7 +102,7 @@ const logoHandler = () => {
               >
                 <Avatar size="sm" name={user?.name || user?.user_id} />
               </button>
-              <p className="flex items-center text-base text-gray-50">
+              <p className="hidden md:flex items-center text-base text-gray-50">
                 {user?.name || user?.user_id || "User"}
               </p>
             </div>
@@ -108,30 +110,36 @@ const logoHandler = () => {
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
-      {mobileMenuOpen && (
-        <div className="absolute top-16 right-12 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
-          <div className="flex flex-col">
-            {/* User Info Section */}
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                Logged in as
-              </p>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                {user?.name || user?.user_id || "User"}
-              </p>
-            </div>
+      {/* Avatar Dropdown Menu */}
+      {isAvatereMenuOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsAvaterMenuOpen(false)}
+          />
+          <div className="absolute top-16 right-2 md:right-4 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+            <div className="flex flex-col">
+              {/* User Info Section */}
+              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  Logged in as
+                </p>
+                <p className="text-sm text-gray-900 dark:text-white truncate">
+                  {user?.name || user?.user_id || "User"}
+                </p>
+              </div>
 
-            {/* Logout Button */}
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-3 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 cursor-pointer"
-            >
-              <LogOut size={18} />
-              <span>Logout</span>
-            </button>
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 w-full px-4 py-3 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 cursor-pointer"
+              >
+                <LogOut size={18} />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
       {mobileMenuOpen && (
         <div

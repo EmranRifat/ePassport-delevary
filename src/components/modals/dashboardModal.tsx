@@ -1,11 +1,16 @@
 "use client";
 
 import React from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, Button } from "@heroui/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  Button,
+} from "@heroui/react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
- 
- 
+
 // Import Barcode dynamically to avoid SSR issues
 const Barcode = dynamic(() => import("react-barcode"), { ssr: false });
 
@@ -63,6 +68,18 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
       day: "numeric",
     });
   };
+
+  let formattedBookingDate = "-";
+
+  if (data?.booking_date) {
+    const dateObj = new Date(data?.booking_date.replace(" ", "T"));
+
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const year = dateObj.getFullYear();
+
+    formattedBookingDate = `${day}-${month}-${year}`;
+  }
 
   const printBookingPreview = () => {
     const printContent = document.getElementById("booking-preview-card");
@@ -242,7 +259,13 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
     printBookingPreview();
   };
   return (
-    <Modal isOpen={isOpen} onOpenChange={onClose} placement="center" size="2xl">
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onClose}
+      placement="center"
+      size="2xl"
+      hideCloseButton
+    >
       <ModalContent>
         {(close) => (
           <div>
@@ -296,7 +319,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   {/* Issue Date */}
                   <div className="text-center mb-3.5">
                     <p className="text-mdDG817791512BD text-gray-900 dark:text-gray-100">
-                      Issue Date : {data?.booking_date || "31-03-2026"}
+                      Issue Date : {formattedBookingDate || "31-03-2026"}
                     </p>
                   </div>
 
@@ -305,14 +328,14 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                     {data ? (
                       <>
                         <div className="barcode-container h-9 w-[250px] md:w-[350px] flex items-center justify-center">
-                        <Barcode
-                        value={data.barcode}
-                        format="CODE39"
-                        height={55}
-                        width={1.9}
-                        displayValue={false}
-                        background="#fefefe"
-                      />
+                          <Barcode
+                            value={data.barcode}
+                            format="CODE39"
+                            height={55}
+                            width={1.9}
+                            displayValue={false}
+                            background="#fefefe"
+                          />
                         </div>
                         <p className="text-lg text-gray-800 mt-3 dark:text-gray-100">
                           {data.barcode}
@@ -354,7 +377,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                 {/* Barcode Input hidden from UI, still used for scanner capture */}
 
                 {/*================ all buttons here ==================*/}
-              <div className="flex justify-between gap-4 my-4">
+                <div className="flex justify-between gap-4 my-4">
                   <Button
                     variant="light"
                     color="danger"

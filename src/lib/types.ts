@@ -277,15 +277,13 @@ export interface PassportDataItem {
 }
 
 export interface TableContentProps {
-  data: any;
+  totalItems:number |undefined,
   loading: boolean;
   error: string | null;
   passportData: PassportDataItem[];
   currentPage: number;
   pageSize: number;
   totalPages: number;
-  searchQuery: string;
-  setSearchQuery: (value: string) => void;
   setCurrentPage: (value: number) => void;
   setPageSize: (value: number) => void;
 }

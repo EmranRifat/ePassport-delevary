@@ -264,11 +264,10 @@ const BookingComponent = () => {
 
   const getTodayDate = () => {
     const today = new Date();
-    return today.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   return (

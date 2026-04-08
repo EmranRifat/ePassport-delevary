@@ -4,15 +4,13 @@ import {
   AllBookingResponse,
 } from "../types";
 
-export const useGetAllBookings = ({
-  token,
-}: {
-  token: string | undefined;
-}) => {
+export const useGetAllBookings = ({token}: {token: string | undefined }) => {
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AllBookingResponse | null>(null);
 
+  
   const getAllBookings = async ( requestData: GetAllBookingsRequest): Promise<AllBookingResponse> => {
     
     if (!token) {

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import {
   Button,
-  Card,
   DateRangePicker,
   Input,
   Select,
@@ -16,7 +15,8 @@ import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
 import TableContent from "./TableContent";
 import DatePickerModal from "@/components/modals/datePickerModal";
-
+import { parseDate } from "@internationalized/date";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 const statusOptions = [
   { key: "All", label: "All Status" },
@@ -25,30 +25,21 @@ const statusOptions = [
 ];
 
 const DashboardComponent = () => {
-  //   const router = useRouter();
-  //   const { user, clearAuth } = useAuthStore();
   const token = Cookies.get("auth-token");
 
-  // Initialize date range (last 30 days)
   const getDefaultDates = () => {
-    const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
-
-    const formatForInput = (date: Date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
+    const todayDate = today(getLocalTimeZone()); // CalendarDate
 
     return {
-      start: formatForInput(startDate),
-      end: formatForInput(endDate),
+      start: todayDate.toString(), // YYYY-MM-DD ✅
+      end: todayDate.toString(), // YYYY-MM-DD ✅
     };
   };
 
   const defaultDates = getDefaultDates();
+
+  const [startDate, setStartDate] = useState(defaultDates.start);
+  const [endDate, setEndDate] = useState(defaultDates.end);
 
   const [dashboardData, setDashboardData] = useState<AllBookingResponse | null>(
     null,
@@ -59,14 +50,12 @@ const DashboardComponent = () => {
     "All" | "Booked" | "Delivered"
   >("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [startDate, setStartDate] = useState(defaultDates.start);
-  const [endDate, setEndDate] = useState(defaultDates.end);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  // const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [isDateModalOpen, setIsDateModalOpen] = useState(false);
 
-  const { getAllBookings, loading, error, data } = useGetAllBookings({ token });
+  const { getAllBookings, loading, error } = useGetAllBookings({ token });
 
-  console.log("Getting_All_booking_Data==>", data);
   // Use ref to prevent multiple API calls on mount
   const hasFetchedRef = useRef(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -74,7 +63,7 @@ const DashboardComponent = () => {
   // Helper function to format date from YYYY-MM-DD to DD-MM-YYYY
   const formatDateForAPI = (dateString: string) => {
     const [year, month, day] = dateString.split("-");
-    return `${day}-${month}-${year}`;
+    return `${day}-${month}-${year}`; // DD-MM-YYYY
   };
 
   // Fetch bookings function
@@ -116,13 +105,13 @@ const DashboardComponent = () => {
         ...searchParams,
       };
 
-      console.log("Fetching bookings with:", requestData);
+      // console.log("Fetching bookings with:", requestData);
+
       const response = await getAllBookings(requestData);
+      console.log("res try--->>>", response);
       setDashboardData(response);
-      setIsInitialLoad(false);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
-      setIsInitialLoad(false);
     }
   };
 
@@ -136,7 +125,7 @@ const DashboardComponent = () => {
     }
 
     fetchBookings();
-  }, [currentPage, pageSize, statusFilter, startDate, endDate]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, statusFilter, startDate, endDate]);
 
   // Debounced search effect for all search fields
   useEffect(() => {
@@ -168,6 +157,7 @@ const DashboardComponent = () => {
   const passportData = dashboardData?.passportissuedata || [];
   const totalBooked = dashboardData?.total_booked?.toString() || "0";
   const totalDelivered = dashboardData?.total_delivered?.toString() || "0";
+
   // Show error message if there's an error
   if (error) {
     console.error("API Error:", error);
@@ -175,7 +165,7 @@ const DashboardComponent = () => {
 
   return (
     <div>
-      <div   className="bg-white dark:bg-gray-900 min-h-screen rounded-lg shadow p-1">
+      <div className="bg-white dark:bg-gray-900 min-h-screen rounded-lg shadow p-1">
         {/* Main Content */}
         <main className="flex-1 w-full px-1 md:px-3 py-4">
           <div className="mb-4">
@@ -208,13 +198,13 @@ const DashboardComponent = () => {
                       Booked
                     </p>
                     {loading && !dashboardData ? (
-                      <Spinner size="sm" color="primary" /> 
+                      <Spinner size="sm" color="primary" />
                     ) : (
                       <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {data?.total_booked || "0"}
+                        {dashboardData?.total_booked || "0"}
                       </p>
                     )}
-                  </div> 
+                  </div>
                 </div>
               </div>
 
@@ -243,7 +233,7 @@ const DashboardComponent = () => {
                       <Spinner size="sm" color="success" />
                     ) : (
                       <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {data?.total_delivered || "0"}
+                        {dashboardData?.total_delivered || "0"}
                       </p>
                     )}
                   </div>
@@ -339,17 +329,16 @@ const DashboardComponent = () => {
               <DateRangePicker
                 size="md"
                 label="Date Range"
-                aria-label="Select date range for filtering"
+                aria-label="Date Range"
+                value={{
+                  start: parseDate(startDate),
+                  end: parseDate(endDate),
+                }}
                 onChange={(value) => {
-                  if (value && value.start && value.end) {
-                    const formatDate = (date: any) => {
-                      const year = date.year;
-                      const month = String(date.month).padStart(2, "0");
-                      const day = String(date.day).padStart(2, "0");
-                      return `${year}-${month}-${day}`;
-                    };
-                    setStartDate(formatDate(value.start));
-                    setEndDate(formatDate(value.end));
+                  if (value?.start && value?.end) {
+                    setStartDate(value.start.toString());
+                    setEndDate(value.end.toString());
+                    setCurrentPage(1);
                   }
                 }}
               />
@@ -357,21 +346,20 @@ const DashboardComponent = () => {
           </div>
 
           <TableContent
-            data={data}
             loading={loading}
             error={error}
             passportData={passportData}
             currentPage={currentPage}
             pageSize={pageSize}
             totalPages={totalPages}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
+            // searchQuery={searchQuery}
+            // setSearchQuery={setSearchQuery}
             setCurrentPage={setCurrentPage}
             setPageSize={setPageSize}
+            totalItems={dashboardData?.total_item}
           />
         </main>
       </div>
-
 
       {/* Date Range Modal */}
       <DatePickerModal
