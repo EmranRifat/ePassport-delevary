@@ -102,7 +102,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
   // Show in-modal scan toast
   React.useEffect(() => {
     if (isScanSuccess) {
-      setScanSuccessToast("✅ Scan Success..!");
+      setScanSuccessToast("Scan successful ✅");
       const toastTimer = setTimeout(() => {
         setScanSuccessToast("");
       }, 2000);
@@ -464,7 +464,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
             {bookingSuccessMessage && (
               <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700 rounded-lg">
                 <p className="text-green-700 dark:text-green-400 text-sm font-medium text-center">
-                  ✅ Booking successful..!
+                  Booking successful..✅
                 </p>
               </div>
             )}

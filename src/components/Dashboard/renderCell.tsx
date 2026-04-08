@@ -61,16 +61,16 @@ const RenderCell = ({
             <span
               className={`
             absolute -top-8 left-1/2 -translate-x-1/2
-            text-[11px] px-2 py-0.5 rounded-md shadow-md
+            text-[11px] px-1 py-0.5 rounded-md shadow-md
             opacity-0 scale-90
             group-hover:opacity-100 group-hover:scale-100
-            transition-all duration-200
+            transition-all duration-100
             whitespace-nowrap
-            ${copiedKey === `booking-${index}` ? "bg-gray-600 text-white" : "bg-gray-50 text-gray-700"}
+            ${copiedKey === `booking-${index}` ? "bg-gray-200 text-green-400" : "bg-gray-50 text-gray-700"}
           `}
               onClick={(e) => {
                 e.stopPropagation();
-                handleCopy(data.item_id, `booking-${index}`);
+                handleCopy(data?.item_id, `booking-${index}`);
               }}
             >
               {copiedKey === `booking-${index}` ? "Copied" : "Copy"}
@@ -102,18 +102,18 @@ const RenderCell = ({
           {/* Tooltip */}
           {data.item_id && (
             <span
-              className={`absolute -top-8 left-1/2 -translate-x-1/2
+              className={`absolute -top-8 left-6 -translate-x-1/2
             bg-gray-50 text-gray-700 text-[11px]
-            px-2 py-0.5 rounded-md shadow-md
+            px-1 py-0.5 rounded-md shadow-md
             opacity-0 scale-90
             group-hover:opacity-100 group-hover:scale-100
             transition-all duration-200
              whitespace-nowrap
-             ${copiedKey === `rpo-${index}` ? "bg-gray-600 text-white" : "bg-gray-50 text-gray-700"}
+             ${copiedKey === `rpo-${index}` ? "bg-gray-200 text-green-400" : "bg-gray-50 text-gray-700"}
            `}
               onClick={(e) => {
                 e.stopPropagation();
-                handleCopy(data.post_code, `rpo-${index}`);
+                handleCopy(data?.item_id, `rpo-${index}`);
               }}
             >
               {copiedKey === `rpo-${index}` ? "Copied" : "Copy"}

@@ -129,7 +129,7 @@ const TableContent: React.FC<TableContentProps> = ({
             isLoading={loading && (!passportData || passportData.length === 0)}
             loadingContent={
               <div className="mt-6 flex justify-center">
-                <Spinner />
+              {  loading && <Spinner />}
               </div>
             }
             emptyContent={
