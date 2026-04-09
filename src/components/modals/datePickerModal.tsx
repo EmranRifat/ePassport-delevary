@@ -14,6 +14,7 @@ import {
 } from "@heroui/react";
 import { usePostEPassportReport } from "@/lib/hooks/usePostBookingReport";
 import { ReportData } from "@/lib/types";
+import { useAuthStore } from "@/store";
 
 interface DatePickerModalProps {
   isOpen: boolean;
@@ -29,7 +30,10 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
 }) => {
   const [tempDateRange, setTempDateRange] = useState<any>(null);
 
-  const { mutateAsync, isPending, error, data } = usePostEPassportReport();
+  const { user } = useAuthStore();
+
+  // const { mutateAsync, isPending, error ,data} = usePostEPassportReport();
+  const { mutate, isPending, error, data } = usePostEPassportReport();
 
   console.log("mutateAsync data -->", data);
 
@@ -40,31 +44,58 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     return `${day}-${month}-${year}`;
   };
 
+ 
+
   const buildPrintContent = (
     reportData: ReportData[],
     printStartDate: string,
     printEndDate: string,
   ) => {
+     const getPageCount = (rowCount: number) => {
+    const rowsPerPage = 30;
+    return Math.max(1, Math.ceil(rowCount / rowsPerPage));
+  };
+    const totalPages = getPageCount(reportData.length);
+
     return `
     <!DOCTYPE html>
     <html>
       <head>
         <title>e-Passport Booking Report</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 20px; position: relative; }
+          body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  position: relative;
+  text-align: center;
+}
           .header { text-align: center; margin-bottom: 30px; padding-top: 10px; }
           .header h1 { margin: 5px 0; font-size: 18px; font-weight: normal; }
           .header h2 { margin: 5px 0; font-size: 16px; font-weight: normal; }
           .header h3 { margin: 5px 0; font-size: 14px; font-weight: normal; }
           .info-row { display: flex; justify-content: space-between; margin: 10px 0; font-size: 14px; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          th, td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 12px; }
+          th { 
+  border: 1px solid #000; 
+  padding: 6px; 
+  text-align: center; 
+  font-size: 12px; 
+}
+
+td { 
+  border: 1px solid #000; 
+  padding: 6px; 
+  text-align: center; 
+  font-size: 12px; 
+}
           th { background-color: #f3f4f6; font-weight: 600; }
           tr:nth-child(even) { background-color: #f9fafb; }
           .no-data { text-align: center; padding: 40px; color: #6b7280; }
           @media print {
             body { padding: 10px; }
             .no-print { display: none; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
           }
         </style>
       </head>
@@ -75,8 +106,8 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
           <h3>Daily Report for: ${printStartDate} to ${printEndDate}</h3>
         </div>
         <div class="info-row">
-          <div>Operator Name: Samsu</div>
-          <div>Total page 1</div>
+          <div>Operator Name: ${user?.name}</div>
+          <div>Total page: ${totalPages}</div>
         </div>
 
         ${
@@ -149,31 +180,65 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     }, 3000);
   };
 
-  const handlePrint = async () => {
+  // const handlePrint = async () => {
+  //   if (!tempDateRange?.start || !tempDateRange?.end) return;
+
+  //   const printStartDate = formatDate(tempDateRange.start);
+  //   const printEndDate = formatDate(tempDateRange.end);
+
+  //   try {
+  //     const res = await mutateAsync({
+  //       user_id: userId,
+  //       start_date: printStartDate,
+  //       end_date: printEndDate,
+  //     });
+
+  //     console.log("report data:", res.data);
+
+  //     const printContent = buildPrintContent(
+  //       res.data,
+  //       printStartDate,
+  //       printEndDate,
+  //     );
+
+  //     printHtml(printContent);
+  //   } catch (err) {
+  //     console.error("Print report failed:", err);
+  //   }
+  // };
+
+  const handlePrint = () => {
     if (!tempDateRange?.start || !tempDateRange?.end) return;
 
     const printStartDate = formatDate(tempDateRange.start);
     const printEndDate = formatDate(tempDateRange.end);
 
-    try {
-      const res = await mutateAsync({
+    mutate(
+      {
         user_id: userId,
         start_date: printStartDate,
         end_date: printEndDate,
-      });
+      },
+      {
+        onSuccess: (res) => {
+          const printContent = buildPrintContent(
+            res.data,
+            printStartDate,
+            printEndDate,
+          );
 
-      console.log("report data:", res.data);
+          setTempDateRange(null);
+          onClose();
 
-      const printContent = buildPrintContent(
-        res.data,
-        printStartDate,
-        printEndDate,
-      );
-
-      printHtml(printContent);
-    } catch (err) {
-      console.error("Print report failed:", err);
-    }
+          setTimeout(() => {
+            printHtml(printContent);
+          }, 200);
+        },
+        onError: (error) => {
+          console.error("Print report failed:", error);
+        },
+      },
+    );
   };
 
   const handleCancel = () => {
@@ -183,14 +248,14 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="3xl" backdrop="blur">
-      <ModalContent>
+      <ModalContent className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 border-b border-gray-200 pb-4">
+            <ModalHeader className="flex flex-col gap-1 border-b border-gray-200 dark:border-gray-700 pb-4">
               <div className="flex items-center gap-3">
-                <div className="bg-blue-100 rounded-lg p-2">
+                <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2">
                   <svg
-                    className="w-6 h-6 text-blue-600"
+                    className="w-6 h-6 text-blue-600 dark:text-blue-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -203,18 +268,20 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                     />
                   </svg>
                 </div>
+
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800">
+                  <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                     Select Date Range for Report Print
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     Choose a start and end date for your filter
                   </p>
                 </div>
               </div>
             </ModalHeader>
+
             <ModalBody className="py-6">
-              <div className="space-y-4">
+              <div className="dark:bg-postDarker  rounded">
                 <I18nProvider locale="en-GB">
                   <DateRangePicker
                     label="Date Range"
@@ -227,14 +294,15 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                   />
                 </I18nProvider>
               </div>
+
               {error && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-red-600 dark:text-red-400 mt-3">
                   {error.message || "Failed to generate report"}
                 </p>
               )}
             </ModalBody>
 
-            <ModalFooter className="border-t border-gray-200 pt-4">
+            <ModalFooter className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <Button
                 color="danger"
                 variant="flat"

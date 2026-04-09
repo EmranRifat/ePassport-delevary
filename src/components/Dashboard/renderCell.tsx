@@ -21,7 +21,7 @@ const RenderCell = ({
     case "serial_no":
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
             {serial + index + 1}
           </span>
         </div>
@@ -33,10 +33,8 @@ const RenderCell = ({
       if (data.booking_date) {
         const dateObj = new Date(data.booking_date.replace(" ", "T"));
 
-        const day = String(dateObj.getDate()).padStart(2, "0");
-        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-        const year = dateObj.getFullYear();
-        const datePart = `${day}-${month}-${year}`;
+        // Date part
+        const datePart = dateObj.toLocaleDateString("en-US");
         let hours = dateObj.getHours();
         const minutes = dateObj.getMinutes().toString().padStart(2, "0");
         const ampm = hours >= 12 ? "PM" : "AM";
@@ -47,8 +45,9 @@ const RenderCell = ({
 
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
-            {formatted || "-"}
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+            {" "}
+            {formatted || "-"}{" "}
           </span>
         </div>
       );
@@ -60,7 +59,7 @@ const RenderCell = ({
           {data.item_id && (
             <span
               className={`
-            absolute -top-8 left-1/2 -translate-x-1/2
+            absolute -top-8 left-12 -translate-x-1/2
             text-[11px] px-1 py-0.5 rounded-md shadow-md
             opacity-0 scale-90
             group-hover:opacity-100 group-hover:scale-100
@@ -137,11 +136,10 @@ const RenderCell = ({
           </span>
         </div>
       );
-
     case "rpo_name":
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
             {data.rpo_name || "-"}
           </span>
         </div>
@@ -172,7 +170,7 @@ const RenderCell = ({
     case "rpo_address":
       return (
         <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
             {data.rpo_address || "-"}
           </span>
         </div>

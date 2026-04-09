@@ -48,9 +48,6 @@ const columns = [
     uid: "status",
   },
 ];
-
-
-
 const TableContent: React.FC<TableContentProps> = ({
   loading: loading,
   error,
@@ -62,11 +59,8 @@ const TableContent: React.FC<TableContentProps> = ({
   setCurrentPage,
   setPageSize,
 }) => {
-
-
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
-
   // console.log("Passport data==", passportData);
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -129,9 +123,9 @@ const TableContent: React.FC<TableContentProps> = ({
             isLoading={loading && (!passportData || passportData.length === 0)}
             loadingContent={
               <div className="mt-6 flex justify-center">
-                <Spinner />
+              {  loading && <Spinner />}
               </div>
-            } 
+            }
             emptyContent={
               <div className="py-8 text-center">
                 <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
