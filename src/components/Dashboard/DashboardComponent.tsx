@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { I18nProvider } from "@react-aria/i18n";
+
 import {
   Button,
   DateRangePicker,
@@ -9,7 +11,7 @@ import {
   SelectItem,
   Spinner,
 } from "@heroui/react";
-import { I18nProvider } from "@react-aria/i18n";
+
 
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
@@ -27,6 +29,7 @@ const statusOptions = [
 
 const DashboardComponent = () => {
   const token = Cookies.get("auth-token");
+  const userId = Cookies.get("user_id") || "";
 
   const getDefaultDates = () => {
     const todayDate = today(getLocalTimeZone()); // CalendarDate
@@ -75,7 +78,7 @@ const DashboardComponent = () => {
     }
 
     try {
-      const userId = Cookies.get("user_id") || "";
+      // const userId = Cookies.get("user_id") || "";
 
       // Determine which field to search based on the query pattern
       let searchParams = {};
@@ -367,13 +370,13 @@ const DashboardComponent = () => {
       {/* Date Range Modal */}
       <DatePickerModal
         isOpen={isDateModalOpen}
+        userId={userId}
         onClose={() => setIsDateModalOpen(false)}
         onApply={(startDate, endDate) => {
           setStartDate(startDate);
           setEndDate(endDate);
           setIsDateModalOpen(false);
         }}
-        passportData={passportData}
       />
     </div>
   );
