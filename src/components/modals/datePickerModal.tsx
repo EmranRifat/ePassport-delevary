@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
-import Cookies from "js-cookie";
+import { I18nProvider } from "@react-aria/i18n";
+
 import {
   Modal,
   ModalContent,
@@ -10,75 +11,33 @@ import {
   Button,
   DateRangePicker,
 } from "@heroui/react";
-import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 
 interface DatePickerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onApply: (startDate: string, endDate: string) => void;
   passportData?: any[];
-  totalBooked?: string;
-  totalDelivered?: string;
-  getAllBookings: (requestData: any) => Promise<any>;
 }
 
 const DatePickerModal: React.FC<DatePickerModalProps> = ({
   isOpen,
   onClose,
   onApply,
-  getAllBookings,
   passportData = [],
-  totalBooked = "0",
-  totalDelivered = "0",
 }) => {
   const [tempDateRange, setTempDateRange] = useState<any>(null);
-  const [printdata, setPrintData] = useState<any>(null);
- const token = Cookies.get("auth-token");
   const formatDate = (date: any) => {
     const year = date.year;
     const month = String(date.month).padStart(2, "0");
     const day = String(date.day).padStart(2, "0");
     return `${day}-${month}-${year}`;
   };
-const userId = Cookies.get("user_id") || "";
 
- const fetchBookings = async (token: string) => {
-    if (!token) {
-      console.log("No token available");
-      return;
-    }
-
-    try {
-      const userId = Cookies.get("user_id") || "";
-
-     
-
-      const requestData = {
-        user_id: userId,
-        start_date: formatDate(tempDateRange.start),
-        end_date: formatDate(tempDateRange.end),
-        status: "All",
-      };
-
-      const response = await getAllBookings(requestData);
-      setPrintData(response);
-      console.log("Fetching print report data print >>>>>>>.....:", response);
-       
-    } catch (err) {
-      console.error("Failed to fetch bookings:", err);
-      
-    }
-  };
   const handlePrint = () => {
     if (!tempDateRange || !tempDateRange.start || !tempDateRange.end) return;
 
     const printStartDate = formatDate(tempDateRange.start);
     const printEndDate = formatDate(tempDateRange.end);
-
-     fetchBookings(token || "");
-
-
-    
 
     // const printWindow = window.open("", "_blank");
     // if (!printWindow) return;
@@ -165,28 +124,28 @@ const userId = Cookies.get("user_id") || "";
     `;
 
     const iframe = document.createElement("iframe");
-  iframe.style.display = "none";
-  document.body.appendChild(iframe);
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
 
-  // Write content to iframe
-  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-  if (iframeDoc) {
-    iframeDoc.open();
-    iframeDoc.write(printContent);
-    iframeDoc.close();
+    // Write content to iframe
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (iframeDoc) {
+      iframeDoc.open();
+      iframeDoc.write(printContent);
+      iframeDoc.close();
 
-    // Clean up iframe after print dialog closes (with delay to account for print dialog duration)
-    setTimeout(() => {
-      try {
-        if (document.body.contains(iframe)) {
-          document.body.removeChild(iframe);
+      // Clean up iframe after print dialog closes (with delay to account for print dialog duration)
+      setTimeout(() => {
+        try {
+          if (document.body.contains(iframe)) {
+            document.body.removeChild(iframe);
+          }
+        } catch (error) {
+          // Silently fail if iframe is already removed
+          console.log(error);
         }
-      } catch (error) {
-        // Silently fail if iframe is already removed
-        console.log(error);
-      }
-    }, 3000);
-  }
+      }, 3000);
+    }
   };
 
   const handleApply = () => {
@@ -237,43 +196,17 @@ const userId = Cookies.get("user_id") || "";
             </ModalHeader>
             <ModalBody className="py-6">
               <div className="space-y-4">
-                <DateRangePicker
-                  label="Date Range"
-                  variant="bordered"
-                  className="w-full"
-                  aria-label="Select date range for report"
-                  onChange={(value) => {
-                    setTempDateRange(value);
-                  }}
-                />
-                {/* {tempDateRange && tempDateRange.start && tempDateRange.end && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm text-blue-800 font-medium mb-2">
-                      Selected Range:
-                    </p>
-                    <div className="flex items-center gap-2 text-sm text-blue-700">
-                      <span className="font-semibold">
-                        {`${tempDateRange.start.day}/${tempDateRange.start.month}/${tempDateRange.start.year}`}
-                      </span>
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 7l5 5m0 0l-5 5m5-5H6"
-                        />
-                      </svg>
-                      <span className="font-semibold">
-                        {`${tempDateRange.end.day}/${tempDateRange.end.month}/${tempDateRange.end.year}`}
-                      </span>
-                    </div>
-                  </div>
-                )} */}
+                <I18nProvider locale="en-GB">
+                  <DateRangePicker
+                    label="Date Range"
+                    variant="bordered"
+                    className="w-full"
+                    aria-label="Select date range for report"
+                    onChange={(value) => {
+                      setTempDateRange(value);
+                    }}
+                  />
+                </I18nProvider>
               </div>
             </ModalBody>
             <ModalFooter className="border-t border-gray-200 pt-4">

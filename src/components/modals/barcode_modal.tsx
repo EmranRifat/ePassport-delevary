@@ -46,6 +46,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
 
   const autoOkTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  const submitLockRef = React.useRef(false);
+
   React.useEffect(() => {
     if (showModal) {
       setBarcodeInput(initialBarcode || "");
@@ -94,30 +96,34 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [isScanSuccess]);
 
+
+
+
   // Show in-modal scan toast
   React.useEffect(() => {
     if (isScanSuccess) {
       setScanSuccessToast("Scan successful ✅");
       const toastTimer = setTimeout(() => {
         setScanSuccessToast("");
-      }, 1000);
+      }, 2000);
       return () => clearTimeout(toastTimer);
     }
   }, [isScanSuccess]);
 
+
+
+
   React.useEffect(() => {
     if (isScanSuccess && !isSubmitted) {
-      setOkCountdown(5); // reset countdown on new scan
+      setOkCountdown(5);
 
       const timer = setInterval(() => {
         setOkCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            setIsSubmitted(true); // stop repeat
-            // Schedule handleSubmitOk to run after render using queueMicrotask
-            queueMicrotask(() => {
-              handleSubmitOk();
-            });
+
+            handleSubmitOk(); // ✅ direct call is fine now
+
             return 0;
           }
           return prev - 1;
@@ -133,6 +139,9 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [isScanSuccess, isSubmitted]);
 
+
+
+
   React.useEffect(() => {
     if (bookingSuccessMessage) {
       setShowSuccessToast(true);
@@ -141,11 +150,18 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       const timer = setTimeout(() => {
         setShowSuccessToast(false);
         handleCloseModal();
-      }, 1500);
+      }, 2000);
 
       return () => clearTimeout(timer);
     }
   }, [bookingSuccessMessage, handleCloseModal]);
+
+
+
+
+
+
+
 
   React.useEffect(() => {
     if (bookingErrorMessage) {
@@ -253,8 +269,13 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     setIsScanning(false);
   };
 
+
+
+
   const handleSubmitOk = async () => {
-    if (isSubmitting || isSubmitted) return;
+    if (submitLockRef.current) return; // 🔒 prevents duplicate calls
+
+    submitLockRef.current = true;
 
     try {
       setIsSubmitting(true);
@@ -273,8 +294,13 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       console.error("Submit failed:", error);
     } finally {
       setIsSubmitting(false);
+      submitLockRef.current = false; // 🔓 reset if needed
     }
   };
+
+
+
+
 
   return (
     <>
@@ -297,8 +323,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                   <Image
                     src="/bpo.png"
                     alt="BPO"
-                    width={65}
-                    height={65}
+                    width={70}
+                    height={70}
                     className="object-contain"
                   />
                 </div>
@@ -314,8 +340,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                   <Image
                     src="/passport.png"
                     alt="Passport"
-                    width={65}
-                    height={65}
+                    width={70}
+                    height={70}
                     className="object-contain"
                   />
                 </div>

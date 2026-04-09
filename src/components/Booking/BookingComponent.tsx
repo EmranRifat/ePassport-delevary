@@ -162,11 +162,6 @@ const BookingComponent = () => {
     data: brtaData,
   } = useGetBrtaBookingLicence(token);
 
-
-
-
-
-
   const handleOk = async (barcode: string) => {
     setBookingErrorMessage("");
     setBookingMessage("");
@@ -235,12 +230,10 @@ const BookingComponent = () => {
           console.error("BRTA booking licence check failed:", brtaErr);
         }
 
-        // setTimeout(() => {
-        //   handleCloseModal();
-        // }, 7000);
-
-      } 
-      else {
+        setTimeout(() => {
+          handleCloseModal();
+        }, 5000);
+      } else {
         const failMessage =
           epassportRes?.message ||
           epassportRes?.status ||

@@ -200,8 +200,8 @@ export interface GetAllBookingsRequest {
   user_id: string;
   start_date: string; // DD-MM-YYYY
   end_date: string; // DD-MM-YYYY
-  page_no?: number;
-  par_page_data?: number;
+  page_no: number;
+  par_page_data: number;
   status: "All" | "Booked" | "Delivered";
   rop_code?: string;
   rpo_name?: string;
@@ -277,15 +277,13 @@ export interface PassportDataItem {
 }
 
 export interface TableContentProps {
-  data: any;
+  totalItems:number |undefined,
   loading: boolean;
   error: string | null;
   passportData: PassportDataItem[];
   currentPage: number;
   pageSize: number;
   totalPages: number;
-  searchQuery: string;
-  setSearchQuery: (value: string) => void;
   setCurrentPage: (value: number) => void;
   setPageSize: (value: number) => void;
 }

@@ -8,6 +8,7 @@ import { useAuthStore } from "@/store";
 import { authApi } from "@/lib/api-services";
 import { useTheme } from "next-themes";
 import Avatar from "../ui/Avatar";
+import Alert from "../ui/Alert";
 
 interface NavbarProps {
   onMenuClick?: () => void;
@@ -19,6 +20,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
   const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAvatereMenuOpen, setIsAvaterMenuOpen] = useState(false);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
 
   const [mounted, setMounted] = useState(false);
 
@@ -131,7 +133,10 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
 
               {/* Logout Button */}
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  setIsAvaterMenuOpen(false);
+                  setShowLogoutAlert(true);
+                }}
                 className="flex items-center gap-3 w-full px-4 py-3 text-left text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200 cursor-pointer"
               >
                 <LogOut size={18} />
@@ -141,6 +146,12 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </div>
         </>
       )}
+      <Alert
+        open={showLogoutAlert}
+        onClose={() => setShowLogoutAlert(false)}
+        onConfirm={handleLogout}
+      />
+
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 md:hidden"

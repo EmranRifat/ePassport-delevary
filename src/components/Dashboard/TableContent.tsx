@@ -48,19 +48,25 @@ const columns = [
     uid: "status",
   },
 ];
+
+
+
 const TableContent: React.FC<TableContentProps> = ({
-  data,
   loading: loading,
   error,
   passportData,
   currentPage,
   pageSize,
   totalPages,
+  totalItems,
   setCurrentPage,
   setPageSize,
 }) => {
+
+
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
+
   // console.log("Passport data==", passportData);
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -73,7 +79,7 @@ const TableContent: React.FC<TableContentProps> = ({
       {/* Pagination Controls */}
       <div className="flex items-center justify-between my-3">
         <h1 className="text-sm  text-gray-700 dark:text-gray-300">
-          Total : {data?.total_item} items
+          Total : {totalItems} items
         </h1>
 
         <div className="flex items-center space-x-2">
@@ -123,7 +129,7 @@ const TableContent: React.FC<TableContentProps> = ({
             isLoading={loading && (!passportData || passportData.length === 0)}
             loadingContent={
               <div className="mt-6 flex justify-center">
-              {  loading && <Spinner />}
+                <Spinner />
               </div>
             }
             emptyContent={
