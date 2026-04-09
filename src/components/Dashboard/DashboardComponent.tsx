@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { I18nProvider } from "@react-aria/i18n";
+
 import {
   Button,
   DateRangePicker,
@@ -18,6 +20,10 @@ import DatePickerModal from "@/components/modals/datePickerModal";
 import { parseDate } from "@internationalized/date";
 import { getLocalTimeZone, today } from "@internationalized/date";
 
+
+
+
+
 const statusOptions = [
   { key: "All", label: "All Status" },
   { key: "Booked", label: "Booked" },
@@ -25,7 +31,9 @@ const statusOptions = [
 ];
 
 const DashboardComponent = () => {
+
   const token = Cookies.get("auth-token");
+  const userId = Cookies.get("user_id") || "";
 
   const getDefaultDates = () => {
     const todayDate = today(getLocalTimeZone()); // CalendarDate
@@ -74,7 +82,7 @@ const DashboardComponent = () => {
     }
 
     try {
-      const userId = Cookies.get("user_id") || "";
+      // const userId = Cookies.get("user_id") || "";
 
       // Determine which field to search based on the query pattern
       let searchParams = {};
@@ -126,6 +134,7 @@ const DashboardComponent = () => {
 
     fetchBookings();
   }, [currentPage, pageSize, statusFilter, startDate, endDate]);
+
 
   // Debounced search effect for all search fields
   useEffect(() => {
@@ -326,6 +335,8 @@ const DashboardComponent = () => {
             </div>
 
             <div>
+               <I18nProvider locale="en-GB">
+
               <DateRangePicker
                 size="md"
                 label="Date Range"
@@ -342,6 +353,7 @@ const DashboardComponent = () => {
                   }
                 }}
               />
+                </I18nProvider>
             </div>
           </div>
 
@@ -361,18 +373,20 @@ const DashboardComponent = () => {
         </main>
       </div>
 
+
+
+
       {/* Date Range Modal */}
       <DatePickerModal
         isOpen={isDateModalOpen}
+        userId={userId}
         onClose={() => setIsDateModalOpen(false)}
         onApply={(startDate, endDate) => {
           setStartDate(startDate);
           setEndDate(endDate);
           setIsDateModalOpen(false);
         }}
-        passportData={passportData}
-        totalBooked={totalBooked}
-        totalDelivered={totalDelivered}
+      
       />
     </div>
   );

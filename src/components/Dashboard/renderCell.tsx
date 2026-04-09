@@ -66,7 +66,7 @@ const RenderCell = ({
             group-hover:opacity-100 group-hover:scale-100
             transition-all duration-100
             whitespace-nowrap
-            ${copiedKey === `booking-${index}` ? "bg-gray-200 text-green-400" : "bg-gray-50 text-gray-700"}
+            ${copiedKey === `booking-${index}` ? "bg-green-100 text-green-600" : "bg-gray-50 text-gray-700"}
           `}
               onClick={(e) => {
                 e.stopPropagation();
@@ -109,7 +109,7 @@ const RenderCell = ({
             group-hover:opacity-100 group-hover:scale-100
             transition-all duration-200
              whitespace-nowrap
-             ${copiedKey === `rpo-${index}` ? "bg-gray-200 text-green-400" : "bg-gray-50 text-gray-700"}
+             ${copiedKey === `rpo-${index}` ? "bg-green-100 text-green-600" : "bg-gray-50 text-gray-700"}
            `}
               onClick={(e) => {
                 e.stopPropagation();

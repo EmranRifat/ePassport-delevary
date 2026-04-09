@@ -275,6 +275,30 @@ export interface PassportDataItem {
   user_id: string;
   vas_type: string;
 }
+export interface ReportData {
+  barcode: string;
+  booking_date: string;
+  booking_status: string;
+  created_at: string;
+  delivered_date: string | null;
+  id: number;
+  insurance_id: string | null;
+  insured: string;
+  is_check_today: number;
+  item_id: string;
+  pending_date: string;
+  phone: string;
+  post_code: string;
+  price: string;
+  push_status: number;
+  rpo_address: string;
+  rpo_name: string;
+  service_type: string;
+  total_charge: string;
+  updated_at: string;
+  user_id: string;
+  vas_type: string;
+}
 
 export interface TableContentProps {
   totalItems:number |undefined,

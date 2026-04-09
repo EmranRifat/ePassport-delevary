@@ -131,7 +131,7 @@ const TableContent: React.FC<TableContentProps> = ({
               <div className="mt-6 flex justify-center">
               {  loading && <Spinner />}
               </div>
-            }
+            } 
             emptyContent={
               <div className="py-8 text-center">
                 <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
