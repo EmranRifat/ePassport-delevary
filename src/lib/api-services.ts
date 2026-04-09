@@ -1,10 +1,7 @@
 import { api, dmsApi } from '@/lib/api-client';
 import { API_CONSTANTS } from '@/utils/constants';
 import {
-    LoginRequest,
-    LoginResponse,
-    DmsLoginRequest,
-    DmsLoginResponse,
+  
     BookingBody,
     BookingResponse,
     LicenseDataBody,
@@ -12,6 +9,8 @@ import {
     LicenseIssueResponse,
     PassportDashboardResponse
 } from '@/types';
+
+import { DmsLoginRequest, DmsLoginResponse, LoginRequest, LoginResponse } from '@/types/auth';
 
 // Authentication API
 export const authApi = {
