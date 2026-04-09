@@ -30,8 +30,8 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
 
 
 
-  const { mutateAsync, isPending, error ,data} = usePostEPassportReport();
-
+  // const { mutateAsync, isPending, error ,data} = usePostEPassportReport();
+const { mutate, isPending, error, data } = usePostEPassportReport();
 
 console.log("mutateAsync data -->",data)
 
@@ -152,33 +152,72 @@ console.log("mutateAsync data -->",data)
   };
 
 
+
+
+  // const handlePrint = async () => {
+  //   if (!tempDateRange?.start || !tempDateRange?.end) return;
+
+  //   const printStartDate = formatDate(tempDateRange.start);
+  //   const printEndDate = formatDate(tempDateRange.end);
+
+  //   try {
+  //     const res = await mutateAsync({
+  //       user_id: userId,
+  //       start_date: printStartDate,
+  //       end_date: printEndDate,
+  //     });
+
+  //     console.log("report data:", res.data);
+
+  //     const printContent = buildPrintContent(
+  //       res.data,
+  //       printStartDate,
+  //       printEndDate,
+  //     );
+
+  //     printHtml(printContent);
+  //   } catch (err) {
+  //     console.error("Print report failed:", err);
+  //   }
+  // };
+
   
-  const handlePrint = async () => {
-    if (!tempDateRange?.start || !tempDateRange?.end) return;
 
-    const printStartDate = formatDate(tempDateRange.start);
-    const printEndDate = formatDate(tempDateRange.end);
+const handlePrint = () => {
+  if (!tempDateRange?.start || !tempDateRange?.end) return;
 
-    try {
-      const res = await mutateAsync({
-        user_id: userId,
-        start_date: printStartDate,
-        end_date: printEndDate,
-      });
+  const printStartDate = formatDate(tempDateRange.start);
+  const printEndDate = formatDate(tempDateRange.end);
 
-      console.log("report data:", res.data);
+  mutate(
+    {
+      user_id: userId,
+      start_date: printStartDate,
+      end_date: printEndDate,
+    },
+    {
+      onSuccess: (res) => {
+        const printContent = buildPrintContent(
+          res.data,
+          printStartDate,
+          printEndDate
+        );
 
-      const printContent = buildPrintContent(
-        res.data,
-        printStartDate,
-        printEndDate,
-      );
+        setTempDateRange(null);
+        onClose();
 
-      printHtml(printContent);
-    } catch (err) {
-      console.error("Print report failed:", err);
+        setTimeout(() => {
+          printHtml(printContent);
+        }, 200);
+      },
+      onError: (error) => {
+        console.error("Print report failed:", error);
+      },
     }
-  };
+  );
+};
+
+
 
 
   const handleCancel = () => {
@@ -189,103 +228,100 @@ console.log("mutateAsync data -->",data)
 
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="3xl" backdrop="blur">
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1 border-b border-gray-200 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-100 rounded-lg p-2">
-                  <svg
-                    className="w-6 h-6 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800">
-                    Select Date Range for Report Print
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Choose a start and end date for your filter
-                  </p>
-                </div>
-              </div>
-            </ModalHeader>
-            <ModalBody className="py-6">
-              <div className="space-y-4">
-                 <I18nProvider locale="en-GB">
-
-                <DateRangePicker
-                  label="Date Range"
-                  variant="bordered"
-                  className="w-full"
-                  aria-label="Select date range for report"
-                  onChange={(value) => {
-                    setTempDateRange(value);
-                  }}
+   <Modal isOpen={isOpen} onClose={onClose} size="3xl" backdrop="blur">
+  <ModalContent className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
+    {(onClose) => (
+      <>
+        <ModalHeader className="flex flex-col gap-1 border-b border-gray-200 dark:border-gray-700 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2">
+              <svg
+                className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
-                  </I18nProvider>
+              </svg>
+            </div>
 
-              </div>
-               {error && (
-                <p className="text-sm text-red-600">
-                  {error.message || "Failed to generate report"}
-                </p>
-              )}
-            </ModalBody>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                Select Date Range for Report Print
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Choose a start and end date for your filter
+              </p>
+            </div>
+          </div>
+        </ModalHeader>
 
+        <ModalBody className="py-6">
+          <div className="dark:bg-postDarker  rounded">
+            <I18nProvider locale="en-GB">
+              <DateRangePicker
+                label="Date Range"
+                variant="bordered"
+                className="w-full"
+                aria-label="Select date range for report"
+                onChange={(value) => {
+                  setTempDateRange(value);
+                }}
+              />
+            </I18nProvider>
+          </div>
 
+          {error && (
+            <p className="text-sm text-red-600 dark:text-red-400 mt-3">
+              {error.message || "Failed to generate report"}
+            </p>
+          )}
+        </ModalBody>
 
-            
-            <ModalFooter className="border-t border-gray-200 pt-4">
-              <Button
-                color="danger"
-                variant="flat"
-                onClick={handleCancel}
-                className="font-medium"
-              >
-                Cancel
-              </Button>
+        <ModalFooter className="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <Button
+            color="danger"
+            variant="flat"
+            onClick={handleCancel}
+            className="font-medium"
+          >
+            Cancel
+          </Button>
 
-              <Button
-                color="primary"
-                onClick={handlePrint}
-                className="font-medium flex items-center gap-2"
-                isDisabled={
-                  !tempDateRange?.start || !tempDateRange?.end || isPending
-                }
-                isLoading={isPending}
-              >
-                Print
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                  />
-                </svg>
-              </Button>
-             
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+          <Button
+            color="primary"
+            onClick={handlePrint}
+            className="font-medium flex items-center gap-2"
+            isDisabled={
+              !tempDateRange?.start || !tempDateRange?.end || isPending
+            }
+            isLoading={isPending}
+          >
+            Print
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+              />
+            </svg>
+          </Button>
+        </ModalFooter>
+      </>
+    )}
+  </ModalContent>
+</Modal>
   );
 };
 

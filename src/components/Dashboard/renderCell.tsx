@@ -9,6 +9,7 @@ interface Props {
   copiedKey: string | null;
   handleCopy: (text: string, key: string) => void;
 }
+
 const RenderCell = ({
   data,
   columnKey,
@@ -27,7 +28,7 @@ const RenderCell = ({
         </div>
       );
 
-    case "date":
+    case "date": {
       let formatted = "-";
 
       if (data.booking_date) {
@@ -37,10 +38,12 @@ const RenderCell = ({
         const month = String(dateObj.getMonth() + 1).padStart(2, "0");
         const year = dateObj.getFullYear();
         const datePart = `${day}-${month}-${year}`;
+
         let hours = dateObj.getHours();
         const minutes = dateObj.getMinutes().toString().padStart(2, "0");
         const ampm = hours >= 12 ? "PM" : "AM";
         hours = hours % 12 || 12;
+
         const timePart = `${hours}:${minutes} ${ampm}`;
         formatted = `${datePart} ${timePart}`;
       }
@@ -48,48 +51,53 @@ const RenderCell = ({
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200 text-start">
-            {formatted || "-"}
+            {formatted}
           </span>
         </div>
       );
+    }
 
     case "booking_id":
       return (
         <div className="relative flex items-center justify-start group">
-          {/* Tooltip */}
           {data.item_id && (
             <span
               className={`
-            absolute -top-8 left-1/2 -translate-x-1/2
-            text-[11px] px-1 py-0.5 rounded-md shadow-md
-            opacity-0 scale-90
-            group-hover:opacity-100 group-hover:scale-100
-            transition-all duration-100
-            whitespace-nowrap
-            ${copiedKey === `booking-${index}` ? "bg-green-100 text-green-600" : "bg-gray-50 text-gray-700"}
-          `}
+                absolute -top-8 left-1/2 -translate-x-1/2
+                text-[11px] px-2 py-0.5 rounded-md shadow-md
+                opacity-0 scale-90
+                group-hover:opacity-100 group-hover:scale-100
+                transition-all duration-100 whitespace-nowrap cursor-pointer
+                ${
+                  copiedKey === `booking-${index}`
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                    : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                }
+              `}
               onClick={(e) => {
                 e.stopPropagation();
-                handleCopy(data?.item_id, `booking-${index}`);
+                handleCopy(data.item_id, `booking-${index}`);
               }}
             >
               {copiedKey === `booking-${index}` ? "Copied" : "Copy"}
             </span>
           )}
 
-          {/* Arrow */}
           {data.item_id && (
             <span
               className={`
-            absolute -top-2 left-1/2 -translate-x-1/2
-            w-2 h-2 rotate-45
-            transition
-            opacity-0 group-hover:opacity-100
-          `}
+                absolute -top-2 left-1/2 -translate-x-1/2
+                w-2 h-2 rotate-45
+                opacity-0 group-hover:opacity-100 transition
+                ${
+                  copiedKey === `booking-${index}`
+                    ? "bg-green-100 dark:bg-green-900/40"
+                    : "bg-gray-100 dark:bg-gray-800"
+                }
+              `}
             />
           )}
 
-          {/* Main Text */}
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
             {data.item_id || "-"}
           </span>
@@ -99,40 +107,45 @@ const RenderCell = ({
     case "rpo_id":
       return (
         <div className="relative flex items-center justify-start group">
-          {/* Tooltip */}
           {data.item_id && (
             <span
-              className={`absolute -top-8 left-6 -translate-x-1/2
-            bg-gray-50 text-gray-700 text-[11px]
-            px-1 py-0.5 rounded-md shadow-md
-            opacity-0 scale-90
-            group-hover:opacity-100 group-hover:scale-100
-            transition-all duration-200
-             whitespace-nowrap
-             ${copiedKey === `rpo-${index}` ? "bg-green-100 text-green-600" : "bg-gray-50 text-gray-700"}
-           `}
+              className={`
+                absolute -top-8 left-6 -translate-x-1/2
+                text-[11px] px-2 py-0.5 rounded-md shadow-md
+                opacity-0 scale-90
+                group-hover:opacity-100 group-hover:scale-100
+                transition-all duration-200 whitespace-nowrap cursor-pointer
+                ${
+                  copiedKey === `rpo-${index}`
+                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                    : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                }
+              `}
               onClick={(e) => {
                 e.stopPropagation();
-                handleCopy(data?.item_id, `rpo-${index}`);
+                handleCopy(data.item_id, `rpo-${index}`);
               }}
             >
               {copiedKey === `rpo-${index}` ? "Copied" : "Copy"}
             </span>
           )}
 
-          {/* Arrow */}
           {data.item_id && (
             <span
-              className="
-            absolute -top-2 left-1/2 -translate-x-1/2
-            w-2 h-2 rotate-45
-            opacity-0 group-hover:opacity-100 transition
-          "
+              className={`
+                absolute -top-2 left-1/2 -translate-x-1/2
+                w-2 h-2 rotate-45
+                opacity-0 group-hover:opacity-100 transition
+                ${
+                  copiedKey === `rpo-${index}`
+                    ? "bg-green-100 dark:bg-green-900/40"
+                    : "bg-gray-100 dark:bg-gray-800"
+                }
+              `}
             />
           )}
 
-          {/* Main Text */}
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 ">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
             {data.post_code || "-"}
           </span>
         </div>
@@ -146,8 +159,10 @@ const RenderCell = ({
           </span>
         </div>
       );
-    case "service_type":
+
+    case "service_type": {
       const service_type = data.service_type || "-";
+
       const getServiceTypeColor = (
         status: string,
       ): "success" | "secondary" | "danger" | "warning" | "default" => {
@@ -169,6 +184,8 @@ const RenderCell = ({
           {service_type}
         </Chip>
       );
+    }
+
     case "rpo_address":
       return (
         <div className="flex flex-col">
@@ -178,8 +195,9 @@ const RenderCell = ({
         </div>
       );
 
-    case "status":
+    case "status": {
       const status = data.booking_status || "-";
+
       const getStatusColor = (
         status: string,
       ): "primary" | "success" | "danger" | "warning" | "default" => {
@@ -205,6 +223,7 @@ const RenderCell = ({
           {status}
         </Chip>
       );
+    }
 
     default:
       return <p className="text-postDark dark:text-postLight text-sm">-</p>;

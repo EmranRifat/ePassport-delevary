@@ -164,8 +164,7 @@ const DashboardComponent = () => {
 
   const totalPages = dashboardData?.total_page || 1;
   const passportData = dashboardData?.passportissuedata || [];
-  const totalBooked = dashboardData?.total_booked?.toString() || "0";
-  const totalDelivered = dashboardData?.total_delivered?.toString() || "0";
+
 
   // Show error message if there's an error
   if (error) {

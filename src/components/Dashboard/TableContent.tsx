@@ -49,8 +49,6 @@ const columns = [
   },
 ];
 
-
-
 const TableContent: React.FC<TableContentProps> = ({
   loading: loading,
   error,
@@ -62,8 +60,6 @@ const TableContent: React.FC<TableContentProps> = ({
   setCurrentPage,
   setPageSize,
 }) => {
-
-
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
 
@@ -103,14 +99,21 @@ const TableContent: React.FC<TableContentProps> = ({
           </select>
         </div>
       </div>
-      <div className="w-full relative mb-2 ">
+      <div className="w-full relative mb-2 bg-white dark:bg-gray-900 rounded-lg">
         <Table
           aria-label="Passport records table"
           classNames={{
-            th: "bg-[#EDF2F7] dark:bg-gray-700  dark:text-gray-200",
-            tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
-            td: "dark:text-gray-200 ",
-            table: "shadow-none",
+            table: "shadow-none bg-white dark:bg-gray-900",
+
+            thead: "bg-[#EDF2F7] dark:bg-gray-800",
+
+            th: "bg-[#EDF2F7] dark:bg-gray-800 text-gray-700 dark:text-gray-200",
+
+            tr: "hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
+
+            td: "text-gray-700 dark:text-gray-300",
+
+            tbody: "divide-y divide-gray-200 dark:divide-gray-700",
           }}
         >
           <TableHeader columns={columns}>
@@ -129,9 +132,9 @@ const TableContent: React.FC<TableContentProps> = ({
             isLoading={loading && (!passportData || passportData.length === 0)}
             loadingContent={
               <div className="mt-6 flex justify-center">
-              {  loading && <Spinner />}
+                {loading && <Spinner />}
               </div>
-            } 
+            }
             emptyContent={
               <div className="py-8 text-center">
                 <p className="text-sm sm:text-base text-gray-500 dark:text-gray-300">
