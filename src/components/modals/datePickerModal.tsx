@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import Cookies from "js-cookie";
 import {
   Modal,
   ModalContent,
@@ -9,6 +10,7 @@ import {
   Button,
   DateRangePicker,
 } from "@heroui/react";
+import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 
 interface DatePickerModalProps {
   isOpen: boolean;
@@ -17,30 +19,66 @@ interface DatePickerModalProps {
   passportData?: any[];
   totalBooked?: string;
   totalDelivered?: string;
+  getAllBookings: (requestData: any) => Promise<any>;
 }
 
 const DatePickerModal: React.FC<DatePickerModalProps> = ({
   isOpen,
   onClose,
   onApply,
+  getAllBookings,
   passportData = [],
   totalBooked = "0",
   totalDelivered = "0",
 }) => {
   const [tempDateRange, setTempDateRange] = useState<any>(null);
-
+  const [printdata, setPrintData] = useState<any>(null);
+ const token = Cookies.get("auth-token");
   const formatDate = (date: any) => {
     const year = date.year;
     const month = String(date.month).padStart(2, "0");
     const day = String(date.day).padStart(2, "0");
     return `${day}-${month}-${year}`;
   };
+const userId = Cookies.get("user_id") || "";
 
+ const fetchBookings = async (token: string) => {
+    if (!token) {
+      console.log("No token available");
+      return;
+    }
+
+    try {
+      const userId = Cookies.get("user_id") || "";
+
+     
+
+      const requestData = {
+        user_id: userId,
+        start_date: formatDate(tempDateRange.start),
+        end_date: formatDate(tempDateRange.end),
+        status: "All",
+      };
+
+      const response = await getAllBookings(requestData);
+      setPrintData(response);
+      console.log("Fetching print report data print >>>>>>>.....:", response);
+       
+    } catch (err) {
+      console.error("Failed to fetch bookings:", err);
+      
+    }
+  };
   const handlePrint = () => {
     if (!tempDateRange || !tempDateRange.start || !tempDateRange.end) return;
 
     const printStartDate = formatDate(tempDateRange.start);
     const printEndDate = formatDate(tempDateRange.end);
+
+     fetchBookings(token || "");
+
+
+    
 
     // const printWindow = window.open("", "_blank");
     // if (!printWindow) return;

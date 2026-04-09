@@ -385,6 +385,7 @@ const DashboardComponent = () => {
         passportData={passportData}
         totalBooked={totalBooked}
         totalDelivered={totalDelivered}
+        getAllBookings={getAllBookings}
       />
     </div>
   );
