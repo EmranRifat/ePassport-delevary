@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { LoginResponse } from '@/types';
 import { STORAGE_KEYS } from '@/utils/constants';
+import { LoginResponse } from '@/types/auth';
 
 interface AuthState {
     isAuthenticated: boolean;
-    user: LoginResponse | null;
+    user: LoginResponse| null;
     token: string | null;
 
     // Actions
