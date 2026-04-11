@@ -16,6 +16,17 @@ import { usePostEPassportReport } from "@/lib/hooks/usePostBookingReport";
 import { ReportData } from "@/lib/types";
 import { useAuthStore } from "@/store";
 
+interface DateValue {
+  year: number;
+  month: number;
+  day: number;
+}
+
+type DateRange = {
+  start: DateValue | null;
+  end: DateValue | null;
+} | null;
+
 interface DatePickerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,7 +39,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
   onClose,
   userId,
 }) => {
-  const [tempDateRange, setTempDateRange] = useState<any>(null);
+  const [tempDateRange, setTempDateRange] = useState<DateRange>(null);
 
   const { user } = useAuthStore();
 
@@ -37,25 +48,24 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
 
   console.log("mutateAsync data -->", data);
 
-  const formatDate = (date: any) => {
+  const formatDate = (date: DateValue) => {
     const year = date.year;
     const month = String(date.month).padStart(2, "0");
     const day = String(date.day).padStart(2, "0");
     return `${day}-${month}-${year}`;
   };
 
- 
-
   const buildPrintContent = (
     reportData: ReportData[],
     printStartDate: string,
     printEndDate: string,
   ) => {
-     const getPageCount = (rowCount: number) => {
-    const rowsPerPage = 30;
-    return Math.max(1, Math.ceil(rowCount / rowsPerPage));
-  };
-    const totalPages = getPageCount(reportData.length);
+    const pdfDateFormatter = (dateString: string): string => {
+      const dateObj = new Date(dateString);
+      const date = dateObj.toISOString().split("T")[0];
+      const ampm = dateObj.getHours() >= 12 ? "PM" : "AM";
+      return `${date} ${ampm}`;
+    };
 
     return `
     <!DOCTYPE html>
@@ -63,40 +73,79 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
       <head>
         <title>e-Passport Booking Report</title>
         <style>
-          body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  position: relative;
-  text-align: center;
-}
-          .header { text-align: center; margin-bottom: 30px; padding-top: 10px; }
-          .header h1 { margin: 5px 0; font-size: 18px; font-weight: normal; }
-          .header h2 { margin: 5px 0; font-size: 16px; font-weight: normal; }
-          .header h3 { margin: 5px 0; font-size: 14px; font-weight: normal; }
-          .info-row { display: flex; justify-content: space-between; margin: 10px 0; font-size: 14px; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          th { 
-  border: 1px solid #000; 
-  padding: 6px; 
-  text-align: center; 
-  font-size: 12px; 
-}
-
-td { 
-  border: 1px solid #000; 
-  padding: 6px; 
-  text-align: center; 
-  font-size: 12px; 
-}
-          th { background-color: #f3f4f6; font-weight: 600; }
-          tr:nth-child(even) { background-color: #f9fafb; }
-          .no-data { text-align: center; padding: 40px; color: #6b7280; }
-          @media print {
-            body { padding: 10px; }
-            .no-print { display: none; }
-            table { page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
           }
+
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            position: relative;
+            text-align: center;
+          }
+          .header { 
+                    text-align: center; 
+                    margin-bottom: 30px; 
+                    padding-top: 10px; 
+                  }
+          .header h1 { 
+                      margin: 5px 0; 
+                      font-size: 18px; 
+                      font-weight: normal; 
+                      }
+          .header h2 { 
+                      margin: 5px 0; 
+                      font-size: 16px; 
+                      font-weight: normal; 
+                     }
+          .header h3 { 
+                      margin: 5px 0; 
+                      font-size: 14px; 
+                      font-weight: normal; 
+                     }
+          .info-row { 
+                      display: flex; 
+                      justify-content: space-between; 
+                      margin: 10px 0; 
+                      font-size: 14px; 
+                      }
+            table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-top: 20px; 
+                      }
+            th { 
+                border: 1px solid #000; 
+                padding: 6px; 
+                text-align: left; 
+                font-size: 12px; 
+              }
+
+          td { 
+              border: 1px solid #000; 
+              padding: 6px; 
+              text-align: left; 
+              font-size: 12px; 
+            }
+          th { 
+              background-color: #f3f4f6; 
+              font-weight: 600; 
+              }
+          tr:nth-child(even) { 
+                              background-color: #f9fafb; 
+                              }
+          .no-data { 
+                    text-align: center; 
+                    padding: 40px; 
+                    color: #6b7280; 
+                    }
+          @media print {
+                        body { padding: 10px; }
+                        .no-print { display: none; }
+                        table { page-break-inside: auto; }
+                        tr { page-break-inside: avoid; page-break-after: auto; }
+                      }
         </style>
       </head>
       <body>
@@ -107,7 +156,7 @@ td {
         </div>
         <div class="info-row">
           <div>Operator Name: ${user?.name}</div>
-          <div>Total page: ${totalPages}</div>
+          <div>Total page: <span class="page-count"></span></div>
         </div>
 
         ${
@@ -127,10 +176,10 @@ td {
                 <tbody>
                   ${reportData
                     .map(
-                      (item: any, index: number) => `
+                      (item: ReportData, index: number) => `
                         <tr>
                           <td>${index + 1}</td>
-                          <td>${item.booking_date || item.created_at || "N/A"}</td>
+                          <td>${pdfDateFormatter(item.booking_date) || pdfDateFormatter(item.created_at) || "N/A"}</td>
                           <td>${item.barcode || "N/A"}</td>
                           <td>${item.post_code || "N/A"}</td>
                           <td>${item.rpo_name || item.rpo_address || "N/A"}</td>
@@ -144,11 +193,29 @@ td {
         }
 
         <script>
+          function updatePageCount() {
+            const mmToPx = 96 / 25.4;
+            const printableHeightMm = 297 - 20;
+            const printableHeightPx = printableHeightMm * mmToPx;
+            const pages = Math.max(
+              1,
+              Math.ceil(document.body.scrollHeight / printableHeightPx),
+            );
+            const pageCountEl = document.querySelector('.page-count');
+            if (pageCountEl) {
+              pageCountEl.textContent = String(pages);
+            }
+          }
+
           window.onload = function() {
-            window.print();
-            window.onafterprint = function() {
-              window.close();
-            };
+            updatePageCount();
+            setTimeout(() => {
+              window.print();
+            }, 100);
+          };
+
+          window.onafterprint = function() {
+            window.close();
           };
         </script>
       </body>
@@ -158,7 +225,13 @@ td {
 
   const printHtml = (html: string) => {
     const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
+    iframe.style.position = "fixed";
+    iframe.style.left = "-9999px";
+    iframe.style.top = "0";
+    iframe.style.width = "210mm";
+    iframe.style.height = "297mm";
+    iframe.style.border = "0";
+    iframe.style.visibility = "hidden";
     document.body.appendChild(iframe);
 
     const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
@@ -179,33 +252,6 @@ td {
       }
     }, 3000);
   };
-
-  // const handlePrint = async () => {
-  //   if (!tempDateRange?.start || !tempDateRange?.end) return;
-
-  //   const printStartDate = formatDate(tempDateRange.start);
-  //   const printEndDate = formatDate(tempDateRange.end);
-
-  //   try {
-  //     const res = await mutateAsync({
-  //       user_id: userId,
-  //       start_date: printStartDate,
-  //       end_date: printEndDate,
-  //     });
-
-  //     console.log("report data:", res.data);
-
-  //     const printContent = buildPrintContent(
-  //       res.data,
-  //       printStartDate,
-  //       printEndDate,
-  //     );
-
-  //     printHtml(printContent);
-  //   } catch (err) {
-  //     console.error("Print report failed:", err);
-  //   }
-  // };
 
   const handlePrint = () => {
     if (!tempDateRange?.start || !tempDateRange?.end) return;
@@ -249,96 +295,92 @@ td {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="3xl" backdrop="blur">
       <ModalContent className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1 border-b border-gray-200 dark:border-gray-700 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2">
-                  <svg
-                    className="w-6 h-6 text-blue-600 dark:text-blue-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-                    Select Date Range for Report Print
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Choose a start and end date for your filter
-                  </p>
-                </div>
-              </div>
-            </ModalHeader>
-
-            <ModalBody className="py-6">
-              <div className="dark:bg-postDarker  rounded">
-                <I18nProvider locale="en-GB">
-                  <DateRangePicker
-                    label="Date Range"
-                    variant="bordered"
-                    className="w-full"
-                    aria-label="Select date range for report"
-                    onChange={(value) => {
-                      setTempDateRange(value);
-                    }}
-                  />
-                </I18nProvider>
-              </div>
-
-              {error && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-3">
-                  {error.message || "Failed to generate report"}
-                </p>
-              )}
-            </ModalBody>
-
-            <ModalFooter className="border-t border-gray-200 dark:border-gray-700 pt-4">
-              <Button
-                color="danger"
-                variant="flat"
-                onClick={handleCancel}
-                className="font-medium"
+        <ModalHeader className="flex flex-col gap-1 border-b border-gray-200 dark:border-gray-700 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2">
+              <svg
+                className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                Cancel
-              </Button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
 
-              <Button
-                color="primary"
-                onClick={handlePrint}
-                className="font-medium flex items-center gap-2"
-                isDisabled={
-                  !tempDateRange?.start || !tempDateRange?.end || isPending
-                }
-                isLoading={isPending}
-              >
-                Print
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                  />
-                </svg>
-              </Button>
-            </ModalFooter>
-          </>
-        )}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                Select Date Range for Report Print
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Choose a start and end date for your filter
+              </p>
+            </div>
+          </div>
+        </ModalHeader>
+
+        <ModalBody className="py-6">
+          <div className="dark:bg-postDarker  rounded">
+            <I18nProvider locale="en-GB">
+              <DateRangePicker
+                label="Date Range"
+                variant="bordered"
+                className="w-full"
+                aria-label="Select date range for report"
+                onChange={(value) => {
+                  setTempDateRange(value as DateRange);
+                }}
+              />
+            </I18nProvider>
+          </div>
+
+          {error && (
+            <p className="text-sm text-red-600 dark:text-red-400 mt-3">
+              {error.message || "Failed to generate report"}
+            </p>
+          )}
+        </ModalBody>
+
+        <ModalFooter className="border-t border-gray-200 dark:border-gray-700 pt-4">
+          <Button
+            color="danger"
+            variant="flat"
+            onClick={handleCancel}
+            className="font-medium"
+          >
+            Cancel
+          </Button>
+
+          <Button
+            color="primary"
+            onClick={handlePrint}
+            className="font-medium flex items-center gap-2"
+            isDisabled={
+              !tempDateRange?.start || !tempDateRange?.end || isPending
+            }
+            isLoading={isPending}
+          >
+            Print
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+              />
+            </svg>
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
