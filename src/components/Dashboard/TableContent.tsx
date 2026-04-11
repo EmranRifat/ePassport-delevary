@@ -14,9 +14,10 @@ import { TableContentProps } from "@/lib/types";
 import renderCell from "./renderCell";
 import RowDetailsModal from "../modals/dashboardModal";
 
+
 const columns = [
   {
-    name: "Serial No",
+    name: "SL",
     uid: "serial_no",
   },
   {
@@ -48,6 +49,8 @@ const columns = [
     uid: "status",
   },
 ];
+
+
 const TableContent: React.FC<TableContentProps> = ({
   loading: loading,
   error,
