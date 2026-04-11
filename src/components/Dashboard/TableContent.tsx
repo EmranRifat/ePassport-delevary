@@ -48,7 +48,6 @@ const columns = [
     uid: "status",
   },
 ];
-
 const TableContent: React.FC<TableContentProps> = ({
   loading: loading,
   error,
@@ -62,7 +61,6 @@ const TableContent: React.FC<TableContentProps> = ({
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedRowData, setSelectedRowData] = React.useState<any>(null);
-
   // console.log("Passport data==", passportData);
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -99,21 +97,16 @@ const TableContent: React.FC<TableContentProps> = ({
           </select>
         </div>
       </div>
-      <div className="w-full relative mb-2 bg-white dark:bg-gray-900 rounded-lg">
+      <div className="w-full relative mb-2 ">
         <Table
           aria-label="Passport records table"
           classNames={{
-            table: "shadow-none bg-white dark:bg-gray-900",
-
-            thead: "bg-[#EDF2F7] dark:bg-gray-800",
-
-            th: "bg-[#EDF2F7] dark:bg-gray-800 text-gray-700 dark:text-gray-200",
-
-            tr: "hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
-
-            td: "text-gray-700 dark:text-gray-300",
-
-            tbody: "divide-y divide-gray-200 dark:divide-gray-700",
+            base: "bg-transparent", 
+            wrapper: "bg-transparent", 
+            table: "shadow-none bg-transparent",
+            th: "bg-[#EDF2F7] dark:bg-gray-700 dark:text-gray-200",
+            tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+            td: "dark:text-gray-200",
           }}
         >
           <TableHeader columns={columns}>
@@ -173,6 +166,7 @@ const TableContent: React.FC<TableContentProps> = ({
           </TableBody>
         </Table>
       </div>
+
       <div className="flex justify-center mt-6">
         {totalPages > 1 && (
           <Pagination

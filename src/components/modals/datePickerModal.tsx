@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { I18nProvider } from "@react-aria/i18n";
+
 import {
   Modal,
   ModalContent,
@@ -11,8 +13,19 @@ import {
   DateRangePicker,
 } from "@heroui/react";
 import { usePostEPassportReport } from "@/lib/hooks/usePostBookingReport";
-import { I18nProvider } from "@react-aria/i18n";
 import { ReportData } from "@/lib/types";
+import { useAuthStore } from "@/store";
+
+interface DateValue {
+  year: number;
+  month: number;
+  day: number;
+}
+
+type DateRange = {
+  start: DateValue | null;
+  end: DateValue | null;
+} | null;
 
 interface DatePickerModalProps {
   isOpen: boolean;
@@ -26,16 +39,16 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
   onClose,
   userId,
 }) => {
-  const [tempDateRange, setTempDateRange] = useState<any>(null);
+  const [tempDateRange, setTempDateRange] = useState<DateRange>(null);
 
-
+  const { user } = useAuthStore();
 
   // const { mutateAsync, isPending, error ,data} = usePostEPassportReport();
-const { mutate, isPending, error, data } = usePostEPassportReport();
+  const { mutate, isPending, error, data } = usePostEPassportReport();
 
-console.log("mutateAsync data -->",data)
+  console.log("mutateAsync data -->", data);
 
-  const formatDate = (date: any) => {
+  const formatDate = (date: DateValue) => {
     const year = date.year;
     const month = String(date.month).padStart(2, "0");
     const day = String(date.day).padStart(2, "0");
@@ -47,28 +60,144 @@ console.log("mutateAsync data -->",data)
     printStartDate: string,
     printEndDate: string,
   ) => {
+    const pdfDateFormatter = (dateString: string): string => {
+      const dateObj = new Date(dateString);
+      const date = dateObj.toISOString().split("T")[0];
+      const ampm = dateObj.getHours() >= 12 ? "PM" : "AM";
+      return `${date} ${ampm}`;
+    };
+
     return `
     <!DOCTYPE html>
     <html>
       <head>
         <title>e-Passport Booking Report</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 20px; position: relative; }
-          .header { text-align: center; margin-bottom: 30px; padding-top: 10px; }
-          .header h1 { margin: 5px 0; font-size: 18px; font-weight: normal; }
-          .header h2 { margin: 5px 0; font-size: 16px; font-weight: normal; }
-          .header h3 { margin: 5px 0; font-size: 14px; font-weight: normal; }
-          .info-row { display: flex; justify-content: space-between; margin: 10px 0; font-size: 14px; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          th, td { border: 1px solid #000; padding: 8px; text-align: left; font-size: 12px; }
-          th { background-color: #f3f4f6; font-weight: 600; }
-          tr:nth-child(even) { background-color: #f9fafb; }
-          .no-data { text-align: center; padding: 40px; color: #6b7280; }
-          @media print {
-            body { padding: 10px; }
-            .no-print { display: none; }
-          }
-        </style>
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    text-align: center;
+  }
+
+  .header {
+    text-align: center;
+    margin: 0 0 6px 0;
+    padding: 0;
+  }
+
+  .header h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 1.15;
+  }
+
+  .header h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.15;
+  }
+
+  .header h3 {
+    margin: 2px 0 0 0;
+    padding: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.15;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0 4px 0;
+    font-size: 14px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+
+  th,
+  td {
+    border: 1px solid #000;
+    padding: 6px;
+    text-align: left;
+    font-size: 12px;
+  }
+
+  th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9fafb;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  @media print {
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .no-print {
+      display: none;
+    }
+
+    table {
+      page-break-inside: auto;
+    }
+
+    tr {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+  }
+</style>
       </head>
       <body>
         <div class="header">
@@ -77,8 +206,8 @@ console.log("mutateAsync data -->",data)
           <h3>Daily Report for: ${printStartDate} to ${printEndDate}</h3>
         </div>
         <div class="info-row">
-          <div>Operator Name: Samsu</div>
-          <div>Total page 1</div>
+          <div>Operator Name: ${user?.name}</div>
+          <div>Total page: <span class="page-count"></span></div>
         </div>
 
         ${
@@ -98,10 +227,10 @@ console.log("mutateAsync data -->",data)
                 <tbody>
                   ${reportData
                     .map(
-                      (item: any, index: number) => `
+                      (item: ReportData, index: number) => `
                         <tr>
                           <td>${index + 1}</td>
-                          <td>${item.booking_date || item.created_at || "N/A"}</td>
+                          <td>${pdfDateFormatter(item.booking_date) || pdfDateFormatter(item.created_at) || "N/A"}</td>
                           <td>${item.barcode || "N/A"}</td>
                           <td>${item.post_code || "N/A"}</td>
                           <td>${item.rpo_name || item.rpo_address || "N/A"}</td>
@@ -114,14 +243,117 @@ console.log("mutateAsync data -->",data)
               </table>`
         }
 
+        // <script>
+        //   function updatePageCount() {
+        //     const mmToPx = 96 / 25.4;
+        //     const printableHeightMm = 297 - 20;
+        //     const printableHeightPx = printableHeightMm * mmToPx;
+        //     const pages = Math.max(
+        //       1,
+        //       Math.ceil(document.body.scrollHeight / printableHeightPx),
+        //     );
+        //     const pageCountEl = document.querySelector('.page-count');
+        //     if (pageCountEl) {
+        //       pageCountEl.textContent = String(pages);
+        //     }
+        //   }
+
+        //   window.onload = function() {
+        //     updatePageCount();
+        //     setTimeout(() => {
+        //       window.print();
+        //     }, 100);
+        //   };
+
+        //   window.onafterprint = function() {
+        //     window.close();
+        //   };
+        // </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <script>
-          window.onload = function() {
-            window.print();
-            window.onafterprint = function() {
-              window.close();
-            };
-          };
-        </script>
+  function updatePageCount() {
+    const mmToPx = 96 / 25.4;
+
+    // A4: 297mm height, @page margin top+bottom = 10mm + 10mm
+    const pageHeightPx = (297 - 20) * mmToPx;
+
+    const body = document.body;
+    const header = document.querySelector('.header');
+    const infoRow = document.querySelector('.info-row');
+    const table = document.querySelector('table');
+    const pageCountEl = document.querySelector('.page-count');
+
+    if (!pageCountEl) return;
+
+    // No table/data => always 1 page
+    if (!table) {
+      pageCountEl.textContent = '1';
+      return;
+    }
+
+    const bodyTop = body.getBoundingClientRect().top;
+
+    // Space used before the table on the first page only
+    const headerBottom = infoRow
+      ? infoRow.getBoundingClientRect().bottom
+      : (header ? header.getBoundingClientRect().bottom : bodyTop);
+
+    const firstPageUsed = headerBottom - bodyTop + 6; // + small buffer
+    const firstPageAvailable = Math.max(0, pageHeightPx - firstPageUsed);
+
+    // Find the bottom of the LAST row, not scrollHeight
+    const rows = table.querySelectorAll('tbody tr');
+    const lastRow = rows.length ? rows[rows.length - 1] : table;
+
+    const tableTop = table.getBoundingClientRect().top - bodyTop;
+    const lastRowBottom = lastRow.getBoundingClientRect().bottom - bodyTop;
+
+    const contentInsideTable = lastRowBottom - tableTop;
+
+    let pages = 1;
+
+    if (contentInsideTable > firstPageAvailable) {
+      const remaining = contentInsideTable - firstPageAvailable;
+      pages += Math.ceil(remaining / pageHeightPx);
+    }
+
+    pageCountEl.textContent = String(Math.max(1, pages));
+  }
+
+  function printWithPageCount() {
+    updatePageCount();
+
+    // one more frame helps browser finish layout before print preview
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        updatePageCount();
+        window.print();
+      });
+    });
+  }
+
+  window.addEventListener('load', printWithPageCount);
+  window.addEventListener('beforeprint', updatePageCount);
+
+  window.addEventListener('afterprint', () => {
+    window.close();
+  });
+</script>
+
+        
       </body>
     </html>
   `;
@@ -129,7 +361,13 @@ console.log("mutateAsync data -->",data)
 
   const printHtml = (html: string) => {
     const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
+    iframe.style.position = "fixed";
+    iframe.style.left = "-9999px";
+    iframe.style.top = "0";
+    iframe.style.width = "210mm";
+    iframe.style.height = "297mm";
+    iframe.style.border = "0";
+    iframe.style.visibility = "hidden";
     document.body.appendChild(iframe);
 
     const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
@@ -151,87 +389,48 @@ console.log("mutateAsync data -->",data)
     }, 3000);
   };
 
+  const handlePrint = () => {
+    if (!tempDateRange?.start || !tempDateRange?.end) return;
 
+    const printStartDate = formatDate(tempDateRange.start);
+    const printEndDate = formatDate(tempDateRange.end);
 
-
-  // const handlePrint = async () => {
-  //   if (!tempDateRange?.start || !tempDateRange?.end) return;
-
-  //   const printStartDate = formatDate(tempDateRange.start);
-  //   const printEndDate = formatDate(tempDateRange.end);
-
-  //   try {
-  //     const res = await mutateAsync({
-  //       user_id: userId,
-  //       start_date: printStartDate,
-  //       end_date: printEndDate,
-  //     });
-
-  //     console.log("report data:", res.data);
-
-  //     const printContent = buildPrintContent(
-  //       res.data,
-  //       printStartDate,
-  //       printEndDate,
-  //     );
-
-  //     printHtml(printContent);
-  //   } catch (err) {
-  //     console.error("Print report failed:", err);
-  //   }
-  // };
-
-  
-
-const handlePrint = () => {
-  if (!tempDateRange?.start || !tempDateRange?.end) return;
-
-  const printStartDate = formatDate(tempDateRange.start);
-  const printEndDate = formatDate(tempDateRange.end);
-
-  mutate(
-    {
-      user_id: userId,
-      start_date: printStartDate,
-      end_date: printEndDate,
-    },
-    {
-      onSuccess: (res) => {
-        const printContent = buildPrintContent(
-          res.data,
-          printStartDate,
-          printEndDate
-        );
-
-        setTempDateRange(null);
-        onClose();
-
-        setTimeout(() => {
-          printHtml(printContent);
-        }, 200);
+    mutate(
+      {
+        user_id: userId,
+        start_date: printStartDate,
+        end_date: printEndDate,
       },
-      onError: (error) => {
-        console.error("Print report failed:", error);
+      {
+        onSuccess: (res) => {
+          const printContent = buildPrintContent(
+            res.data,
+            printStartDate,
+            printEndDate,
+          );
+
+          setTempDateRange(null);
+          onClose();
+
+          setTimeout(() => {
+            printHtml(printContent);
+          }, 200);
+        },
+        onError: (error) => {
+          console.error("Print report failed:", error);
+        },
       },
-    }
-  );
-};
-
-
-
+    );
+  };
 
   const handleCancel = () => {
     setTempDateRange(null);
     onClose();
   };
 
-
-
   return (
-   <Modal isOpen={isOpen} onClose={onClose} size="3xl" backdrop="blur">
-  <ModalContent className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-    {(onClose) => (
-      <>
+    <Modal isOpen={isOpen} onClose={onClose} size="3xl" backdrop="blur">
+      <ModalContent className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
         <ModalHeader className="flex flex-col gap-1 border-b border-gray-200 dark:border-gray-700 pb-4">
           <div className="flex items-center gap-3">
             <div className="bg-blue-100 dark:bg-blue-900/30 rounded-lg p-2">
@@ -270,7 +469,7 @@ const handlePrint = () => {
                 className="w-full"
                 aria-label="Select date range for report"
                 onChange={(value) => {
-                  setTempDateRange(value);
+                  setTempDateRange(value as DateRange);
                 }}
               />
             </I18nProvider>
@@ -318,10 +517,8 @@ const handlePrint = () => {
             </svg>
           </Button>
         </ModalFooter>
-      </>
-    )}
-  </ModalContent>
-</Modal>
+      </ModalContent>
+    </Modal>
   );
 };
 

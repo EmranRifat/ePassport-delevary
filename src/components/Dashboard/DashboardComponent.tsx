@@ -12,6 +12,7 @@ import {
   Spinner,
 } from "@heroui/react";
 
+
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
@@ -20,10 +21,6 @@ import DatePickerModal from "@/components/modals/datePickerModal";
 import { parseDate } from "@internationalized/date";
 import { getLocalTimeZone, today } from "@internationalized/date";
 
-
-
-
-
 const statusOptions = [
   { key: "All", label: "All Status" },
   { key: "Booked", label: "Booked" },
@@ -31,7 +28,6 @@ const statusOptions = [
 ];
 
 const DashboardComponent = () => {
-
   const token = Cookies.get("auth-token");
   const userId = Cookies.get("user_id") || "";
 
@@ -134,7 +130,6 @@ const DashboardComponent = () => {
 
     fetchBookings();
   }, [currentPage, pageSize, statusFilter, startDate, endDate]);
-
 
   // Debounced search effect for all search fields
   useEffect(() => {
@@ -335,25 +330,24 @@ const DashboardComponent = () => {
             </div>
 
             <div>
-               <I18nProvider locale="en-GB">
-
-              <DateRangePicker
-                size="md"
-                label="Date Range"
-                aria-label="Date Range"
-                value={{
-                  start: parseDate(startDate),
-                  end: parseDate(endDate),
-                }}
-                onChange={(value) => {
-                  if (value?.start && value?.end) {
-                    setStartDate(value.start.toString());
-                    setEndDate(value.end.toString());
-                    setCurrentPage(1);
-                  }
-                }}
-              />
-                </I18nProvider>
+              <I18nProvider locale="en-GB">
+                <DateRangePicker
+                  size="md"
+                  label="Date Range"
+                  aria-label="Date Range"
+                  value={{
+                    start: parseDate(startDate),
+                    end: parseDate(endDate),
+                  }}
+                  onChange={(value) => {
+                    if (value?.start && value?.end) {
+                      setStartDate(value.start.toString());
+                      setEndDate(value.end.toString());
+                      setCurrentPage(1);
+                    }
+                  }}
+                />
+              </I18nProvider>
             </div>
           </div>
 
@@ -376,6 +370,9 @@ const DashboardComponent = () => {
 
 
 
+
+
+
       {/* Date Range Modal */}
       <DatePickerModal
         isOpen={isDateModalOpen}
@@ -386,7 +383,6 @@ const DashboardComponent = () => {
           setEndDate(endDate);
           setIsDateModalOpen(false);
         }}
-      
       />
     </div>
   );
