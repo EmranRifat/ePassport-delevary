@@ -97,7 +97,7 @@ const TableContent: React.FC<TableContentProps> = ({
           </select>
         </div>
       </div>
-      <div className="w-full relative mb-2 ">
+      <div className="w-full relative mb-2">
         <Table
           aria-label="Passport records table"
           classNames={{
