@@ -101,10 +101,12 @@ const TableContent: React.FC<TableContentProps> = ({
         <Table
           aria-label="Passport records table"
           classNames={{
-            th: "bg-[#EDF2F7] dark:bg-gray-700  dark:text-gray-200",
+            base: "bg-transparent", 
+            wrapper: "bg-transparent", 
+            table: "shadow-none bg-transparent",
+            th: "bg-[#EDF2F7] dark:bg-gray-700 dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
-            td: "dark:text-gray-200 ",
-            table: "shadow-none",
+            td: "dark:text-gray-200",
           }}
         >
           <TableHeader columns={columns}>
@@ -123,7 +125,7 @@ const TableContent: React.FC<TableContentProps> = ({
             isLoading={loading && (!passportData || passportData.length === 0)}
             loadingContent={
               <div className="mt-6 flex justify-center">
-              {  loading && <Spinner />}
+                {loading && <Spinner />}
               </div>
             }
             emptyContent={
@@ -164,6 +166,7 @@ const TableContent: React.FC<TableContentProps> = ({
           </TableBody>
         </Table>
       </div>
+
       <div className="flex justify-center mt-6">
         {totalPages > 1 && (
           <Pagination

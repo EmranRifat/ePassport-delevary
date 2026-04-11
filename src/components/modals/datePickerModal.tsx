@@ -73,80 +73,131 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
       <head>
         <title>e-Passport Booking Report</title>
         <style>
-          @page {
-            size: A4 portrait;
-            margin: 10mm;
-          }
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
 
-          body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            position: relative;
-            text-align: center;
-          }
-          .header { 
-                    text-align: center; 
-                    margin-bottom: 30px; 
-                    padding-top: 10px; 
-                  }
-          .header h1 { 
-                      margin: 5px 0; 
-                      font-size: 18px; 
-                      font-weight: normal; 
-                      }
-          .header h2 { 
-                      margin: 5px 0; 
-                      font-size: 16px; 
-                      font-weight: normal; 
-                     }
-          .header h3 { 
-                      margin: 5px 0; 
-                      font-size: 14px; 
-                      font-weight: normal; 
-                     }
-          .info-row { 
-                      display: flex; 
-                      justify-content: space-between; 
-                      margin: 10px 0; 
-                      font-size: 14px; 
-                      }
-            table { 
-                    width: 100%; 
-                    border-collapse: collapse; 
-                    margin-top: 20px; 
-                      }
-            th { 
-                border: 1px solid #000; 
-                padding: 6px; 
-                text-align: left; 
-                font-size: 12px; 
-              }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
 
-          td { 
-              border: 1px solid #000; 
-              padding: 6px; 
-              text-align: left; 
-              font-size: 12px; 
-            }
-          th { 
-              background-color: #f3f4f6; 
-              font-weight: 600; 
-              }
-          tr:nth-child(even) { 
-                              background-color: #f9fafb; 
-                              }
-          .no-data { 
-                    text-align: center; 
-                    padding: 40px; 
-                    color: #6b7280; 
-                    }
-          @media print {
-                        body { padding: 10px; }
-                        .no-print { display: none; }
-                        table { page-break-inside: auto; }
-                        tr { page-break-inside: avoid; page-break-after: auto; }
-                      }
-        </style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    text-align: center;
+  }
+
+  .header {
+    text-align: center;
+    margin: 0 0 6px 0;
+    padding: 0;
+  }
+
+  .header h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 1.15;
+  }
+
+  .header h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.15;
+  }
+
+  .header h3 {
+    margin: 2px 0 0 0;
+    padding: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.15;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0 4px 0;
+    font-size: 14px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+
+  th,
+  td {
+    border: 1px solid #000;
+    padding: 6px;
+    text-align: left;
+    font-size: 12px;
+  }
+
+  th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9fafb;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  @media print {
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    .no-print {
+      display: none;
+    }
+
+    table {
+      page-break-inside: auto;
+    }
+
+    tr {
+      break-inside: avoid;
+      page-break-inside: avoid;
+      page-break-after: auto;
+    }
+  }
+</style>
       </head>
       <body>
         <div class="header">
@@ -192,32 +243,117 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
               </table>`
         }
 
+        // <script>
+        //   function updatePageCount() {
+        //     const mmToPx = 96 / 25.4;
+        //     const printableHeightMm = 297 - 20;
+        //     const printableHeightPx = printableHeightMm * mmToPx;
+        //     const pages = Math.max(
+        //       1,
+        //       Math.ceil(document.body.scrollHeight / printableHeightPx),
+        //     );
+        //     const pageCountEl = document.querySelector('.page-count');
+        //     if (pageCountEl) {
+        //       pageCountEl.textContent = String(pages);
+        //     }
+        //   }
+
+        //   window.onload = function() {
+        //     updatePageCount();
+        //     setTimeout(() => {
+        //       window.print();
+        //     }, 100);
+        //   };
+
+        //   window.onafterprint = function() {
+        //     window.close();
+        //   };
+        // </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <script>
-          function updatePageCount() {
-            const mmToPx = 96 / 25.4;
-            const printableHeightMm = 297 - 20;
-            const printableHeightPx = printableHeightMm * mmToPx;
-            const pages = Math.max(
-              1,
-              Math.ceil(document.body.scrollHeight / printableHeightPx),
-            );
-            const pageCountEl = document.querySelector('.page-count');
-            if (pageCountEl) {
-              pageCountEl.textContent = String(pages);
-            }
-          }
+  function updatePageCount() {
+    const mmToPx = 96 / 25.4;
 
-          window.onload = function() {
-            updatePageCount();
-            setTimeout(() => {
-              window.print();
-            }, 100);
-          };
+    // A4: 297mm height, @page margin top+bottom = 10mm + 10mm
+    const pageHeightPx = (297 - 20) * mmToPx;
 
-          window.onafterprint = function() {
-            window.close();
-          };
-        </script>
+    const body = document.body;
+    const header = document.querySelector('.header');
+    const infoRow = document.querySelector('.info-row');
+    const table = document.querySelector('table');
+    const pageCountEl = document.querySelector('.page-count');
+
+    if (!pageCountEl) return;
+
+    // No table/data => always 1 page
+    if (!table) {
+      pageCountEl.textContent = '1';
+      return;
+    }
+
+    const bodyTop = body.getBoundingClientRect().top;
+
+    // Space used before the table on the first page only
+    const headerBottom = infoRow
+      ? infoRow.getBoundingClientRect().bottom
+      : (header ? header.getBoundingClientRect().bottom : bodyTop);
+
+    const firstPageUsed = headerBottom - bodyTop + 6; // + small buffer
+    const firstPageAvailable = Math.max(0, pageHeightPx - firstPageUsed);
+
+    // Find the bottom of the LAST row, not scrollHeight
+    const rows = table.querySelectorAll('tbody tr');
+    const lastRow = rows.length ? rows[rows.length - 1] : table;
+
+    const tableTop = table.getBoundingClientRect().top - bodyTop;
+    const lastRowBottom = lastRow.getBoundingClientRect().bottom - bodyTop;
+
+    const contentInsideTable = lastRowBottom - tableTop;
+
+    let pages = 1;
+
+    if (contentInsideTable > firstPageAvailable) {
+      const remaining = contentInsideTable - firstPageAvailable;
+      pages += Math.ceil(remaining / pageHeightPx);
+    }
+
+    pageCountEl.textContent = String(Math.max(1, pages));
+  }
+
+  function printWithPageCount() {
+    updatePageCount();
+
+    // one more frame helps browser finish layout before print preview
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        updatePageCount();
+        window.print();
+      });
+    });
+  }
+
+  window.addEventListener('load', printWithPageCount);
+  window.addEventListener('beforeprint', updatePageCount);
+
+  window.addEventListener('afterprint', () => {
+    window.close();
+  });
+</script>
+
+        
       </body>
     </html>
   `;

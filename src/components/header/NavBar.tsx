@@ -8,7 +8,7 @@ import { useAuthStore } from "@/store";
 import { authApi } from "@/lib/api-services";
 import { useTheme } from "next-themes";
 import Avatar from "../ui/Avatar";
-import Alert from "../ui/Alert";
+import Alert from "../modals/LogoutAlertModal";
 
 interface NavbarProps {
   onMenuClick?: () => void;
