@@ -415,17 +415,19 @@ const config: Config = {
       sm: "575px",
       // => @media (min-width: 576px) { ... }
 
-      md: "768px",
-      // => @media (min-width: 768px) { ... }
+      md: "998px",
+      // => @media (min-width: 998px) { ... }
 
-      lg: "992px",
-      // => @media (min-width: 992px) { ... }
+      lg: "1265px",
+      // => @media (min-width: 1265px) { ... }
 
-      xl: "1200px",
-      // => @media (min-width: 1200px) { ... }
+      xl: "1500px",
+      // => @media (min-width: 1500px) { ... }
 
-      "2xl": "1400px",
-      // => @media (min-width: 1400px) { ... }
+      "2xl": "1750px",
+      // => @media (min-width: 1750px) { ... }
+       "3xl": "1750px",
+      // => @media (min-width: 1750px) { ... }
     },
     extend: {},
   },

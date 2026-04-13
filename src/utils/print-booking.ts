@@ -182,7 +182,7 @@ export const printBookingPreview = ({
           ${formattedAddress} ${selectedRPO.code}
         </div>
       </div>
-      <div class="address-text">Phone: ${selectedRPO.mobile}</div>
+      <div class="address-text">Phone:+88 ${selectedRPO.mobile}</div>
     </div>
 
     <div class="address-section">

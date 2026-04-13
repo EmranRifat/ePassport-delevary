@@ -411,8 +411,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
                   {selectedRPO.address}
                 </p>
-                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
-                  Phone: {selectedRPO.mobile}
+                 <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                  Phone: +88 {selectedRPO.mobile}
                 </p>
               </div>
 
