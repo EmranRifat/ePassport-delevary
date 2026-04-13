@@ -264,8 +264,8 @@ const BookingComponent = () => {
 
   const getTodayDate = () => {
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     return `${day}-${month}-${year}`;
   };
@@ -274,7 +274,6 @@ const BookingComponent = () => {
     <div className="bg-white dark:bg-gray-900 min-h-screen rounded-lg shadow">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
         {/* Toast Notifications */}
-
 
         {/* Search Bar Section */}
         <div className="bg-gradient-to-r from-green-100 to-blue-100 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6 mb-6">
@@ -380,7 +379,7 @@ const BookingComponent = () => {
 
         {/* RPO Grid */}
         {viewMode === "grid" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-4 lg:gap-4">
             {filteredAddresses.map((address) => (
               <button
                 key={address.code}
@@ -407,8 +406,14 @@ const BookingComponent = () => {
                   {address.code}
                 </span>
 
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">
-                  {address.name.toLowerCase()}
+                <span
+                  className={`font-medium text-gray-900 dark:text-gray-100 capitalize ${
+                    address?.name?.toUpperCase() === "CHAPAINAWABGANJ"
+                      ? "text-sm mid-desktop:text-xs"
+                      : "text-sm"
+                  }`}
+                >
+                  {address?.name?.toLowerCase()}
                 </span>
               </button>
             ))}

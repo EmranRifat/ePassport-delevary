@@ -60,12 +60,25 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     printStartDate: string,
     printEndDate: string,
   ) => {
-    const pdfDateFormatter = (dateString: string): string => {
-      const dateObj = new Date(dateString);
-      const date = dateObj.toISOString().split("T")[0];
-      const ampm = dateObj.getHours() >= 12 ? "PM" : "AM";
-      return `${date} ${ampm}`;
-    };
+   const pdfDateFormatter = (dateString: string): string => {
+  const dateObj = new Date(dateString);
+
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
+
+  let hours = dateObj.getHours();
+  const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 হলে 12 হবে
+
+  const formattedHours = String(hours).padStart(2, "0");
+
+  return `${year}-${month}-${day} ${formattedHours}:${minutes} ${ampm}`;
+};
 
     return `
     <!DOCTYPE html>
@@ -203,11 +216,11 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
         <div class="header">
           <h1>Bangladesh Post Office</h1>
           <h2>e-Passport Booking</h2>
-          <h3>Daily Report for: ${printStartDate} to ${printEndDate}</h3>
+          <h3>Report Summary : ${printStartDate} to ${printEndDate}</h3>
         </div>
         <div class="info-row">
-          <div>Operator Name: ${user?.name}</div>
-          <div>Total page: <span class="page-count"></span></div>
+          <div>Operator Name : ${user?.name}</div>
+          <div>Total page : <span class="page-count"></span></div>
         </div>
 
         ${
@@ -216,7 +229,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
             : `<table>
                 <thead>
                   <tr>
-                    <th>#</th>
+                    <th>SL</th>
                     <th>Date</th>
                     <th>Booking ID</th>
                     <th>RPO ID</th>
@@ -230,7 +243,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                       (item: ReportData, index: number) => `
                         <tr>
                           <td>${index + 1}</td>
-                          <td>${pdfDateFormatter(item.booking_date) || pdfDateFormatter(item.created_at) || "N/A"}</td>
+                          <td>${ pdfDateFormatter(item.booking_date )|| pdfDateFormatter(item.created_at) || "N/A"}</td>
                           <td>${item.barcode || "N/A"}</td>
                           <td>${item.post_code || "N/A"}</td>
                           <td>${item.rpo_name || item.rpo_address || "N/A"}</td>
@@ -243,32 +256,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
               </table>`
         }
 
-        // <script>
-        //   function updatePageCount() {
-        //     const mmToPx = 96 / 25.4;
-        //     const printableHeightMm = 297 - 20;
-        //     const printableHeightPx = printableHeightMm * mmToPx;
-        //     const pages = Math.max(
-        //       1,
-        //       Math.ceil(document.body.scrollHeight / printableHeightPx),
-        //     );
-        //     const pageCountEl = document.querySelector('.page-count');
-        //     if (pageCountEl) {
-        //       pageCountEl.textContent = String(pages);
-        //     }
-        //   }
-
-        //   window.onload = function() {
-        //     updatePageCount();
-        //     setTimeout(() => {
-        //       window.print();
-        //     }, 100);
-        //   };
-
-        //   window.onafterprint = function() {
-        //     window.close();
-        //   };
-        // </script>
+     
 
 
 
