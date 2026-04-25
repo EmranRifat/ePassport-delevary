@@ -96,7 +96,7 @@ const TableContent: React.FC<TableContentProps> = ({
             <option value={10}>10</option>
             <option value={20}>20</option>
             <option value={50}>50</option>
-            <option value={100}>80</option>
+            <option value={80}>80</option>
           </select>
         </div>
       </div>
@@ -158,7 +158,7 @@ const TableContent: React.FC<TableContentProps> = ({
                       data: item,
                       columnKey,
                       index,
-                      serial: (currentPage - 1) * pageSize,
+                      serial: (currentPage - 1) * pageSize + index + 1,
                       copiedKey,
                       handleCopy,
                     })}

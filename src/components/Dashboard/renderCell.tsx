@@ -22,7 +22,7 @@ const RenderCell = ({
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            {serial + index + 1}
+            {serial }
           </span>
         </div>
       );

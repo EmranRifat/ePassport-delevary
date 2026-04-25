@@ -3,11 +3,13 @@ import {
   GetMissingBarcodeRequest,
   MissingBarcodeResponse,
 } from "../types";
+import Cookies from "js-cookie";
 
 export const useGetMissingBarcode = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<MissingBarcodeResponse | null>(null);
+const token = Cookies.get("auth-token");
 
   const getMissingBarcode = async (requestData: GetMissingBarcodeRequest): Promise<MissingBarcodeResponse> => {
     setLoading(true);
@@ -15,11 +17,12 @@ export const useGetMissingBarcode = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/passport_get_barcode`,
+        `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/operator/get_barcode`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify(requestData),
         }
@@ -30,6 +33,7 @@ export const useGetMissingBarcode = () => {
       }
 
       const responseData = await response.json();
+      console.log("Response Data - Barcode:", responseData);
 
       // ✅ Normalize success
       const isSuccess =

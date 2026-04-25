@@ -17,7 +17,7 @@ export default function LoginForm() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role_id: "4",
+    // role_id: "4",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +32,9 @@ export default function LoginForm() {
     }));
     setError("");
   };
+  
+
+
 
   const performInitialLogin = async (): Promise<LoginResponse> => {
     const response = await authApi.login(formData);
@@ -52,13 +55,16 @@ export default function LoginForm() {
   };
 
   const saveAuthData = (initialResponse: LoginResponse) => {
+    console.log("initial res", initialResponse);
     const authData = {
       ...initialResponse,
     };
 
+    
     setAuth(authData);
 
-    document.cookie = `auth-token=${initialResponse.apiresponse.token}; path=/; max-age=86400`;
+    document.cookie = `auth-token=${initialResponse.token}; `;
+    document.cookie = `dms-token=${initialResponse.apiresponse.token}; `;
     document.cookie = `user_id=${initialResponse.user_id}; path=/; max-age=86400`;
     document.cookie = `branch_code=${initialResponse.apiresponse.branch_code || ""}; path=/; max-age=86400`;
     document.cookie = `my_emts_branch_code=${initialResponse.apiresponse.my_emts_branch_code || ""}; path=/; max-age=86400`;
@@ -67,6 +73,10 @@ export default function LoginForm() {
     document.cookie = `city_post_status=${initialResponse.apiresponse.city_post_status || ""}; path=/; max-age=86400`;
   };
 
+
+
+
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -89,6 +99,7 @@ export default function LoginForm() {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">

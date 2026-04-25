@@ -58,7 +58,7 @@ export interface LoginResponse {
 export interface LoginRequest {
     email: string;
     password: string;
-    role_id: string;
+    // role_id: string;
     deviceImei?: string;
 }
 

@@ -13,11 +13,14 @@ import Cookies from "js-cookie";
 import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
 import { useGetBrtaBookingLicence } from "@/lib/hooks/useGetBookingSubmissionCheck";
 import { useStoreMissingData } from "@/lib/hooks/useStoreMissingData";
-import { Card, Input } from "@heroui/react";
+import { Input } from "@heroui/react";
+
 
 type ViewMode = "grid" | "list";
 const token = Cookies.get("auth-token");
+const dms_token = Cookies.get("dms-token");
 // const token = Cookies.get("access");
+
 
 const BookingComponent = () => {
   // const router = useRouter();
@@ -150,7 +153,7 @@ const BookingComponent = () => {
     loading,
     error,
     data: epassportData,
-  } = useSubmitEpassport(token);
+  } = useSubmitEpassport(dms_token,token);
   // Third API Call for BRTA Booking Licence Check
 
   // console.log("E-passport data 333:", epassportData);
@@ -161,6 +164,13 @@ const BookingComponent = () => {
     error: brtaError,
     data: brtaData,
   } = useGetBrtaBookingLicence(token);
+
+
+
+
+
+
+// =================================Handle Ok Button Click in Modal===========================================
 
   const handleOk = async (barcode: string) => {
     setBookingErrorMessage("");
@@ -218,17 +228,17 @@ const BookingComponent = () => {
       if (isSuccess) {
         setBookingMessage("E-passport submission successful");
 
-        try {
-          console.log("Step 3: Fetching BRTA booking licence...");
-          const brtaRes = await getBrtaBookingLicence();
-          console.log("BRTA booking licence data:", brtaRes);
+        // try {
+        //   console.log("Step 3: Fetching BRTA booking licence...");
+        //   const brtaRes = await getBrtaBookingLicence();
+        //   console.log("BRTA booking licence data:", brtaRes);
 
-          if (!brtaRes?.success) {
-            console.warn("BRTA API returned non-success:", brtaRes);
-          }
-        } catch (brtaErr) {
-          console.error("BRTA booking licence check failed:", brtaErr);
-        }
+        //   if (!brtaRes?.success) {
+        //     console.warn("BRTA API returned non-success:", brtaRes);
+        //   }
+        // } catch (brtaErr) {
+        //   console.error("BRTA booking licence check failed:", brtaErr);
+        // }
 
         setTimeout(() => {
           handleCloseModal();
@@ -277,10 +287,10 @@ const BookingComponent = () => {
 
         {/* Search Bar Section */}
         <div className="bg-gradient-to-r from-green-100 to-blue-100 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6 mb-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 flex-1">
-              <h3 className="text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
-                RPO Name
+          <div className=" flex items-center justify-between gap-4">
+            <div className="sm:flex items-center gap-4 flex-1">
+              <h3 className="ps-1 sm:ps-0 text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+              RPO Name
               </h3>
 
               <div className="flex-1 max-w-md">
@@ -327,7 +337,7 @@ const BookingComponent = () => {
             </div>
 
             {/* View Toggle */}
-            <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+            <div className="mt-5 sm:mt-0 flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode("grid")}
                 className={`px-2 md:px-4 py-1 md:py-2 text-sm font-medium transition-colors ${
@@ -379,7 +389,7 @@ const BookingComponent = () => {
 
         {/* RPO Grid */}
         {viewMode === "grid" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-4 lg:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5   2xl:grid-cols-6 gap-3 sm:gap-4 md:gap-4 lg:gap-4">
             {filteredAddresses.map((address) => (
               <button
                 key={address.code}
