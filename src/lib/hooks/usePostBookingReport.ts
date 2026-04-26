@@ -42,7 +42,8 @@ interface EPassportReportResponse {
 
 const postEPassportReport = async (payload: EPassportReportPayload ): Promise<EPassportReportResponse> => {
  
-    const url = `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/epassportreport`;
+    // const url = `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/epassportreport`;
+    const url = `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/operator/epassportreport`;
     const token = Cookies.get("auth-token") || "";
 
   const response = await fetch(url, {

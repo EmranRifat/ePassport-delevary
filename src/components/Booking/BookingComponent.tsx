@@ -13,11 +13,14 @@ import Cookies from "js-cookie";
 import { useSubmitEpassport } from "@/lib/hooks/useSubmitEpassport";
 import { useGetBrtaBookingLicence } from "@/lib/hooks/useGetBookingSubmissionCheck";
 import { useStoreMissingData } from "@/lib/hooks/useStoreMissingData";
-import { Card, Input } from "@heroui/react";
+import { Input } from "@heroui/react";
+
 
 type ViewMode = "grid" | "list";
 const token = Cookies.get("auth-token");
+const dms_token = Cookies.get("dms-token");
 // const token = Cookies.get("access");
+
 
 const BookingComponent = () => {
   // const router = useRouter();
@@ -150,7 +153,7 @@ const BookingComponent = () => {
     loading,
     error,
     data: epassportData,
-  } = useSubmitEpassport(token);
+  } = useSubmitEpassport(dms_token,token);
   // Third API Call for BRTA Booking Licence Check
 
   // console.log("E-passport data 333:", epassportData);
@@ -161,6 +164,13 @@ const BookingComponent = () => {
     error: brtaError,
     data: brtaData,
   } = useGetBrtaBookingLicence(token);
+
+
+
+
+
+
+// =================================Handle Ok Button Click in Modal===========================================
 
   const handleOk = async (barcode: string) => {
     setBookingErrorMessage("");
@@ -218,17 +228,17 @@ const BookingComponent = () => {
       if (isSuccess) {
         setBookingMessage("E-passport submission successful");
 
-        try {
-          console.log("Step 3: Fetching BRTA booking licence...");
-          const brtaRes = await getBrtaBookingLicence();
-          console.log("BRTA booking licence data:", brtaRes);
+        // try {
+        //   console.log("Step 3: Fetching BRTA booking licence...");
+        //   const brtaRes = await getBrtaBookingLicence();
+        //   console.log("BRTA booking licence data:", brtaRes);
 
-          if (!brtaRes?.success) {
-            console.warn("BRTA API returned non-success:", brtaRes);
-          }
-        } catch (brtaErr) {
-          console.error("BRTA booking licence check failed:", brtaErr);
-        }
+        //   if (!brtaRes?.success) {
+        //     console.warn("BRTA API returned non-success:", brtaRes);
+        //   }
+        // } catch (brtaErr) {
+        //   console.error("BRTA booking licence check failed:", brtaErr);
+        // }
 
         setTimeout(() => {
           handleCloseModal();
@@ -264,8 +274,8 @@ const BookingComponent = () => {
 
   const getTodayDate = () => {
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     return `${day}-${month}-${year}`;
   };
@@ -274,7 +284,6 @@ const BookingComponent = () => {
     <div className="bg-white dark:bg-gray-900 min-h-screen rounded-lg shadow">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-5">
         {/* Toast Notifications */}
-
 
         {/* Search Bar Section */}
         <div className="bg-gradient-to-r from-green-100 to-blue-100 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6 mb-6">
@@ -407,8 +416,14 @@ const BookingComponent = () => {
                   {address.code}
                 </span>
 
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">
-                  {address.name.toLowerCase()}
+                <span
+                  className={`font-medium text-gray-900 dark:text-gray-100 capitalize ${
+                    address?.name?.toUpperCase() === "CHAPAINAWABGANJ"
+                      ? "text-sm mid-desktop:text-xs"
+                      : "text-sm"
+                  }`}
+                >
+                  {address?.name?.toLowerCase()}
                 </span>
               </button>
             ))}

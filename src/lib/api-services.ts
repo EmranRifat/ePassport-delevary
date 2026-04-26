@@ -1,7 +1,7 @@
 import { api, dmsApi } from '@/lib/api-client';
 import { API_CONSTANTS } from '@/utils/constants';
 import {
-  
+
     BookingBody,
     BookingResponse,
     LicenseDataBody,
@@ -18,7 +18,7 @@ export const authApi = {
 
     login: async (data: LoginRequest): Promise<LoginResponse> => {
         const response = await api.post<LoginResponse>(
-            `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/passportoperator-login`,
+            `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/user/login`,
             data
         );
         return response.data;
@@ -41,6 +41,8 @@ export const authApi = {
             localStorage.clear();
             // Remove all auth cookies
             document.cookie = 'auth-token=; path=/; max-age=0';
+            document.cookie = 'dms-token=; path=/; max-age=0';
+
             document.cookie = 'user_id=; path=/; max-age=0';
             document.cookie = 'branch_code=; path=/; max-age=0';
             document.cookie = 'my_emts_branch_code=; path=/; max-age=0';

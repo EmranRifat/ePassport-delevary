@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { BarcodeCheckRequest, BarcodeCheckResponse } from "../types";
+import Cookies from "js-cookie";
 
 export const useGetBarcodeData = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [data, setData] = useState<BarcodeCheckResponse | null>(null);
+    
+    const token = Cookies.get("auth-token");
 
     const GetBarcodeInfo = async (requestData: BarcodeCheckRequest): Promise<BarcodeCheckResponse> => {
         setLoading(true); setError(null);
@@ -12,11 +15,12 @@ export const useGetBarcodeData = () => {
         try {
             // Using native fetch instead of api-client
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/epassportchack`,
+                `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/operator/epassportchack`,
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(requestData),
                 }

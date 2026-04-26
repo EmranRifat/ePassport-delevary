@@ -8,7 +8,6 @@ export const useStoreMissingData = (token?: string) => {
 
 
 
-
     const storeMissingData = async (requestData: StoreaDataRequest ): Promise<StoreaDataRequestResponse> => {
         setLoading(true); setError(null);
 
@@ -17,18 +16,22 @@ export const useStoreMissingData = (token?: string) => {
                 "Content-Type": "application/json",
             };
 
-            if (token) {
-                headers["Authorization"] = `Bearer ${token}`;
-            }
+            // if (token) {
+            //     headers["Authorization"] = `Bearer ${token}`;
+            // }
 
             console.log("Submitting missing booking data:", requestData);
 
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/epassportstore`,
+                `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/operator/epassportstore`,
                 {
                     method: "POST",
-                    headers,
+                    headers: {
+                        "Content-Type": "application/json",
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify(requestData),
+
                 }
             );
 

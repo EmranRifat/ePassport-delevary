@@ -16,7 +16,7 @@ const APP_CONSTANTS = {
 
 
 
-export const useSubmitEpassport = (token?: string) => {
+export const useSubmitEpassport = (dms_token?: string, token?: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<EpassportResponse | null>(null);
@@ -71,19 +71,19 @@ export const useSubmitEpassport = (token?: string) => {
           ad_pod_id: "0",
         };
         const payload = {
-          token: input.token ?? token ?? "",
+          token: dms_token || "",
           request_body: requestBody,
         };
 
         console.log("[useSubmitEpassport] POST payload", payload);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/epassportsubmit`,
+          `${process.env.NEXT_PUBLIC_API_DMS_BASE_URL}/api/operator/epassportsubmit`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              // ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              Authorization: `Bearer ${token}` ,
             },
 
             body: payload ? JSON.stringify(payload) : null,
