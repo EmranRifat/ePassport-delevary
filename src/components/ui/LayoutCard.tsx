@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 
 interface LayoutCardProps {
-  children: ReactNode; // ✅ এখানে type fix
+  children: ReactNode;
   shadow?: "sm" | "md" | "lg" | "xl" | "2xl" | "none";
   rounded?: "none" | "sm" | "md" | "lg" | "xl" | "2xl" | "full";
   border?: "0" | "1" | "2" | "4" | "8";
