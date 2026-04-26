@@ -5,9 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button, Input, Card } from "@/components/ui";
 import { authApi } from "@/lib/api-services";
 import { useAuthStore } from "@/store";
-import { handleApiError } from "@/lib/error-handler";
 import Image from "next/image";
 import { LoginResponse } from "@/types/auth";
+import { useLogin } from "@/lib/hooks/useUserLogin";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -20,8 +20,9 @@ export default function LoginForm() {
     // role_id: "4",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const loginMutation = useLogin();
 
   const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -32,53 +33,29 @@ export default function LoginForm() {
     }));
     setError("");
   };
-  
-
-
-
-  const performInitialLogin = async (): Promise<LoginResponse> => {
-    const response = await authApi.login(formData);
-
-    const isSuccess =
-      response.status?.toLowerCase() === "success" ||
-      response.status_code === "200";
-
-    if (!isSuccess) {
-      throw new Error(response.status || "Login failed. Please try again.");
-    }
-
-    if (!response.user_id) {
-      throw new Error("User ID not found in response");
-    }
-
-    return response;
-  };
 
   const saveAuthData = (initialResponse: LoginResponse) => {
-    console.log("initial res", initialResponse);
-    const authData = {
-      ...initialResponse,
-    };
+    setAuth({ ...initialResponse });
 
-    
-    setAuth(authData);
+    const maxAge = 86400;
+    const api = initialResponse.apiresponse;
 
-    document.cookie = `auth-token=${initialResponse.token}; `;
-    document.cookie = `dms-token=${initialResponse.apiresponse.token}; `;
-    document.cookie = `user_id=${initialResponse.user_id}; path=/; max-age=86400`;
-    document.cookie = `branch_code=${initialResponse.apiresponse.branch_code || ""}; path=/; max-age=86400`;
-    document.cookie = `my_emts_branch_code=${initialResponse.apiresponse.my_emts_branch_code || ""}; path=/; max-age=86400`;
-    document.cookie = `rms_code=${initialResponse.apiresponse.rms_code || ""}; path=/; max-age=86400`;
-    document.cookie = `shift=${initialResponse.apiresponse.shift || ""}; path=/; max-age=86400`;
-    document.cookie = `city_post_status=${initialResponse.apiresponse.city_post_status || ""}; path=/; max-age=86400`;
+    document.cookie = `auth-token=${initialResponse.token || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `dms-token=${api?.token || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `user_id=${initialResponse.user_id || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `branch_code=${api?.branch_code || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `my_emts_branch_code=${api?.my_emts_branch_code || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `rms_code=${api?.rms_code || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `shift=${api?.shift || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    document.cookie = `city_post_status=${api?.city_post_status || ""}; path=/; max-age=${maxAge}; SameSite=Lax`;
+
+    localStorage.setItem("token", initialResponse.token || "");
   };
 
-
-
-
-  
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+
     setError("");
 
     if (!formData.email || !formData.password) {
@@ -86,20 +63,30 @@ export default function LoginForm() {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      const initialResponse = await performInitialLogin();
-      saveAuthData(initialResponse);
-      router.push(redirectUrl);
+      const response = await loginMutation.mutateAsync({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      const isSuccess =
+        String(response.status_code) === "200" &&
+        response.status?.toLowerCase() === "success";
+
+      if (!isSuccess) {
+        setError(response.message || "Login failed");
+        return;
+      }
+
+      saveAuthData(response);
+
+      router.replace("/booking");
     } catch (err) {
-      const apiError = handleApiError(err);
-      setError(apiError.message || "An error occurred during login");
-    } finally {
-      setIsLoading(false);
+      setError(
+        err instanceof Error ? err.message : "Invalid email or password",
+      );
     }
   };
-
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
@@ -149,16 +136,16 @@ export default function LoginForm() {
             className="bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition"
           />
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="md"
-            className="w-full rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
-            isLoading={isLoading}
-          >
-            {isLoading ? "Signing In..." : "Sign In"}
-          </Button>
-
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              disabled={loginMutation.isPending}
+              isLoading={loginMutation.isPending}
+              className="px-8"
+            >
+              {loginMutation.isPending ? "Signing In..." : "Sign In"}
+            </Button>
+          </div>
           {error && (
             <div className="flex items-start gap-3 bg-red-50 dark:bg-red-900/40 border-red-200 dark:border-red-500 text-red-600 dark:text-red-300 px-4 py-2 rounded-xl text-sm">
               <span className="font-semibold">Error :</span>

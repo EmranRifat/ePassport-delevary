@@ -14,7 +14,6 @@ import { TableContentProps } from "@/lib/types";
 import renderCell from "./renderCell";
 import RowDetailsModal from "../modals/dashboardModal";
 
-
 const columns = [
   {
     name: "SL",
@@ -50,7 +49,6 @@ const columns = [
   },
 ];
 
-
 const TableContent: React.FC<TableContentProps> = ({
   loading: loading,
   error,
@@ -67,10 +65,29 @@ const TableContent: React.FC<TableContentProps> = ({
   // console.log("Passport data==", passportData);
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(key);
+
+  
+  const handleCopy = async (
+    text: string | number | null | undefined,
+    key: string,
+  ) => {
+    try {
+      const value = String(text ?? "");
+
+      await navigator.clipboard.writeText(value);
+
+      console.log("copied-->>", key, value);
+
+      setCopiedKey(key);
+
+      setTimeout(() => {
+        setCopiedKey(null);
+      }, 1500);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
   };
+
   return (
     <div>
       {/* Pagination Controls */}
@@ -104,8 +121,8 @@ const TableContent: React.FC<TableContentProps> = ({
         <Table
           aria-label="Passport records table"
           classNames={{
-            base: "bg-transparent", 
-            wrapper: "bg-transparent", 
+            base: "bg-transparent",
+            wrapper: "bg-transparent",
             table: "shadow-none bg-transparent",
             th: "bg-[#EDF2F7] dark:bg-gray-700 dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",

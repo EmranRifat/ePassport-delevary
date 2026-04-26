@@ -52,6 +52,8 @@ export interface LoginResponse {
   created_at: string; // ISO date
   updated_at: string; // ISO date
   apiresponse: ApiResponse;
+  message?:string;
+  isFirstLogin?: boolean;
 }
 
 // Login Request Type

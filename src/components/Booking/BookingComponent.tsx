@@ -288,13 +288,14 @@ const BookingComponent = () => {
         {/* Search Bar Section */}
         <div className="bg-gradient-to-r from-green-100 to-blue-100 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6 mb-6">
           <div className=" flex items-center justify-between gap-4">
-            <div className="sm:flex items-center gap-4 flex-1">
+            <div className="sm:flex items-center gap-4 flex-1 ">
               <h3 className="ps-1 sm:ps-0 text-base md:text-md lg:text-2xl font-semibold  md:font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
               RPO Name
               </h3>
 
-              <div className="flex-1 max-w-md">
+              <div className="flex-1 max-w-md  ">
                 <Input
+                
                   type="text"
                   placeholder="Search by Name or RPO..."
                   value={searchQuery}

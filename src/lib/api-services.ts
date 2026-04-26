@@ -24,18 +24,15 @@ export const authApi = {
         return response.data;
     },
 
+    // dmsLogin: async (data: DmsLoginRequest): Promise<DmsLoginResponse> => {
+    //     const response = await dmsApi.post<DmsLoginResponse>(
+    //         `${process.env.NEXT_PUBLIC_EKDAK_BASE_URL}/app_dommail_internal_api/public/ws/login`,
+    //         data
+    //     );
+    //     return response.data;
+    // },
 
-
-
-
-    dmsLogin: async (data: DmsLoginRequest): Promise<DmsLoginResponse> => {
-        const response = await dmsApi.post<DmsLoginResponse>(
-            `${process.env.NEXT_PUBLIC_EKDAK_BASE_URL}/app_dommail_internal_api/public/ws/login`,
-            data
-        );
-        return response.data;
-    },
-
+    
     logout: () => {
         if (typeof window !== 'undefined') {
             localStorage.clear();

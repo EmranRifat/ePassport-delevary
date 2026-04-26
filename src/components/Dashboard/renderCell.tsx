@@ -17,6 +17,7 @@ const RenderCell = ({
   copiedKey,
   handleCopy,
 }: Props) => {
+
   switch (columnKey) {
     case "serial_no":
       return (
@@ -112,7 +113,7 @@ const RenderCell = ({
            `}
               onClick={(e) => {
                 e.stopPropagation();
-                handleCopy(data?.item_id, `rpo-${index}`);
+                handleCopy(data?.post_code, `rpo-${index}`);
               }}
             >
               {copiedKey === `rpo-${index}` ? "Copied" : "Copy"}
