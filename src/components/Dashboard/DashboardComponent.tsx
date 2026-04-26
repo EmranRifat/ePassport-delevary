@@ -12,7 +12,6 @@ import {
   Spinner,
 } from "@heroui/react";
 
-
 import { useGetAllBookings } from "@/lib/hooks/useGetAllBookings";
 import Cookies from "js-cookie";
 import { AllBookingResponse } from "@/lib/types";
@@ -61,7 +60,7 @@ const DashboardComponent = () => {
   const { getAllBookings, loading, error } = useGetAllBookings({ token });
 
   // Use ref to prevent multiple API calls on mount
-  const hasFetchedRef = useRef(false);
+  // const hasFetchedRef = useRef(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Helper function to format date from YYYY-MM-DD to DD-MM-YYYY
@@ -69,19 +68,7 @@ const DashboardComponent = () => {
     const [year, month, day] = dateString.split("-");
     return `${day}-${month}-${year}`; // DD-MM-YYYY
   };
-
-  // Fetch bookings function
-  const fetchBookings = async () => {
-    if (!token) {
-      console.log("No token available");
-      return;
-    }
-
-    try {
-      // const userId = Cookies.get("user_id") || "";
-
-      // Determine which field to search based on the query pattern
-      let searchParams = {};
+       let searchParams = {};
       if (searchQuery) {
         const trimmedQuery = searchQuery.trim();
 
@@ -98,8 +85,7 @@ const DashboardComponent = () => {
           searchParams = { rpo_name: trimmedQuery };
         }
       }
-      
-      const requestData = {
+  const requestData = {
         user_id: userId,
         start_date: formatDateForAPI(startDate),
         end_date: formatDateForAPI(endDate),
@@ -108,58 +94,80 @@ const DashboardComponent = () => {
         status: statusFilter,
         ...searchParams,
       };
+  // Fetch bookings function
+ const requestIdRef = useRef(0);
+ const fetchBookings = async () => {
+  if (!token) return;
 
-      // console.log("Fetching bookings with:", requestData);
+  const requestId = ++requestIdRef.current;
 
-      const response = await getAllBookings(requestData);
-      console.log("res try--->>>", response);
-      setDashboardData(response);
-    } catch (err) {
-      console.error("Failed to fetch bookings:", err);
-    }
-  };
+  setDashboardData(null);
+
+  try {
+    const response = await getAllBookings(requestData);
+
+    // ignore old response
+    if (requestId !== requestIdRef.current) return;
+
+    setDashboardData(response);
+  } catch (err) {
+    console.error("Failed to fetch bookings:", err);
+  }
+};
 
   // Fetch bookings when component mounts or filters change
-  useEffect(() => {
-    // Skip the first render to avoid double calls in development mode
-    if (!hasFetchedRef.current) {
-      hasFetchedRef.current = true;
-      fetchBookings();
-      return;
-    }
+  // useEffect(() => {
+  //   // Skip the first render to avoid double calls in development mode
+  //   if (!hasFetchedRef.current) {
+  //     hasFetchedRef.current = true;
+  //     fetchBookings();
+  //     return;
+  //   }
 
-    fetchBookings();
-  }, [currentPage, pageSize, statusFilter, startDate, endDate]);
+  //   fetchBookings();
+  // }, [currentPage, pageSize, statusFilter, startDate, endDate]);
+  
+  useEffect(() => {
+  fetchBookings();
+}, [currentPage, pageSize, statusFilter, startDate, endDate]);
 
   // Debounced search effect for all search fields
+  // useEffect(() => {
+  //   // Clear existing timeout
+  //   if (searchTimeoutRef.current) {
+  //     clearTimeout(searchTimeoutRef.current);
+  //   }
+
+  //   // Don't search on initial render
+  //   if (!hasFetchedRef.current) {
+  //     return;
+  //   }
+
+  //   // Set new timeout for debounced search
+  //   searchTimeoutRef.current = setTimeout(() => {
+  //     setCurrentPage(1);
+  //     fetchBookings();
+  //   }, 500); // 500ms debounce delay
+
+  //   // Cleanup timeout on unmount or when search terms change
+  //   return () => {
+  //     if (searchTimeoutRef.current) {
+  //       clearTimeout(searchTimeoutRef.current);
+  //     }
+  //   };
+  // }, [searchQuery]); 
   useEffect(() => {
-    // Clear existing timeout
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+  if (searchTimeoutRef.current) {
+    clearTimeout(searchTimeoutRef.current);
+  }
 
-    // Don't search on initial render
-    if (!hasFetchedRef.current) {
-      return;
-    }
-
-    // Set new timeout for debounced search
-    searchTimeoutRef.current = setTimeout(() => {
-      setCurrentPage(1);
-      fetchBookings();
-    }, 500); // 500ms debounce delay
-
-    // Cleanup timeout on unmount or when search terms change
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
+  searchTimeoutRef.current = setTimeout(() => {
+    setCurrentPage(1);
+  }, 500);
+}, [searchQuery]);
 
   const totalPages = dashboardData?.total_page || 1;
   const passportData = dashboardData?.passportissuedata || [];
-
 
   // Show error message if there's an error
   if (error) {
@@ -243,7 +251,7 @@ const DashboardComponent = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="w-full lg:w-[20%] flex lg:justify-end ">
               <Button
                 color="primary"
@@ -263,7 +271,7 @@ const DashboardComponent = () => {
                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                   />
                 </svg>
-                 Report Print
+                Report Print
               </Button>
             </div>
           </div>
@@ -366,12 +374,6 @@ const DashboardComponent = () => {
           />
         </main>
       </div>
-
-
-
-
-
-
 
       {/* Date Range Modal */}
       <DatePickerModal

@@ -289,9 +289,9 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                   {/* Header with Icons */}
                   <div className="flex items-center justify-between px-5 mb-5">
                     <div className="w-[45px] h-[45px] relative">
-                      <Image
-                        src="/bpo.png"
-                        alt="BPO"
+                       <Image
+                        src="/passport.png"
+                        alt="Passport"
                         width={65}
                         height={65}
                         className="object-contain"
@@ -306,9 +306,10 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
                       </p>
                     </div>
                     <div className="w-[45px] h-[45px] relative">
+                     
                       <Image
-                        src="/passport.png"
-                        alt="Passport"
+                        src="/bpo.png"
+                        alt="BPO"
                         width={65}
                         height={65}
                         className="object-contain"

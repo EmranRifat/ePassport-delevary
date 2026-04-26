@@ -66,7 +66,9 @@ const TableContent: React.FC<TableContentProps> = ({
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const handleCopy = (text: string, key: string) => {
-    navigator.clipboard.writeText(text);
+    if (typeof window !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    }
     setCopiedKey(key);
   };
   return (

@@ -24,7 +24,7 @@ const RenderCell = ({
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            { (currentPage - 1) * rowsPerPage + index + 1}
+            {(index + 1) + (currentPage - 1) * rowsPerPage}
           </span>
         </div>
       );
