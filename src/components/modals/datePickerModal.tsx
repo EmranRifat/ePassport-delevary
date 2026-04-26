@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { I18nProvider } from "@react-aria/i18n";
+import { parseDate } from "@internationalized/date";
 
 import {
   Modal,
@@ -22,11 +23,6 @@ interface DateValue {
   day: number;
 }
 
-type DateRange = {
-  start: DateValue | null;
-  end: DateValue | null;
-} | null;
-
 interface DatePickerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -39,14 +35,19 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
   onClose,
   userId,
 }) => {
-  const [tempDateRange, setTempDateRange] = useState<DateRange>(null);
+  const today = new Date();
+  const currentDateValue: DateValue = {
+    year: today.getFullYear(),
+    month: today.getMonth() + 1,
+    day: today.getDate(),
+  };
 
-  const { user } = useAuthStore();
-
-  // const { mutateAsync, isPending, error ,data} = usePostEPassportReport();
-  const { mutate, isPending, error, data } = usePostEPassportReport();
-
-  console.log("mutateAsync data -->", data);
+  const formatDateISO = (date: DateValue) => {
+    const year = date.year;
+    const month = String(date.month).padStart(2, "0");
+    const day = String(date.day).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   const formatDate = (date: DateValue) => {
     const year = date.year;
@@ -55,30 +56,40 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
     return `${day}-${month}-${year}`;
   };
 
+  const [startDate, setStartDate] = useState(formatDateISO(currentDateValue));
+  const [endDate, setEndDate] = useState(formatDateISO(currentDateValue));
+
+  const { user } = useAuthStore();
+
+  // const { mutateAsync, isPending, error ,data} = usePostEPassportReport();
+  const { mutate, isPending, error, data } = usePostEPassportReport();
+
+  console.log("mutateAsync data -->", data);
+
   const buildPrintContent = (
     reportData: ReportData[],
     printStartDate: string,
     printEndDate: string,
   ) => {
-   const pdfDateFormatter = (dateString: string): string => {
-  const dateObj = new Date(dateString);
+    const pdfDateFormatter = (dateString: string): string => {
+      const dateObj = new Date(dateString);
 
-  const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-  const day = String(dateObj.getDate()).padStart(2, "0");
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const day = String(dateObj.getDate()).padStart(2, "0");
 
-  let hours = dateObj.getHours();
-  const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+      let hours = dateObj.getHours();
+      const minutes = String(dateObj.getMinutes()).padStart(2, "0");
 
-  const ampm = hours >= 12 ? "PM" : "AM";
+      const ampm = hours >= 12 ? "PM" : "AM";
 
-  hours = hours % 12;
-  hours = hours ? hours : 12; // 0 হলে 12 হবে
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 হলে 12 হবে
 
-  const formattedHours = String(hours).padStart(2, "0");
+      const formattedHours = String(hours).padStart(2, "0");
 
-  return `${year}-${month}-${day} ${formattedHours}:${minutes} ${ampm}`;
-};
+      return `${year}-${month}-${day} ${formattedHours}:${minutes} ${ampm}`;
+    };
 
     return `
     <!DOCTYPE html>
@@ -243,7 +254,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                       (item: ReportData, index: number) => `
                         <tr>
                           <td>${index + 1}</td>
-                          <td>${ pdfDateFormatter(item.booking_date )|| pdfDateFormatter(item.created_at) || "N/A"}</td>
+                          <td>${pdfDateFormatter(item.booking_date) || pdfDateFormatter(item.created_at) || "N/A"}</td>
                           <td>${item.barcode || "N/A"}</td>
                           <td>${item.post_code || "N/A"}</td>
                           <td>${item.rpo_name || item.rpo_address || "N/A"}</td>
@@ -378,10 +389,8 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
   };
 
   const handlePrint = () => {
-    if (!tempDateRange?.start || !tempDateRange?.end) return;
-
-    const printStartDate = formatDate(tempDateRange.start);
-    const printEndDate = formatDate(tempDateRange.end);
+    const printStartDate = formatDate(parseDate(startDate));
+    const printEndDate = formatDate(parseDate(endDate));
 
     mutate(
       {
@@ -397,7 +406,21 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
             printEndDate,
           );
 
-          setTempDateRange(null);
+          const today = new Date();
+          setStartDate(
+            formatDateISO({
+              year: today.getFullYear(),
+              month: today.getMonth() + 1,
+              day: today.getDate(),
+            }),
+          );
+          setEndDate(
+            formatDateISO({
+              year: today.getFullYear(),
+              month: today.getMonth() + 1,
+              day: today.getDate(),
+            }),
+          );
           onClose();
 
           setTimeout(() => {
@@ -412,7 +435,21 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
   };
 
   const handleCancel = () => {
-    setTempDateRange(null);
+    const today = new Date();
+    setStartDate(
+      formatDateISO({
+        year: today.getFullYear(),
+        month: today.getMonth() + 1,
+        day: today.getDate(),
+      }),
+    );
+    setEndDate(
+      formatDateISO({
+        year: today.getFullYear(),
+        month: today.getMonth() + 1,
+        day: today.getDate(),
+      }),
+    );
     onClose();
   };
 
@@ -456,8 +493,15 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
                 variant="bordered"
                 className="w-full"
                 aria-label="Select date range for report"
+                value={{
+                  start: parseDate(startDate),
+                  end: parseDate(endDate),
+                }}
                 onChange={(value) => {
-                  setTempDateRange(value as DateRange);
+                  if (value?.start && value?.end) {
+                    setStartDate(value.start.toString());
+                    setEndDate(value.end.toString());
+                  }
                 }}
               />
             </I18nProvider>
@@ -484,9 +528,7 @@ const DatePickerModal: React.FC<DatePickerModalProps> = ({
             color="primary"
             onClick={handlePrint}
             className="font-medium flex items-center gap-2"
-            isDisabled={
-              !tempDateRange?.start || !tempDateRange?.end || isPending
-            }
+            isDisabled={!startDate || !endDate || isPending}
             isLoading={isPending}
           >
             Print

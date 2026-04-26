@@ -96,9 +96,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [isScanSuccess]);
 
-
-
-
   // Show in-modal scan toast
   React.useEffect(() => {
     if (isScanSuccess) {
@@ -109,9 +106,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       return () => clearTimeout(toastTimer);
     }
   }, [isScanSuccess]);
-
-
-
 
   React.useEffect(() => {
     if (isScanSuccess && !isSubmitted) {
@@ -139,9 +133,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   }, [isScanSuccess, isSubmitted]);
 
-
-
-
   React.useEffect(() => {
     if (bookingSuccessMessage) {
       setShowSuccessToast(true);
@@ -155,13 +146,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
       return () => clearTimeout(timer);
     }
   }, [bookingSuccessMessage, handleCloseModal]);
-
-
-
-
-
-
-
 
   React.useEffect(() => {
     if (bookingErrorMessage) {
@@ -269,9 +253,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     setIsScanning(false);
   };
 
-
-
-
   const handleSubmitOk = async () => {
     if (submitLockRef.current) return; // 🔒 prevents duplicate calls
 
@@ -298,10 +279,6 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
     }
   };
 
-
-
-
-
   return (
     <>
       {showSuccessToast && (
@@ -321,8 +298,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               <div className="flex items-center justify-between px-5 mb-5">
                 <div className="w-[45px] h-[45px] relative">
                   <Image
-                    src="/bpo.png"
-                    alt="BPO"
+                    src="/passport.png"
+                    alt="Passport"
                     width={70}
                     height={70}
                     className="object-contain"
@@ -338,8 +315,8 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 </div>
                 <div className="w-[45px] h-[45px] relative">
                   <Image
-                    src="/passport.png"
-                    alt="Passport"
+                    src="/bpo.png"
+                    alt="BPO"
                     width={70}
                     height={70}
                     className="object-contain"
@@ -355,10 +332,10 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
               </div>
 
               {/* Barcode Section */}
-              <div className="flex flex-col items-center mb-2">
+              <div className="flex flex-col items-center mb-2 h-[90px]">
                 {barcodeLoading ? (
-                  <>
-                    <div className="barcode-container h-9 w-[350px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded">
+                  <div className="flex flex-col items-center h-full">
+                    <div className="barcode-container h-[55px] w-[350px] flex items-center justify-center bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded">
                       <span className="flex items-center gap-2 text-primary-600">
                         <svg
                           className="animate-spin h-5 w-5"
@@ -383,10 +360,10 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                       </span>
                     </div>
                     <p className="text-lg text-transparent mt-1.5">.</p>
-                  </>
+                  </div>
                 ) : initialBarcode ? (
-                  <>
-                    <div className="barcode-container h-9 w-[250px] md:w-[350px] flex items-center justify-center">
+                  <div className="flex flex-col items-center h-full">
+                    <div className="barcode-container h-[55px] w-[250px] md:w-[350px] flex items-center justify-center">
                       <Barcode
                         value={initialBarcode}
                         format="CODE39"
@@ -399,7 +376,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                     <p className="text-lg text-gray-8DP741503837BD 00 mt-3 dark:text-gray-100">
                       {initialBarcode}
                     </p>
-                  </>
+                  </div>
                 ) : null}
               </div>
 
@@ -411,7 +388,7 @@ const BarcodeModal: React.FC<BarcodeModalProps> = ({
                 <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
                   {selectedRPO.address}
                 </p>
-                 <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
+                <p className="text-lg font-normal text-gray-900 dark:text-gray-100">
                   Phone: +88 {selectedRPO.mobile}
                 </p>
               </div>

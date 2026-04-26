@@ -5,7 +5,8 @@ interface Props {
   data: PassportBookingResponse;
   columnKey: string | React.Key;
   index: number;
-  serial?: number;
+  currentPage: number;
+  rowsPerPage: number;
   copiedKey: string | null;
   handleCopy: (text: string, key: string) => void;
 }
@@ -13,8 +14,9 @@ const RenderCell = ({
   data,
   columnKey,
   index,
-  serial = 0,
   copiedKey,
+  rowsPerPage,
+  currentPage,
   handleCopy,
 }: Props) => {
   switch (columnKey) {
@@ -22,7 +24,7 @@ const RenderCell = ({
       return (
         <div className="flex flex-col">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            {serial }
+            { (currentPage - 1) * rowsPerPage + index + 1}
           </span>
         </div>
       );
@@ -99,7 +101,7 @@ const RenderCell = ({
       return (
         <div className="relative flex items-center justify-start group">
           {/* Tooltip */}
-          {data.item_id && (
+          {data.post_code && (
             <span
               className={`absolute -top-8 left-6 -translate-x-1/2
             bg-gray-50 text-gray-700 text-[11px]
@@ -112,7 +114,7 @@ const RenderCell = ({
            `}
               onClick={(e) => {
                 e.stopPropagation();
-                handleCopy(data?.item_id, `rpo-${index}`);
+                handleCopy(data?.post_code, `rpo-${index}`);
               }}
             >
               {copiedKey === `rpo-${index}` ? "Copied" : "Copy"}
@@ -120,7 +122,7 @@ const RenderCell = ({
           )}
 
           {/* Arrow */}
-          {data.item_id && (
+          {data.post_code && (
             <span
               className="
             absolute -top-2 left-1/2 -translate-x-1/2

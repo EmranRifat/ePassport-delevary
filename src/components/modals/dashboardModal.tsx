@@ -58,6 +58,7 @@ const RowDetailsModal: React.FC<RowDetailsModalProps> = ({
   onClose,
   data,
 }) => {
+  
   console.log("modal data>>>>>>>", data);
   const getTodayDate = () => {
     const today = new Date();

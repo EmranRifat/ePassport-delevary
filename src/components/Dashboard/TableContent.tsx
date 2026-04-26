@@ -14,7 +14,6 @@ import { TableContentProps } from "@/lib/types";
 import renderCell from "./renderCell";
 import RowDetailsModal from "../modals/dashboardModal";
 
-
 const columns = [
   {
     name: "SL",
@@ -49,7 +48,6 @@ const columns = [
     uid: "status",
   },
 ];
-
 
 const TableContent: React.FC<TableContentProps> = ({
   loading: loading,
@@ -104,8 +102,8 @@ const TableContent: React.FC<TableContentProps> = ({
         <Table
           aria-label="Passport records table"
           classNames={{
-            base: "bg-transparent", 
-            wrapper: "bg-transparent", 
+            base: "bg-transparent",
+            wrapper: "bg-transparent",
             table: "shadow-none bg-transparent",
             th: "bg-[#EDF2F7] dark:bg-gray-700 dark:text-gray-200",
             tr: "hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
@@ -158,7 +156,8 @@ const TableContent: React.FC<TableContentProps> = ({
                       data: item,
                       columnKey,
                       index,
-                      serial: (currentPage - 1) * pageSize + index + 1,
+                      currentPage,
+                      rowsPerPage: pageSize,
                       copiedKey,
                       handleCopy,
                     })}
